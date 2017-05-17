@@ -4,7 +4,7 @@ Copyright (C) 1999-2008 Zilog, Inc. All Rights Reserved
 
 LINK MAP:
 
-DATE:      Tue May 16 18:43:50 2017
+DATE:      Tue May 16 21:17:26 2017
 PROCESSOR: assembler
 FILES:     obj\cstartup.obj
            obj\libheader.obj
@@ -28,8 +28,8 @@ SPACE ALLOCATION:
 
 Space                     Base         Top      Size      Used    Unused
 ------------------ ----------- ----------- --------- --------- ---------
-RAM                   D:D1A87F    D:D1DF2B   300000H     36ADH   2FC953H
-                                          (  3145728     13997   3131731)
+RAM                   D:D1A87F    D:D1D9D9   300000H     315BH   2FCEA5H
+                                          (  3145728     12635   3133093)
 
 
 SEGMENTS WITHIN SPACE:
@@ -37,26 +37,26 @@ SEGMENTS WITHIN SPACE:
 
 RAM                Type                Base        Top         Size
 ------------------ ------------------- ----------- ----------- ---------
-.graphx            normal data            D:D1A8E9    D:D1A91C       34h
+.graphx            normal data            D:D1A8E9    D:D1A924       3ch
 .graphx_header     normal data            D:D1A8E0    D:D1A8E8        9h
 .header            normal data            D:D1A87F    D:D1A881        3h
 .keypadc           normal data            D:D1A8DC    D:D1A8DF        4h
 .keypadc_header    normal data            D:D1A8D2    D:D1A8DB        ah
 .launcher          normal data            D:D1A882    D:D1A8D1       50h
-.startup           normal data            D:D1A91D    D:D1A95A       3eh
-CODE               normal data            D:D1A95B    D:D1DEA9     354fh
-DATA               normal data            D:D1DEAA    D:D1DECB       22h
-TEXT               normal data            D:D1DECC    D:D1DF2B       60h
+.startup           normal data            D:D1A925    D:D1A962       3eh
+CODE               normal data            D:D1A963    D:D1D983     3021h
+DATA               normal data            D:D1D984    D:D1D9A5       22h
+TEXT               normal data            D:D1D9A6    D:D1D9D9       34h
 
 SEGMENTS WITHIN MODULES:
 ========================
 
-Module: ..\SRC\MAIN.C (File: main.obj) Version: 1:0 05/16/2017 18:39:07
+Module: ..\SRC\MAIN.C (File: main.obj) Version: 1:0 05/16/2017 21:17:26
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1A95B    D:D1DE58     34feh
-    Segment: TEXT (was STRSECT)                D:D1DECC    D:D1DF2B       60h
+    Segment: CODE                              D:D1A963    D:D1D932     2fd0h
+    Segment: TEXT (was STRSECT)                D:D1D9A6    D:D1D9D9       34h
 
 
 Module: C:\CEdev\lib\asm\cstartup.asm (File: cstartup.obj) Version: 1:0 04/30/2017 13:10:54
@@ -64,120 +64,134 @@ Module: C:\CEdev\lib\asm\cstartup.asm (File: cstartup.obj) Version: 1:0 04/30/20
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .header                           D:D1A87F    D:D1A881        3h
-    Segment: .startup                          D:D1A91D    D:D1A95A       3eh
+    Segment: .startup                          D:D1A925    D:D1A962       3eh
 
 
-Module: C:\CEdev\lib\asm\graphx_header.asm (File: graphx_header.obj) Version: 1:0 05/16/2017 18:43:50
+Module: C:\CEdev\lib\asm\graphx_header.asm (File: graphx_header.obj) Version: 1:0 05/16/2017 21:17:23
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx_header                    D:D1A8E0    D:D1A8E8        9h
 
 
-Module: C:\CEdev\lib\asm\keypadc_header.asm (File: keypadc_header.obj) Version: 1:0 05/16/2017 18:43:50
+Module: C:\CEdev\lib\asm\keypadc_header.asm (File: keypadc_header.obj) Version: 1:0 05/16/2017 21:17:23
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .keypadc_header                   D:D1A8D2    D:D1A8DB        ah
 
 
-Module: C:\CEdev\lib\asm\libheader.asm (File: libheader.obj) Version: 1:0 05/16/2017 18:43:50
+Module: C:\CEdev\lib\asm\libheader.asm (File: libheader.obj) Version: 1:0 05/16/2017 21:17:24
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .launcher                         D:D1A882    D:D1A8D1       50h
-    Segment: DATA                              D:D1DEAA    D:D1DECB       22h
+    Segment: DATA                              D:D1D984    D:D1D9A5       22h
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\ce\memset_fast.src (Library: cce.lib) Version: 1:0 04/29/2017 14:56:07
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1DE59    D:D1DE6F       17h
+    Segment: CODE                              D:D1D933    D:D1D949       17h
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\ce\prgmcleanup.src (Library: cce.lib) Version: 1:0 04/29/2017 14:56:06
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1DE89    D:D1DEA9       21h
+    Segment: CODE                              D:D1D963    D:D1D983       21h
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_Begin.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:00
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: .graphx                           D:D1A911    D:D1A914        4h
+    Segment: .graphx                           D:D1A919    D:D1A91C        4h
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_BlitRectangle.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:55:59
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: .graphx                           D:D1A8ED    D:D1A8F0        4h
+    Segment: .graphx                           D:D1A8F5    D:D1A8F8        4h
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_End.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:00
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: .graphx                           D:D1A919    D:D1A91C        4h
+    Segment: .graphx                           D:D1A921    D:D1A924        4h
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_FillRectangle.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:55:57
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: .graphx                           D:D1A8F9    D:D1A8FC        4h
+    Segment: .graphx                           D:D1A901    D:D1A904        4h
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_FillScreen.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:02
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: .graphx                           D:D1A905    D:D1A908        4h
-
-
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_HorizLine_NoClip.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:01
-
-    Name                                        Base        Top      Size
-    --------------------------------------- ----------- ----------- ---------
-    Segment: .graphx                           D:D1A909    D:D1A90C        4h
-
-
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_Line.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:03
-
-    Name                                        Base        Top      Size
-    --------------------------------------- ----------- ----------- ---------
-    Segment: .graphx                           D:D1A901    D:D1A904        4h
-
-
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_Line_NoClip.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:01
-
-    Name                                        Base        Top      Size
-    --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A90D    D:D1A910        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_PrintStringXY.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:01
+Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_GetStringWidth.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:01
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A8F1    D:D1A8F4        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SetColor.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:02
+Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_HorizLine_NoClip.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:01
+
+    Name                                        Base        Top      Size
+    --------------------------------------- ----------- ----------- ---------
+    Segment: .graphx                           D:D1A911    D:D1A914        4h
+
+
+Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_Line.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:03
+
+    Name                                        Base        Top      Size
+    --------------------------------------- ----------- ----------- ---------
+    Segment: .graphx                           D:D1A909    D:D1A90C        4h
+
+
+Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_Line_NoClip.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:01
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A915    D:D1A918        4h
 
 
+Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_PrintStringXY.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:01
+
+    Name                                        Base        Top      Size
+    --------------------------------------- ----------- ----------- ---------
+    Segment: .graphx                           D:D1A8F9    D:D1A8FC        4h
+
+
+Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SetColor.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:02
+
+    Name                                        Base        Top      Size
+    --------------------------------------- ----------- ----------- ---------
+    Segment: .graphx                           D:D1A91D    D:D1A920        4h
+
+
 Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SetDraw.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:00
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: .graphx                           D:D1A8FD    D:D1A900        4h
+    Segment: .graphx                           D:D1A905    D:D1A908        4h
+
+
+Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SetTextFGColor.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:55:58
+
+    Name                                        Base        Top      Size
+    --------------------------------------- ----------- ----------- ---------
+    Segment: .graphx                           D:D1A8ED    D:D1A8F0        4h
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SwapDraw.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:00
@@ -191,7 +205,7 @@ Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_VertLine_NoClip.src
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: .graphx                           D:D1A8F5    D:D1A8F8        4h
+    Segment: .graphx                           D:D1A8FD    D:D1A900        4h
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\keypadc\kb_Scan.src (Library: keypadc.lib) Version: 1:0 04/29/2017 14:56:06
@@ -205,14 +219,14 @@ Module: Z:\home\waltz\Documents\git\toolchain\src\std\shared\frameset.src (Libra
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1DE7B    D:D1DE88        eh
+    Segment: CODE                              D:D1D955    D:D1D962        eh
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\std\shared\frameset0.src (Library: cshared.lib) Version: 1:0 04/29/2017 14:56:18
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1DE70    D:D1DE7A        bh
+    Segment: CODE                              D:D1D94A    D:D1D954        bh
 
 EXTERNAL DEFINITIONS:
 =====================
@@ -349,37 +363,39 @@ _errno                              D:D008DC cstartup        CODE
 _init                               D:D1A882 cstartup        .header                         
 _kb_Scan                            D:D1A8DC kb_Scan         .keypadc                        
 _gfx_SwapDraw                       D:D1A8E9 gfx_SwapDraw    .graphx                         
-_gfx_BlitRectangle                  D:D1A8ED gfx_BlitRectang .graphx                         
-_gfx_PrintStringXY                  D:D1A8F1 gfx_PrintString .graphx                         
-_gfx_VertLine_NoClip                D:D1A8F5 gfx_VertLine_No .graphx                         
-_gfx_FillRectangle                  D:D1A8F9 gfx_FillRectang .graphx                         
-_gfx_SetDraw                        D:D1A8FD gfx_SetDraw     .graphx                         
-_gfx_Line                           D:D1A901 gfx_Line        .graphx                         
-_gfx_FillScreen                     D:D1A905 gfx_FillScreen  .graphx                         
-_gfx_HorizLine_NoClip               D:D1A909 gfx_HorizLine_N .graphx                         
-_gfx_Line_NoClip                    D:D1A90D gfx_Line_NoClip .graphx                         
-_gfx_Begin                          D:D1A911 gfx_Begin       .graphx                         
-_gfx_SetColor                       D:D1A915 gfx_SetColor    .graphx                         
-_gfx_End                            D:D1A919 gfx_End         .graphx                         
-__exit                              D:D1A946 cstartup        .startup                        
-_exit                               D:D1A957 cstartup        .startup                        
-_main                               D:D1A95B MAIN            CODE                            
-_printText                          D:D1DA5D MAIN            CODE                            
-_fillScreen                         D:D1DA7F MAIN            CODE                            
-_x_x                                D:D1DAA1 MAIN            CODE                            
-_x_y                                D:D1DB52 MAIN            CODE                            
-_y_x                                D:D1DC03 MAIN            CODE                            
-_y_y                                D:D1DCC0 MAIN            CODE                            
-_z_x                                D:D1DD71 MAIN            CODE                            
-_z_y                                D:D1DDC2 MAIN            CODE                            
-_function                           D:D1DE07 MAIN            CODE                            
-_mod                                D:D1DE16 MAIN            CODE                            
-_memset_fast                        D:D1DE59 memset_fast     CODE                            
-__frameset0                         D:D1DE70 frameset0       CODE                            
-__frameset                          D:D1DE7B frameset        CODE                            
-_prgm_CleanUp                       D:D1DE89 prgmcleanup     CODE                            
+_gfx_SetTextFGColor                 D:D1A8ED gfx_SetTextFGCo .graphx                         
+_gfx_GetStringWidth                 D:D1A8F1 gfx_GetStringWi .graphx                         
+_gfx_BlitRectangle                  D:D1A8F5 gfx_BlitRectang .graphx                         
+_gfx_PrintStringXY                  D:D1A8F9 gfx_PrintString .graphx                         
+_gfx_VertLine_NoClip                D:D1A8FD gfx_VertLine_No .graphx                         
+_gfx_FillRectangle                  D:D1A901 gfx_FillRectang .graphx                         
+_gfx_SetDraw                        D:D1A905 gfx_SetDraw     .graphx                         
+_gfx_Line                           D:D1A909 gfx_Line        .graphx                         
+_gfx_FillScreen                     D:D1A90D gfx_FillScreen  .graphx                         
+_gfx_HorizLine_NoClip               D:D1A911 gfx_HorizLine_N .graphx                         
+_gfx_Line_NoClip                    D:D1A915 gfx_Line_NoClip .graphx                         
+_gfx_Begin                          D:D1A919 gfx_Begin       .graphx                         
+_gfx_SetColor                       D:D1A91D gfx_SetColor    .graphx                         
+_gfx_End                            D:D1A921 gfx_End         .graphx                         
+__exit                              D:D1A94E cstartup        .startup                        
+_exit                               D:D1A95F cstartup        .startup                        
+_main                               D:D1A963 MAIN            CODE                            
+_printText                          D:D1D4EF MAIN            CODE                            
+_fillScreen                         D:D1D511 MAIN            CODE                            
+_x_x                                D:D1D533 MAIN            CODE                            
+_x_y                                D:D1D5E4 MAIN            CODE                            
+_y_x                                D:D1D695 MAIN            CODE                            
+_y_y                                D:D1D752 MAIN            CODE                            
+_z_x                                D:D1D803 MAIN            CODE                            
+_z_y                                D:D1D854 MAIN            CODE                            
+_function                           D:D1D899 MAIN            CODE                            
+_mod                                D:D1D8F0 MAIN            CODE                            
+_memset_fast                        D:D1D933 memset_fast     CODE                            
+__frameset0                         D:D1D94A frameset0       CODE                            
+__frameset                          D:D1D955 frameset        CODE                            
+_prgm_CleanUp                       D:D1D963 prgmcleanup     CODE                            
 
-159 external symbol(s).
+161 external symbol(s).
 
 SYMBOL CROSS REFERENCE:
 =======================
@@ -535,6 +551,10 @@ _kb_Scan                          Defined     Z:\home\waltz\Documents\git\toolch
                                   Referenced  ..\SRC\MAIN.C
 _gfx_SwapDraw                     Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SwapDraw.src
                                   Referenced  ..\SRC\MAIN.C
+_gfx_SetTextFGColor               Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SetTextFGColor.src
+                                  Referenced  ..\SRC\MAIN.C
+_gfx_GetStringWidth               Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_GetStringWidth.src
+                                  Referenced  ..\SRC\MAIN.C
 _gfx_BlitRectangle                Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_BlitRectangle.src
                                   Referenced  ..\SRC\MAIN.C
 _gfx_PrintStringXY                Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_PrintStringXY.src
@@ -584,7 +604,7 @@ _prgm_CleanUp                     Defined     Z:\home\waltz\Documents\git\toolch
 
 OUTPUT CHECKSUM
 ===============
-bin/DEMO.hex         1E4DCF
+bin/DEMO.hex         1B9565
 
 
 
