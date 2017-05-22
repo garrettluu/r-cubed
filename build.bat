@@ -1,1 +1,3 @@
 make
+pause
+build
