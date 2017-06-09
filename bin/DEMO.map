@@ -4,7 +4,7 @@ Copyright (C) 1999-2008 Zilog, Inc. All Rights Reserved
 
 LINK MAP:
 
-DATE:      Sun May 21 21:26:11 2017
+DATE:      Thu Jun 08 23:08:41 2017
 PROCESSOR: assembler
 FILES:     obj\cstartup.obj
            obj\libheader.obj
@@ -28,8 +28,8 @@ SPACE ALLOCATION:
 
 Space                     Base         Top      Size      Used    Unused
 ------------------ ----------- ----------- --------- --------- ---------
-RAM                   D:D031F6    D:D1D87D   300000H     307DH   2FCF83H
-                                          (  3145728     12413   3133315)
+RAM                   D:D031F6    D:D1DA15   300000H     329AH   2FCD66H
+                                          (  3145728     12954   3132774)
 
 
 SEGMENTS WITHIN SPACE:
@@ -44,22 +44,23 @@ RAM                Type                Base        Top         Size
 .keypadc_header    normal data            D:D1A8D2    D:D1A8DB        ah
 .launcher          normal data            D:D1A882    D:D1A8D1       50h
 .startup           normal data            D:D1A925    D:D1A962       3eh
-BSS                normal data            D:D031F6    D:D03273       7eh
-CODE               normal data            D:D1A963    D:D1D80F     2eadh
-DATA               normal data            D:D1D810    D:D1D831       22h
-TEXT               normal data            D:D1D832    D:D1D87D       4ch
+BSS                normal data            D:D031F6    D:D032F8      103h
+CODE               normal data            D:D1A963    D:D1D97C     301ah
+DATA               normal data            D:D1D97D    D:D1D9A1       25h
+TEXT               normal data            D:D1D9A2    D:D1DA15       74h
 
 SEGMENTS WITHIN MODULES:
 ========================
 
-Module: ..\SRC\MAIN.C (File: main.obj) Version: 1:0 05/21/2017 21:26:10
+Module: ..\SRC\MAIN.C (File: main.obj) Version: 1:0 06/08/2017 23:08:41
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: BSS                               D:D031F6    D:D03273       7eh
-    Segment: CODE                              D:D1A963    D:D1D7BE     2e5ch
-    Segment: TEXT                              D:D1D832    D:D1D83D        ch
-    Segment: TEXT (was STRSECT)                D:D1D83E    D:D1D87D       40h
+    Segment: BSS                               D:D031F6    D:D032F8      103h
+    Segment: CODE                              D:D1A963    D:D1D92B     2fc9h
+    Segment: DATA                              D:D1D99F    D:D1D9A1        3h
+    Segment: TEXT                              D:D1D9A2    D:D1D9C9       28h
+    Segment: TEXT (was STRSECT)                D:D1D9CA    D:D1DA15       4ch
 
 
 Module: C:\CEdev\lib\asm\cstartup.asm (File: cstartup.obj) Version: 1:0 04/30/2017 13:10:54
@@ -70,40 +71,40 @@ Module: C:\CEdev\lib\asm\cstartup.asm (File: cstartup.obj) Version: 1:0 04/30/20
     Segment: .startup                          D:D1A925    D:D1A962       3eh
 
 
-Module: C:\CEdev\lib\asm\graphx_header.asm (File: graphx_header.obj) Version: 1:0 05/21/2017 21:26:08
+Module: C:\CEdev\lib\asm\graphx_header.asm (File: graphx_header.obj) Version: 1:0 06/08/2017 23:08:39
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx_header                    D:D1A8E0    D:D1A8E8        9h
 
 
-Module: C:\CEdev\lib\asm\keypadc_header.asm (File: keypadc_header.obj) Version: 1:0 05/21/2017 21:26:08
+Module: C:\CEdev\lib\asm\keypadc_header.asm (File: keypadc_header.obj) Version: 1:0 06/08/2017 23:08:39
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .keypadc_header                   D:D1A8D2    D:D1A8DB        ah
 
 
-Module: C:\CEdev\lib\asm\libheader.asm (File: libheader.obj) Version: 1:0 05/21/2017 21:26:08
+Module: C:\CEdev\lib\asm\libheader.asm (File: libheader.obj) Version: 1:0 06/08/2017 23:08:39
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .launcher                         D:D1A882    D:D1A8D1       50h
-    Segment: DATA                              D:D1D810    D:D1D831       22h
+    Segment: DATA                              D:D1D97D    D:D1D99E       22h
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\ce\memset_fast.src (Library: cce.lib) Version: 1:0 04/29/2017 14:56:07
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1D7BF    D:D1D7D5       17h
+    Segment: CODE                              D:D1D92C    D:D1D942       17h
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\ce\prgmcleanup.src (Library: cce.lib) Version: 1:0 04/29/2017 14:56:06
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1D7EF    D:D1D80F       21h
+    Segment: CODE                              D:D1D95C    D:D1D97C       21h
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_Begin.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:00
@@ -222,14 +223,14 @@ Module: Z:\home\waltz\Documents\git\toolchain\src\std\shared\frameset.src (Libra
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1D7E1    D:D1D7EE        eh
+    Segment: CODE                              D:D1D94E    D:D1D95B        eh
 
 
 Module: Z:\home\waltz\Documents\git\toolchain\src\std\shared\frameset0.src (Library: cshared.lib) Version: 1:0 04/29/2017 14:56:18
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1D7D6    D:D1D7E0        bh
+    Segment: CODE                              D:D1D943    D:D1D94D        bh
 
 EXTERNAL DEFINITIONS:
 =====================
@@ -237,15 +238,16 @@ EXTERNAL DEFINITIONS:
 Symbol                             Address   Module          Segment
 -------------------------------- ----------- --------------- --------------------------------
 __copy_code_to_ram                  00000000 (User Defined)
-__len_bss                           0000007E (User Defined)
+__len_bss                           00000103 (User Defined)
 __low_bss                           00D031F6 (User Defined)
-__heapbot                           00D03274 (User Defined)
+__heapbot                           00D032F9 (User Defined)
 __heaptop                           00D13FD6 (User Defined)
 __stack                             00D1A87E (User Defined)
 _boot_GetBootMajorVer               D:000080 tice            CODE                            
 _boot_GetHardwareVer                D:000084 tice            CODE                            
 _boot_GetBootMinorVer               D:00008C tice            CODE                            
 _boot_DebugPrintf                   D:0000B4 tice            CODE                            
+_strcpy                             D:0000CC strcpy          CODE                            
 _strtok                             D:0000F4 strtok          CODE                            
 __ildix                             D:000148 ildix           CODE                            
 __irems                             D:00016C irems           CODE                            
@@ -254,6 +256,7 @@ __fadd                              D:000270 fpadd           CODE
 __fcmp                              D:000274 fpcmp           CODE                            
 __fdiv                              D:000278 fpdiv           CODE                            
 __ftol                              D:00027C fpftol          CODE                            
+__ltof                              D:000284 fpltof          CODE                            
 __fmul                              D:000288 fpmul           CODE                            
 __fsub                              D:000290 fpsub           CODE                            
 _boot_ClearVRAM                     D:000374 tice            CODE                            
@@ -365,10 +368,14 @@ _os_FontDrawTransText               D:022178 tice            CODE
 _os_CreateAppVar                    D:022184 tice            CODE                            
 _errno                              D:D008DC cstartup        CODE                            
 _text                               D:D031F6 MAIN            BSS                             
-_r                                  D:D03205 MAIN            BSS                             
-_aa                                 D:D03209 MAIN            BSS                             
-_bb                                 D:D0320D MAIN            BSS                             
-_RPN                                D:D03211 MAIN            BSS                             
+_r                                  D:D031F9 MAIN            BSS                             
+_aa                                 D:D031FD MAIN            BSS                             
+_bb                                 D:D03201 MAIN            BSS                             
+_c                                  D:D03205 MAIN            BSS                             
+_d                                  D:D0322D MAIN            BSS                             
+_e                                  D:D03230 MAIN            BSS                             
+_RPN                                D:D03233 MAIN            BSS                             
+_OP                                 D:D03296 MAIN            BSS                             
 _init                               D:D1A882 cstartup        .header                         
 _kb_Scan                            D:D1A8DC kb_Scan         .keypadc                        
 _gfx_SwapDraw                       D:D1A8E9 gfx_SwapDraw    .graphx                         
@@ -389,28 +396,32 @@ _gfx_End                            D:D1A921 gfx_End         .graphx
 __exit                              D:D1A94E cstartup        .startup                        
 _exit                               D:D1A95F cstartup        .startup                        
 _main                               D:D1A963 MAIN            CODE                            
-_printText                          D:D1D0DA MAIN            CODE                            
-_fillScreen                         D:D1D0FC MAIN            CODE                            
-_x_x                                D:D1D11E MAIN            CODE                            
-_x_y                                D:D1D1CF MAIN            CODE                            
-_y_x                                D:D1D280 MAIN            CODE                            
-_y_y                                D:D1D33D MAIN            CODE                            
-_z_x                                D:D1D3EE MAIN            CODE                            
-_z_y                                D:D1D43F MAIN            CODE                            
-_function                           D:D1D484 MAIN            CODE                            
-_mod                                D:D1D4DB MAIN            CODE                            
-_tokenize                           D:D1D51E MAIN            CODE                            
-_floatToStr                         D:D1D53D MAIN            CODE                            
-_initRPN                            D:D1D58B MAIN            CODE                            
-_pushRPN                            D:D1D595 MAIN            CODE                            
-_popRPN                             D:D1D5C0 MAIN            CODE                            
-_parseRPN                           D:D1D5E0 MAIN            CODE                            
-_memset_fast                        D:D1D7BF memset_fast     CODE                            
-__frameset0                         D:D1D7D6 frameset0       CODE                            
-__frameset                          D:D1D7E1 frameset        CODE                            
-_prgm_CleanUp                       D:D1D7EF prgmcleanup     CODE                            
+_printText                          D:D1D13A MAIN            CODE                            
+_fillScreen                         D:D1D15C MAIN            CODE                            
+_x_x                                D:D1D17E MAIN            CODE                            
+_x_y                                D:D1D22F MAIN            CODE                            
+_y_x                                D:D1D2E0 MAIN            CODE                            
+_y_y                                D:D1D39D MAIN            CODE                            
+_z_x                                D:D1D44E MAIN            CODE                            
+_z_y                                D:D1D49F MAIN            CODE                            
+_function                           D:D1D4E4 MAIN            CODE                            
+_mod                                D:D1D53B MAIN            CODE                            
+_tokenize                           D:D1D57E MAIN            CODE                            
+_floatToStr                         D:D1D59D MAIN            CODE                            
+_initRPN                            D:D1D5FE MAIN            CODE                            
+_pushRPN                            D:D1D608 MAIN            CODE                            
+_popRPN                             D:D1D633 MAIN            CODE                            
+_parseRPN                           D:D1D653 MAIN            CODE                            
+_pushOP                             D:D1D863 MAIN            CODE                            
+_popOP                              D:D1D884 MAIN            CODE                            
+_shunt                              D:D1D8A9 MAIN            CODE                            
+_memset_fast                        D:D1D92C memset_fast     CODE                            
+__frameset0                         D:D1D943 frameset0       CODE                            
+__frameset                          D:D1D94E frameset        CODE                            
+_prgm_CleanUp                       D:D1D95C prgmcleanup     CODE                            
+_w                                  D:D1D99F MAIN            DATA                            
 
-173 external symbol(s).
+183 external symbol(s).
 
 SYMBOL CROSS REFERENCE:
 =======================
@@ -427,6 +438,8 @@ _boot_GetBootMajorVer             Defined     Z:\home\waltz\Documents\git\toolch
 _boot_GetHardwareVer              Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
 _boot_GetBootMinorVer             Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
 _boot_DebugPrintf                 Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
+_strcpy                           Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\strcpy.src
+                                  Referenced  ..\SRC\MAIN.C
 _strtok                           Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\strtok.src
                                   Referenced  ..\SRC\MAIN.C
 __ildix                           Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\ildix.src
@@ -442,6 +455,8 @@ __fcmp                            Defined     Z:\home\waltz\Documents\git\toolch
 __fdiv                            Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\fpdiv.src
                                   Referenced  ..\SRC\MAIN.C
 __ftol                            Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\fpftol.src
+                                  Referenced  ..\SRC\MAIN.C
+__ltof                            Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\fpltof.src
                                   Referenced  ..\SRC\MAIN.C
 __fmul                            Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\fpmul.src
                                   Referenced  ..\SRC\MAIN.C
@@ -569,7 +584,11 @@ _text                             Defined     ..\SRC\MAIN.C
 _r                                Defined     ..\SRC\MAIN.C
 _aa                               Defined     ..\SRC\MAIN.C
 _bb                               Defined     ..\SRC\MAIN.C
+_c                                Defined     ..\SRC\MAIN.C
+_d                                Defined     ..\SRC\MAIN.C
+_e                                Defined     ..\SRC\MAIN.C
 _RPN                              Defined     ..\SRC\MAIN.C
+_OP                               Defined     ..\SRC\MAIN.C
 _init                             Defined     C:\CEdev\lib\asm\cstartup.asm
 _kb_Scan                          Defined     Z:\home\waltz\Documents\git\toolchain\src\keypadc\kb_Scan.src
                                   Referenced  ..\SRC\MAIN.C
@@ -623,6 +642,9 @@ _initRPN                          Defined     ..\SRC\MAIN.C
 _pushRPN                          Defined     ..\SRC\MAIN.C
 _popRPN                           Defined     ..\SRC\MAIN.C
 _parseRPN                         Defined     ..\SRC\MAIN.C
+_pushOP                           Defined     ..\SRC\MAIN.C
+_popOP                            Defined     ..\SRC\MAIN.C
+_shunt                            Defined     ..\SRC\MAIN.C
 _memset_fast                      Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\memset_fast.src
                                   Referenced  ..\SRC\MAIN.C
 __frameset0                       Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\frameset0.src
@@ -631,10 +653,11 @@ __frameset                        Defined     Z:\home\waltz\Documents\git\toolch
                                   Referenced  ..\SRC\MAIN.C
 _prgm_CleanUp                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\prgmcleanup.src
                                   Referenced  ..\SRC\MAIN.C
+_w                                Defined     ..\SRC\MAIN.C
 
 OUTPUT CHECKSUM
 ===============
-bin/DEMO.hex         1AB46D
+bin/DEMO.hex         1B4230
 
 
 

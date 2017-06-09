@@ -66,19 +66,38 @@ float r;
 
 float aa;
 float bb;
+char c[40];
+char *d;
+char *e;
+char *w = " \t\n\r\f";
 
 char *floatToStr(float arg);
+
 typedef struct stack
 {
     float val[24];
     int size;
-}stack;
+} stack;
+typedef struct opStack
+{
+    char op[96];
+    int size;
+} opStack;
 stack RPN;
+opStack OP;
+
 void initRPN(void);
+
 void pushRPN(float val);
+
 float peekRPN(void);
-float popRPN(void);
-float parseRPN(char *s);
+
+double popRPN(void);
+
+double parseRPN(char *s, double X, double Y);
+
+void shunt(void);
+
 //main function
 //this is what gets run when the program starts
 void main(void)
@@ -128,19 +147,11 @@ void main(void)
     double d2;
 
     double aaa;
+    char equ[40] = " 5 6 5 + + ";
     uint8_t xxNodes[256][3]; //create the node arrays
     uint8_t xyNodes[256][3]; //why are they multidimensional? this is like 2am code so who knows
     uint8_t yxNodes[256][3];
     uint8_t yyNodes[256][3];
-
-
-    // reverse polish notation parser
-    char tokens[] = " 5 6 2 * ^ ";
-
-    floatToStr(parseRPN(tokens));
-
-
-
 
 
     //------program actually starts here------\\
@@ -151,10 +162,12 @@ void main(void)
     gfx_SetDraw(gfx_buffer);
 
     gfx_SetTextFGColor(gfx_black);
-    gfx_PrintStringXY("R3 - 3D grapher for the TI84PCE", 12, 12); //print title text
-  //  gfx_PrintStringXY(title2, 12, 21);
 
-    gfx_PrintStringXY(text, 12, 30);
+    floatToStr(5);
+    gfx_PrintStringXY("R3 - 3D grapher for the TI84PCE", 12, 12); //print title text
+    gfx_PrintStringXY(text, 12, 21);
+
+//    gfx_PrintStringXY(text, 12, 30);
 
     gfx_SwapDraw(); //update the screen
 
@@ -162,22 +175,6 @@ void main(void)
 
     prgm_CleanUp(); //clear the screen
 
-    /* Loop until 2nd is pressed */
-/*    do 
-    {
-	kb_Scan();
-	// Load all keyboard registers 
-	key1 = kb_Data[kb_group_1];
-	key2 = kb_Data[kb_group_2];
-	key3 = kb_Data[kb_group_3];
-	key4 = kb_Data[kb_group_4];
-	key5 = kb_Data[kb_group_5];
-	key6 = kb_Data[kb_group_6];
-        key7 = kb_Data[kb_group_7];
-
-	
-    } 
-    while( kb_Data[kb_group_1] != kb_2nd );*/
 
     do
     {
@@ -286,7 +283,7 @@ void main(void)
                             (int) (120 - (z_y(a, b, c) * 100))); //the resolution of the TI84+CE is 320*240
             gfx_PrintStringXY("z", (int) (160 + (z_x(a, b, c) * 100)), (int) (120 - (z_y(a, b, c) * 100)));
             i = 0;
-            for (t = 0; t <= 1 && kb_Data[kb_group_1] != kb_2nd; t += dx)
+            for (t = 0; t < 1 && kb_Data[kb_group_1] != kb_2nd; t += .00909)
             {
                 kb_Scan(); //keep scanning for key presses
                 gfx_SetColor(gfx_green); //we want to graph in green
@@ -295,29 +292,35 @@ void main(void)
                 //	_g = 2*s2*((floor((t+dx)*(n+1))/n)-.5); //unused for now
                 h = 2 * s2 * (mod(t * (n + 1), 1) - .5);
                 //	_h = 2*s2*(mod((t+dx)*(n+1),1)-.5); //unused for now
+
+
+
                 xxNodes[i][0] = (uint8_t)(160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
-                                                      (z_x(a, b, c) * function(g, h))))); //fill out the arrays of nodes
+                                                      (z_x(a, b, c) * parseRPN(equ, g, h))))); //fill out the arrays of nodes
                 xyNodes[i][0] = (uint8_t)(
-                        120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * function(g, h)))));
+                        120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * parseRPN(equ, g, h)))));
                 yxNodes[i][0] = (uint8_t)(
-                        160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) * function(h, g)))));
+                        160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) * parseRPN(equ, h, g)))));
                 yyNodes[i][0] = (uint8_t)(
-                        120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * function(h, g)))));
+                        120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * parseRPN(equ, h, g)))));
 
-//			xxNodes[i][1]=(uint8_t)(160+(s*((x_x(a+.15,b,c)*g) + (y_x(a+.15,b,c)*h) + (z_x(a+.15,b,c)*function(g,h)))));  //what was i thinking here
-//			xyNodes[i][1]=(uint8_t)(120-(s*((x_y(a+.15,b,c)*g) + (y_y(a+.15,b,c)*h) + (z_y(a+.15,b,c)*function(g,h)))));  //ignore this pls
-//			yxNodes[i][1]=(uint8_t)(160+(s*((x_x(a+.15,b,c)*h) + (y_x(a+.15,b,c)*g) + (z_x(a+.15,b,c)*function(h,g)))));
-//			yyNodes[i][1]=(uint8_t)(120-(s*((x_y(a+.15,b,c)*h) + (y_y(a+.15,b,c)*g) + (z_y(a+.15,b,c)*function(h,g)))));
 
-//			xxNodes[i][2]=(uint8_t)(160+(s*((x_x(a-.15,b,c)*g) + (y_x(a-.15,b,c)*h) + (z_x(a-.15,b,c)*function(g,h)))));
-//			xyNodes[i][2]=(uint8_t)(120-(s*((x_y(a-.15,b,c)*g) + (y_y(a-.15,b,c)*h) + (z_y(a-.15,b,c)*function(g,h)))));
-//			yxNodes[i][2]=(uint8_t)(160+(s*((x_x(a-.15,b,c)*h) + (y_x(a-.15,b,c)*g) + (z_x(a-.15,b,c)*function(h,g)))));
-//			yyNodes[i][2]=(uint8_t)(120-(s*((x_y(a-.15,b,c)*h) + (y_y(a-.15,b,c)*g) + (z_y(a-.15,b,c)*function(h,g)))));
+
+                //testing purposes
+//                xxNodes[i][0] = (uint8_t)(160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
+//                                                      (z_x(a, b, c) * function(g, h))))); //fill out the arrays of nodes
+//                xyNodes[i][0] = (uint8_t)(
+//                        120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * function( g, h)))));
+//                yxNodes[i][0] = (uint8_t)(
+//                        160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) *function( h, g)))));
+//                yyNodes[i][0] = (uint8_t)(
+//                        120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * function( h, g)))));
+
 
                 if (i >= 12) //for some reason the first 12 nodes don't connect to the rest, so we omit them
                 {
-                    if ((i - 1) % (int) (n) != 0)
-                    { //if the distance is less than 45 (or some arbitrary constant)
+                    if ((i - 1) % (int) (n) != 0) // we don't want to connect the nodes that are on opposite sides
+                    {
                         gfx_Line(xxNodes[i - 1][0], xyNodes[i - 1][0], xxNodes[i][0],
                                  xyNodes[i][0]); //connect the nodes
                     }
@@ -418,42 +421,96 @@ char *tokenize(char *input)
     output = strtok(input, ",");
     return output;
 }
+
 char *floatToStr(float arg)
 {
     const real_t arg2 = os_FloatToReal(arg);
     os_RealToStr(text, &arg2, -1, 1, -1);
     return text;
 }
+//sets the size of the stack to 0
 void initRPN()
 {
     RPN.size = 0;
 }
+//pushes the argument to the stack
 void pushRPN(double val)
 {
     RPN.val[RPN.size++] = val;
 }
-
-double popRPN()
+//returns the value of the element on top of the stack and removes it
+double popRPN(void)
 {
     return RPN.val[--RPN.size];
 }
-double parseRPN(char *s)
+
+double parseRPN(char *s, double X, double Y)
 {
     double a, b;
-    int i;
-    char *e, *w = " \t\n\r\f";
+    RPN.size = 0;
+    strcpy(c,s);
+    d = &c[0];
 
-    for (s = strtok(s, w); s; s = strtok(0, w)) {
-        a = strtod(s, &e);
-        if (e > s)	pushRPN(a);
-#define binop(x) b = popRPN(), a = popRPN(), pushRPN(x)
-        else if (*s == '+')	binop(a + b);
-        else if (*s == '-')	binop(a - b);
-        else if (*s == '*')	binop(a * b);
-        else if (*s == '/')	binop(a / b);
-        else if (*s == '^')	binop(pow(a, b));
+
+
+    for (d = strtok(d, w); d; d = strtok(0, w))
+    {
+        a = strtod(d, &e);
+        if (e > d)
+        {
+            pushRPN(a);
+        }
+//        else if (*d == 'x')
+//        {
+//            pushRPN(X);
+//        }
+//        else if (*d == 'y')
+//        {
+//            pushRPN(Y);
+//        }
+#define binop(x) b = popRPN(), a = popRPN(), pushRPN(x) //pop, pop, perform operator, push
+        else if (*d == '+')
+        {
+            binop(a + b);
+        }
+        else if (*d == '-')
+        {
+            binop(a - b);
+        }
+        else if (*d == '*')
+        {
+            binop(a * b);
+        }
+        else if (*d == '/')
+        {
+            binop(a / b);
+        }
+        else if (*d == '^')
+        {
+            binop(pow(a, b));
+        }
 #undef binop
     }
 
     return popRPN();
+}
+double pushOP(char op)
+{
+    OP.op[OP.size++] = op;
+}
+double popOP(void)
+{
+    return OP.op[--OP.size];
+}
+void shunt(void)
+{
+    int i = 0;
+    char **num = &text;
+    char *s = text;
+    char *t;
+    for(s = strtok(s, "+-*/^"); s; s = strtok(0,"+-*/^"))
+    {
+        *num[i] = strtod(s, &t);
+        i++;
+    }
 }
