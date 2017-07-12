@@ -5,7 +5,7 @@
 	.assume ADL=1
 	SEGMENT BSS
 _text:
-	DS	3
+	DS	15
 _r:
 	DS 4*1
 _aa:
@@ -26,8 +26,10 @@ L__0:
 _w:
 	DW24	L__0
 	SEGMENT BSS
-_RPN:
-	DS	99
+_val:
+	DS	96
+_size:
+	DS	3
 _OP:
 	DS	99
 ;    1	/*	The AMAZING 3D grapher for the TI84+CE
@@ -92,135 +94,135 @@ _OP:
 ;   60	
 ;   61	char *tokenize(char *input);
 ;   62	
-;   63	char *text;
-;   64	
+;   63	//global vars
+;   64	char text[15];
 ;   65	float r;
-;   66	
-;   67	float aa;
-;   68	float bb;
-;   69	char c[40];
-;   70	char *d;
-;   71	char *e;
-;   72	char *w = " \t\n\r\f";
-;   73	
-;   74	char *floatToStr(float arg);
-;   75	
-;   76	typedef struct stack
-;   77	{
-;   78	    float val[24];
-;   79	    int size;
-;   80	} stack;
-;   81	typedef struct opStack
-;   82	{
-;   83	    char op[96];
-;   84	    int size;
-;   85	} opStack;
-;   86	stack RPN;
+;   66	float aa;
+;   67	float bb;
+;   68	char c[40];
+;   69	char *d;
+;   70	char *e, *w = " \t\n\r\f";
+;   71	
+;   72	char *floatToStr(float arg);
+;   73	typedef struct node
+;   74	{
+;   75		double val;
+;   76		struct Node* next;
+;   77	} node;
+;   78	
+;   79	double val[24];
+;   80	int size;
+;   81	
+;   82	typedef struct opStack
+;   83	{
+;   84	    char op[96];
+;   85	    int size;
+;   86	} opStack;
 ;   87	opStack OP;
 	SEGMENT CODE
 ;   88	
 ;   89	void initRPN(void);
 ;   90	
-;   91	void pushRPN(float val);
+;   91	void pushRPN(double val);
 ;   92	
-;   93	float peekRPN(void);
+;   93	double popRPN(void);
 ;   94	
-;   95	double popRPN(void);
+;   95	double parseRPN(char *s, double X, double Y);
 ;   96	
-;   97	double parseRPN(char *s, double X, double Y);
+;   97	void shunt(void);
 ;   98	
-;   99	void shunt(void);
-;  100	
-;  101	//main function
-;  102	//this is what gets run when the program starts
-;  103	void main(void)
-;  104	{
+;   99	//main function
+;  100	//this is what gets run when the program starts
+;  101	void main(void)
+;  102	{
 _main:
 	LD	HL,-3285
 	CALL	__frameset
-;  105	    //initialize all the keymaps
-;  106	    //I don't think all of them get used, but it's nice to have them anyways
-;  107	    //feel free to delete the unused ones if you really want to save a few bytes
-;  108	    kb_key_t key1;
-;  109	    kb_key_t key2;
-;  110	    kb_key_t key3;
-;  111	    kb_key_t key4;
-;  112	    kb_key_t key5;
-;  113	    kb_key_t key6;
-;  114	    kb_key_t key7;
-;  115	
-;  116	    //initialize strings
-;  117	    const char *graph = "Graphing...";
+;  103	    //initialize all the keymaps
+;  104	    //I don't think all of them get used, but it's nice to have them anyways
+;  105	    //feel free to delete the unused ones if you really want to save a few bytes
+;  106	    kb_key_t key1;
+;  107	    kb_key_t key2;
+;  108	    kb_key_t key3;
+;  109	    kb_key_t key4;
+;  110	    kb_key_t key5;
+;  111	    kb_key_t key6;
+;  112	    kb_key_t key7;
+;  113	
+;  114	    //initialize strings
+;  115	    const char *graph = "Graphing...";
 	LD	BC,L__1
-	LD	(IX+-27),BC
-;  118	
-;  119	    //declare variables and some constants
-;  120	    //uint8_t is the best thing ever
-;  121	    //it's basically an unsigned 8bit integer that takes up less space than an int
-;  122	    //but functions the same as an int for all intents and purposes (except negatives)
-;  123	    uint8_t sel = 1; //used for menu selections
-;  124	    bool kill = false; //used to terminate program
-;  125	    bool lol = false; //used to initialize graphx
-	LD	(IX+-48),0
-;  126	    bool lol2 = false; //used to plot points
-	LD	(IX+-39),0
-;  127	    bool lol3 = false; //used to draw the perspective changer
-	LD	(IX+-24),0
-;  128	    uint8_t mode = 0; //used for menu selections
-;  129	    int i = 0;
-;  130	    double t; //parameter for plotting points
-;  131	    double a = -2.3; //yaw
+	LD	(IX+-39),BC
+;  116	
+;  117	    //declare variables and some constants
+;  118	    //uint8_t is the best thing ever
+;  119	    //it's basically an unsigned 8bit integer that takes up less space than an int
+;  120	    //but functions the same as an int for all intents and purposes (except negatives)
+;  121	    uint8_t sel = 1; //used for menu selections
+;  122	    bool kill = false; //used to terminate program
+;  123	    bool lol = false; //used to initialize graphx
+	LD	(IX+-47),0
+;  124	    bool lol2 = false; //used to plot points
+	LD	(IX+-46),0
+;  125	    bool lol3 = false; //used to draw the perspective changer
+	LD	(IX+-32),0
+;  126	    uint8_t mode = 0; //used for menu selections
+;  127	    int i = 0;
+	LD	BC,0
+	LD	(IX+-23),BC
+;  128	    double t; //parameter for plotting points
+;  129	    double a = -2.3; //yaw
 	LD	BC,1258291
 	LD	(IX+-4),BC
 	LD	A,192
 	LD	(IX+-1),A
-;  132	    double b = .6; //roll
+;  130	    double b = .6; //roll
 	LD	BC,1677722
 	LD	(IX+-8),BC
 	LD	A,63
 	LD	(IX+-5),A
-;  133	    double c = 0; //pitch; this never changes since i don't want people to mess with the rotation of the screen
+;  131	    double c = 0; //pitch; this never changes since i don't want people to mess with the rotation of the screen
 	LD	BC,0
 	LD	(IX+-12),BC
 	XOR	A,A
 	LD	(IX+-9),A
-;  134	    double a1 = a; //dummy variables we'll use later
+;  132	    double a1 = a; //dummy variables we'll use later
 	LD	BC,1258291
 	LD	(IX+-16),BC
 	LD	A,192
 	LD	(IX+-13),A
-;  135	    double b1 = b;
+;  133	    double b1 = b;
 	LD	BC,1677722
 	LD	(IX+-20),BC
 	LD	A,63
 	LD	(IX+-17),A
-;  136	    double c1 = c;
-;  137	    double g; //g and h are used for calculating the points to plot
-;  138	    double _g; //_g and _h are unused for now, keeping it as legacy in case i might need them someday
-;  139	    double h;
-;  140	    double _h;
-;  141	    const double s = 15; //scale of the graph
-;  142	    const double s2 = 3.75; //how much of the graph gets shown
-;  143	    const double n = 10; //resolution of the grid of the graph is (higher = more detail)
-;  144	    double dx = 1 / (n * (1 +
-;  145	                          n)); //degree of precision when plotting; higher values mean less precise plotting. This value should be called dt to be mathematically correct, but I don't feel like changing it now
-;  146	    double d1;
-;  147	    double d2;
-;  148	
-;  149	    double aaa;
-;  150	    char equ[40] = " 5 6 5 + + ";
+;  134	    double c1 = c;
+;  135	    double g; //g and h are used for calculating the points to plot
+;  136	    double _g; //_g and _h are unused for now, keeping it as legacy in case i might need them someday
+;  137	    double h;
+;  138	    double _h;
+;  139	    const double s = 15; //scale of the graph
+;  140	    const double s2 = 3.75; //how much of the graph gets shown
+;  141	    const double n = 10; //resolution of the grid of the graph is (higher = more detail)
+;  142	    double dx = 1 / (n * (1 +
+;  143	                          n)); //degree of precision when plotting; higher values mean less precise plotting. This value should be called dt to be mathematically correct, but I don't feel like changing it now
+;  144	    double d1;
+;  145	    double d2;
+;  146	
+;  147	    double aaa;
+;  148	    char equ[40] = " x x * y y * - ";
 	LEA	DE,IX+-95
-;  151	    uint8_t xxNodes[256][3]; //create the node arrays
-;  152	    uint8_t xyNodes[256][3]; //why are they multidimensional? this is like 2am code so who knows
-;  153	    uint8_t yxNodes[256][3];
-;  154	    uint8_t yyNodes[256][3];
-;  155	
+;  149	    uint8_t xxNodes[256][3]; //create the node arrays
+;  150	    uint8_t xyNodes[256][3]; //why are they multidimensional? this is like 2am code so who knows
+;  151	    uint8_t yxNodes[256][3];
+;  152	    uint8_t yyNodes[256][3];
+;  153	
+;  154	
+;  155	    //------program actually starts here------\\
 ;  156	
-;  157	    //------program actually starts here------\\
+;  157	    prgm_CleanUp(); //clear the screen
 ;  158	
-;  159	    prgm_CleanUp(); //clear the screen
-;  160	
-;  161	    gfx_Begin(gfx_8bpp); //initialize advanced graphx
+;  159	    gfx_Begin(gfx_8bpp); //initialize advanced graphx
 	LD	BC,39
 	PUSH	BC
 	LD	HL,_0temp0
@@ -242,7 +244,7 @@ _main:
 	POP	HL
 	POP	BC
 	POP	BC
-;  162	    gfx_SetDraw(gfx_buffer);
+;  160	    gfx_SetDraw(gfx_buffer);
 	LD	BC,1
 	PUSH	BC
 	PUSH	BC
@@ -261,8 +263,8 @@ _main:
 	POP	HL
 	POP	BC
 	POP	BC
-;  163	
-;  164	    gfx_SetTextFGColor(gfx_black);
+;  161	
+;  162	    gfx_SetTextFGColor(gfx_black);
 	LD	BC,0
 	PUSH	BC
 	PUSH	BC
@@ -281,8 +283,8 @@ _main:
 	POP	HL
 	POP	BC
 	POP	BC
-;  165	
-;  166	    floatToStr(5);
+;  163	
+;  164	    floatToStr(5);
 	LD	C,64
 	LD	B,0
 	PUSH	BC
@@ -305,11 +307,92 @@ _main:
 	POP	BC
 	POP	BC
 	POP	BC
-;  167	    gfx_PrintStringXY("R3 - 3D grapher for the TI84PCE", 12, 12); //print title text
+;  165	
+;  166	    //testing purposes
+;  167	    for (t = 0; t < 1 && kb_Data[kb_group_1] != kb_2nd; t += .1)
+	LD	BC,0
+	LD	(IX+-31),BC
+	XOR	A,A
+	LD	(IX+-28),A
+	JR	L_5
+L_3:
+;  168	    {
+;  169	    	g = i;
+	LD	BC,(IX+-23)
+	CALL	__itol
+	CALL	__ltof
+	LD	(IX+-27),BC
+	LD	(IX+-24),A
+;  170	    	h = 8;
+	LD	BC,0
+	LD	(IX+-36),BC
+	LD	A,65
+	LD	(IX+-33),A
+;  171	    	floatToStr(g);
+	LD	C,(IX+-24)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-27)
+	PUSH	BC
+	CALL	_floatToStr
+	POP	BC
+	POP	BC
+;  172	    	gfx_PrintStringXY(text, 12, 21 + (9 * i));
+	LD	HL,(IX+-23)
+	ADD	HL,HL
+	ADD	HL,HL
+	ADD	HL,HL
+	LD	BC,(IX+-23)
+	ADD	HL,BC
+	LD	IY,HL
+	LEA	BC,IY+21
+	PUSH	BC
 	LD	BC,12
 	PUSH	BC
+	LD	BC,_text
 	PUSH	BC
-	LD	BC,L__2
+	CALL	_gfx_PrintStringXY
+	POP	BC
+	POP	BC
+	POP	BC
+;  173	    	floatToStr(parseRPN(equ,g,h));
+	LD	C,65
+	LD	B,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-24)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-27)
+	PUSH	BC
+	PEA	IX+-95
+	CALL	_parseRPN
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	C,E
+	LD	B,0
+	PUSH	BC
+	PUSH	HL
+	CALL	_floatToStr
+	POP	BC
+	POP	BC
+;  174	    	gfx_PrintStringXY(text, 150, 21 + (9 * i));
+	LD	HL,(IX+-23)
+	ADD	HL,HL
+	ADD	HL,HL
+	ADD	HL,HL
+	LD	BC,(IX+-23)
+	ADD	HL,BC
+	LD	IY,HL
+	LEA	BC,IY+21
+	PUSH	BC
+	LD	BC,150
+	PUSH	BC
+	LD	BC,_text
 	PUSH	BC
 	PUSH	BC
 	PUSH	HL
@@ -329,12 +412,37 @@ _main:
 	POP	BC
 	POP	BC
 	POP	BC
-;  168	    gfx_PrintStringXY(text, 12, 21);
-	LD	BC,21
-	PUSH	BC
+;  175	    	i++;
+	LD	BC,(IX+-23)
+	INC	BC
+	LD	(IX+-23),BC
+	LD	BC,(IX+-31)
+	LD	A,(IX+-28)
+	LD	HL,13421773
+	LD	E,61
+	CALL	__fadd
+	LD	(IX+-31),BC
+	LD	(IX+-28),A
+;  176	    }
+L_5:
+	LD	HL,(IX+-31)
+	LD	E,(IX+-28)
+	LD	BC,8388608
+	LD	A,63
+	CALL	__fcmp
+	JP	P,L_6
+	LD	A,(16056338)
+	CP	A,32
+	JR	NZ,L_3
+L_6:
+;  177	
+;  178	
+;  179	
+;  180	    gfx_PrintStringXY("R3 - 3D grapher for the TI84PCE", 12, 12); //print title text
 	LD	BC,12
 	PUSH	BC
-	LD	BC,(_text)
+	PUSH	BC
+	LD	BC,L__4
 	PUSH	BC
 	PUSH	BC
 	PUSH	HL
@@ -361,10 +469,11 @@ _main:
 	CALL	__istix
 	POP	HL
 	POP	BC
-;  169	
-;  170	//    gfx_PrintStringXY(text, 12, 30);
-;  171	
-;  172	    gfx_SwapDraw(); //update the screen
+;  181	//    gfx_PrintStringXY(text, 12, 21);
+;  182	
+;  183	//    gfx_PrintStringXY(text, 12, 30);
+;  184	
+;  185	    gfx_SwapDraw(); //update the screen
 	CALL	_gfx_SwapDraw
 	PUSH	BC
 	LD	BC,-3281
@@ -373,9 +482,9 @@ _main:
 	LD	IY,HL
 	POP	HL
 	POP	BC
-;  173	
-;  174	    while (!os_GetCSC()); //wait for input
-L_2:
+;  186	
+;  187	    while (!os_GetCSC()); //wait for input
+L_8:
 	PUSH	BC
 	PUSH	HL
 	LD	HL,IY
@@ -392,38 +501,23 @@ L_2:
 	POP	HL
 	POP	BC
 	OR	A,A
-	JR	Z,L_2
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-;  175	
-;  176	    prgm_CleanUp(); //clear the screen
-	CALL	_prgm_CleanUp
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-;  177	
-;  178	
-;  179	    do
-L_28:
-;  180	    {
-;  181	        //THIS IS WHERE THE FUN BEGINS
-;  182	        if (!lol)
-	LD	A,(IX+-48)
+	JR	Z,L_8
+;  188	
+;  189	    prgm_CleanUp(); //clear the screen
+;  190	
+;  191	
+;  192	    do
+L_34:
+;  193	    {
+;  194	        //THIS IS WHERE THE FUN BEGINS
+;  195	        if (!lol)
+	LD	A,(IX+-47)
 	OR	A,A
-	JR	NZ,L_5
-;  183	        {
-;  184	            i = 0;
-;  185	            //the stuff here will only happen the first time this loop is run
-;  186	            gfx_FillScreen(gfx_white); //fill the screen with white
+	JR	NZ,L_11
+;  196	        {
+;  197	            i = 0;
+;  198	            //the stuff here will only happen the first time this loop is run
+;  199	            gfx_FillScreen(gfx_white); //fill the screen with white
 	LD	BC,255
 	PUSH	BC
 	PUSH	BC
@@ -442,10 +536,10 @@ L_28:
 	POP	HL
 	POP	BC
 	POP	BC
-;  187	            gfx_PrintStringXY(graph, 320 - gfx_GetStringWidth(graph), 230);
+;  200	            gfx_PrintStringXY(graph, 320 - gfx_GetStringWidth(graph), 230);
 	LD	BC,230
 	PUSH	BC
-	LD	BC,(IX+-27)
+	LD	BC,(IX+-39)
 	PUSH	BC
 	PUSH	BC
 	PUSH	HL
@@ -468,7 +562,7 @@ L_28:
 	OR	A,A
 	SBC	HL,BC
 	PUSH	HL
-	LD	BC,(IX+-27)
+	LD	BC,(IX+-39)
 	PUSH	BC
 	PUSH	BC
 	PUSH	HL
@@ -488,10 +582,10 @@ L_28:
 	POP	BC
 	POP	BC
 	POP	BC
-;  188	            gfx_BlitRectangle(gfx_buffer, 320 - gfx_GetStringWidth(graph), 230, gfx_GetStringWidth(graph), 10);
+;  201	            gfx_BlitRectangle(gfx_buffer, 320 - gfx_GetStringWidth(graph), 230, gfx_GetStringWidth(graph), 10);
 	LD	BC,10
 	PUSH	BC
-	LD	BC,(IX+-27)
+	LD	BC,(IX+-39)
 	PUSH	BC
 	PUSH	BC
 	PUSH	HL
@@ -512,7 +606,7 @@ L_28:
 	PUSH	HL
 	LD	BC,230
 	PUSH	BC
-	LD	BC,(IX+-27)
+	LD	BC,(IX+-39)
 	PUSH	BC
 	PUSH	BC
 	PUSH	HL
@@ -557,10 +651,10 @@ L_28:
 	POP	BC
 	POP	BC
 	POP	BC
-;  189	            lol = true; //make sure these aren't run again
-	LD	(IX+-48),1
-;  190	        }
-L_5:
+;  202	            lol = true; //make sure these aren't run again
+	LD	(IX+-47),1
+;  203	        }
+L_11:
 	PUSH	BC
 	PUSH	HL
 	LD	HL,IY
@@ -568,7 +662,7 @@ L_5:
 	CALL	__istix
 	POP	HL
 	POP	BC
-;  191	        kb_Scan(); //scan the keyboard for inputs
+;  204	        kb_Scan(); //scan the keyboard for inputs
 	CALL	_kb_Scan
 	PUSH	BC
 	LD	BC,-3281
@@ -577,10 +671,10 @@ L_5:
 	LD	IY,HL
 	POP	HL
 	POP	BC
-;  192	        key7 = kb_Data[kb_group_7]; //load the group 7 registers
+;  205	        key7 = kb_Data[kb_group_7]; //load the group 7 registers
 	LD	A,(16056350)
 	LD	(IX+-49),A
-;  193	        gfx_SetColor(gfx_black);
+;  206	        gfx_SetColor(gfx_black);
 	LD	BC,0
 	PUSH	BC
 	PUSH	BC
@@ -599,54 +693,54 @@ L_5:
 	POP	HL
 	POP	BC
 	POP	BC
-;  194	        switch (key7)
+;  207	        switch (key7)
 	LD	A,(IX+-49)
 	UEXT	HL
 	LD	L,A
 	LD	BC,HL
-L__6:
+L__8:
 	LD	DE,8
 	OR	A,A
 	SBC	HL,DE
-	JR	Z,L_6
+	JR	Z,L_12
 	LD	HL,8
 	OR	A,A
 	SBC	HL,BC
-	JR	C,L_11
+	JR	C,L_17
 	LD	DE,1
 	LD	HL,BC
 	OR	A,A
 	SBC	HL,DE
-	JR	C,L_11
+	JR	C,L_17
 	LD	HL,4
 	OR	A,A
 	SBC	HL,BC
-	JR	C,L_11
+	JR	C,L_17
 	LD	HL,BC
 	ADD	HL,HL
 	ADD	HL,HL
 	OR	A,A
 	SBC	HL,BC
-	LD	BC,L__5-3
+	LD	BC,L__7-3
 	ADD	HL,BC
 	LD	HL,(HL)
 	JP	(HL)
-L__5:
-	DW24	L_7	
+L__7:
+	DW24	L_13	
 
-	DW24	L_8	
+	DW24	L_14	
 
-	DW24	L_11	
+	DW24	L_17	
 
-	DW24	L_9	
+	DW24	L_15	
 
-;  195	        {
-;  196	            //this is for controlling perspective, but the ez80 is a crappy 48mHz cpu and can't do this in real time
-;  197	            //(well it can, but it has to redraw the function every freakin' time)
-;  198	            case kb_Up:
-L_6:
-;  199	                //	gfx_FillScreen( gfx_white); //every time this happens, we want to clear the screen before drawing stuff again
-;  200	                gfx_SetColor(gfx_white);
+;  208	        {
+;  209	            //this is for controlling perspective, but the ez80 is a crappy 48mHz cpu and can't do this in real time
+;  210	            //(well it can, but it has to redraw the function every freakin' time)
+;  211	            case kb_Up:
+L_12:
+;  212	                //	gfx_FillScreen( gfx_white); //every time this happens, we want to clear the screen before drawing stuff again
+;  213	                gfx_SetColor(gfx_white);
 	LD	BC,255
 	PUSH	BC
 	PUSH	BC
@@ -665,7 +759,7 @@ L_6:
 	POP	HL
 	POP	BC
 	POP	BC
-;  201	                gfx_FillRectangle(320 - 64, 0, 64, 64);
+;  214	                gfx_FillRectangle(320 - 64, 0, 64, 64);
 	LD	BC,64
 	PUSH	BC
 	PUSH	BC
@@ -692,7 +786,7 @@ L_6:
 	POP	BC
 	POP	BC
 	POP	BC
-;  202	                b1 += .15;
+;  215	                b1 += .15;
 	LD	BC,(IX+-20)
 	LD	A,(IX+-17)
 	LD	HL,1677722
@@ -700,13 +794,13 @@ L_6:
 	CALL	__fadd
 	LD	(IX+-20),BC
 	LD	(IX+-17),A
-;  203	                lol3 = false; //this is so that it redraws the function
-	LD	(IX+-24),0
-;  204	                break;
-	JR	L_11
-;  205	            case kb_Down:
-L_7:
-;  206	                gfx_SetColor(gfx_white);
+;  216	                lol3 = false; //this is so that it redraws the function
+	LD	(IX+-32),0
+;  217	                break;
+	JR	L_17
+;  218	            case kb_Down:
+L_13:
+;  219	                gfx_SetColor(gfx_white);
 	LD	BC,255
 	PUSH	BC
 	PUSH	BC
@@ -725,7 +819,7 @@ L_7:
 	POP	HL
 	POP	BC
 	POP	BC
-;  207	                gfx_FillRectangle(320 - 64, 0, 64, 64);
+;  220	                gfx_FillRectangle(320 - 64, 0, 64, 64);
 	LD	BC,64
 	PUSH	BC
 	PUSH	BC
@@ -752,7 +846,7 @@ L_7:
 	POP	BC
 	POP	BC
 	POP	BC
-;  208	                b1 -= .15;
+;  221	                b1 -= .15;
 	LD	BC,(IX+-20)
 	LD	A,(IX+-17)
 	LD	HL,1677722
@@ -760,13 +854,13 @@ L_7:
 	CALL	__fsub
 	LD	(IX+-20),BC
 	LD	(IX+-17),A
-;  209	                lol3 = false; //i honestly should name my variables more intuitively so you can actually understand what they do
-	LD	(IX+-24),0
-;  210	                break;
-	JR	L_11
-;  211	            case kb_Left:
-L_8:
-;  212	                gfx_SetColor(gfx_white);
+;  222	                lol3 = false; //i honestly should name my variables more intuitively so you can actually understand what they do
+	LD	(IX+-32),0
+;  223	                break;
+	JR	L_17
+;  224	            case kb_Left:
+L_14:
+;  225	                gfx_SetColor(gfx_white);
 	LD	BC,255
 	PUSH	BC
 	PUSH	BC
@@ -785,7 +879,7 @@ L_8:
 	POP	HL
 	POP	BC
 	POP	BC
-;  213	                gfx_FillRectangle(320 - 64, 0, 64, 64);
+;  226	                gfx_FillRectangle(320 - 64, 0, 64, 64);
 	LD	BC,64
 	PUSH	BC
 	PUSH	BC
@@ -812,7 +906,7 @@ L_8:
 	POP	BC
 	POP	BC
 	POP	BC
-;  214	                a1 += .15;
+;  227	                a1 += .15;
 	LD	BC,(IX+-16)
 	LD	A,(IX+-13)
 	LD	HL,1677722
@@ -820,13 +914,13 @@ L_8:
 	CALL	__fadd
 	LD	(IX+-16),BC
 	LD	(IX+-13),A
-;  215	                lol3 = false;
-	LD	(IX+-24),0
-;  216	                break;
-	JR	L_11
-;  217	            case kb_Right:
-L_9:
-;  218	                gfx_SetColor(gfx_white);
+;  228	                lol3 = false;
+	LD	(IX+-32),0
+;  229	                break;
+	JR	L_17
+;  230	            case kb_Right:
+L_15:
+;  231	                gfx_SetColor(gfx_white);
 	LD	BC,255
 	PUSH	BC
 	PUSH	BC
@@ -845,7 +939,7 @@ L_9:
 	POP	HL
 	POP	BC
 	POP	BC
-;  219	                gfx_FillRectangle(320 - 64, 0, 64, 64);
+;  232	                gfx_FillRectangle(320 - 64, 0, 64, 64);
 	LD	BC,64
 	PUSH	BC
 	PUSH	BC
@@ -872,7 +966,7 @@ L_9:
 	POP	BC
 	POP	BC
 	POP	BC
-;  220	                a1 -= .15;
+;  233	                a1 -= .15;
 	LD	BC,(IX+-16)
 	LD	A,(IX+-13)
 	LD	HL,1677722
@@ -880,17 +974,17 @@ L_9:
 	CALL	__fsub
 	LD	(IX+-16),BC
 	LD	(IX+-13),A
-;  221	                lol3 = false;
-	LD	(IX+-24),0
-;  222	                break;
-;  223	            default:
-;  224	                break;
-;  225	        }
-L_11:
-;  226	        //The perspective box
-;  227	        //This is my solution to controlling perspective, since we can't rotate in real time
-;  228	        //rotate the preview axes to desired position and press enter, and the function will redraw itself
-;  229	        gfx_SetColor(gfx_black);
+;  234	                lol3 = false;
+	LD	(IX+-32),0
+;  235	                break;
+;  236	            default:
+;  237	                break;
+;  238	        }
+L_17:
+;  239	        //The perspective box
+;  240	        //This is my solution to controlling perspective, since we can't rotate in real time
+;  241	        //rotate the preview axes to desired position and press enter, and the function will redraw itself
+;  242	        gfx_SetColor(gfx_black);
 	LD	BC,0
 	PUSH	BC
 	PUSH	BC
@@ -909,7 +1003,7 @@ L_11:
 	POP	HL
 	POP	BC
 	POP	BC
-;  230	        gfx_VertLine_NoClip(320 - 64, 0, 64); //borders for box
+;  243	        gfx_VertLine_NoClip(320 - 64, 0, 64); //borders for box
 	LD	BC,64
 	PUSH	BC
 	LD	BC,0
@@ -934,7 +1028,7 @@ L_11:
 	POP	BC
 	POP	BC
 	POP	BC
-;  231	        gfx_HorizLine_NoClip(320 - 64, 64, 64);
+;  244	        gfx_HorizLine_NoClip(320 - 64, 64, 64);
 	LD	BC,64
 	PUSH	BC
 	PUSH	BC
@@ -958,9 +1052,9 @@ L_11:
 	POP	BC
 	POP	BC
 	POP	BC
-;  232	        //x-axis
-;  233	        gfx_Line_NoClip(288 - (x_x(a1, b1, c1) * 24), 32 + (x_y(a1, b1, c1) * 24), (int) (288 + (x_x(a1, b1, c1) * 24)),
-;  234	                        (int) (32 - (x_y(a1, b1, c1) * 24)));
+;  245	        //x-axis
+;  246	        gfx_Line_NoClip(288 - (x_x(a1, b1, c1) * 24), 32 + (x_y(a1, b1, c1) * 24), (int) (288 + (x_x(a1, b1, c1) * 24)),
+;  247	                        (int) (32 - (x_y(a1, b1, c1) * 24)));
 	LD	C,0
 	LD	B,0
 	PUSH	BC
@@ -1169,7 +1263,7 @@ L_11:
 	POP	BC
 	POP	BC
 	POP	BC
-;  235	        gfx_PrintStringXY("x", (int) (288 + (x_x(a1, b1, c1) * 25)), (int) (32 - (x_y(a1, b1, c1) * 25))); //axis labels
+;  248	        gfx_PrintStringXY("x", (int) (288 + (x_x(a1, b1, c1) * 25)), (int) (32 - (x_y(a1, b1, c1) * 25))); //axis labels
 	LD	C,0
 	LD	B,0
 	PUSH	BC
@@ -1241,658 +1335,6 @@ L_11:
 	POP	HL
 	POP	BC
 	CALL	_x_x
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,65
-	CALL	__fmul
-	LD	HL,9437184
-	LD	E,67
-	CALL	__fadd
-	CALL	__ftol
-	PUSH	BC
-	LD	BC,L__11
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_gfx_PrintStringXY
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-;  236	        //y-axis
-;  237	        gfx_Line_NoClip(288 - (y_x(a1, b1, c1) * 24), 32 + (y_y(a1, b1, c1) * 24), (int) (288 + (y_x(a1, b1, c1) * 24)),
-;  238	                        (int) (32 - (y_y(a1, b1, c1) * 24)));
-	LD	C,0
-	LD	B,0
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	LD	C,(IX+-17)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-20)
-	PUSH	BC
-	LD	C,(IX+-13)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-16)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_y_y
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,12582912
-	LD	E,65
-	CALL	__fmul
-	LD	E,A
-	LD	HL,BC
-	LD	BC,0
-	LD	A,66
-	CALL	__fsub
-	CALL	__ftol
-	LD	B,0
-	PUSH	BC
-	LD	C,0
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	LD	C,(IX+-17)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-20)
-	PUSH	BC
-	LD	C,(IX+-13)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-16)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_y_x
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,12582912
-	LD	E,65
-	CALL	__fmul
-	LD	HL,9437184
-	LD	E,67
-	CALL	__fadd
-	CALL	__ftol
-	PUSH	BC
-	LD	C,0
-	LD	B,0
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	LD	C,(IX+-17)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-20)
-	PUSH	BC
-	LD	C,(IX+-13)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-16)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_y_y
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,12582912
-	LD	E,65
-	CALL	__fmul
-	OR	A,A
-	SBC	HL,HL
-	LD	E,66
-	CALL	__fadd
-	CALL	__ftol
-	LD	B,0
-	PUSH	BC
-	LD	C,0
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	LD	C,(IX+-17)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-20)
-	PUSH	BC
-	LD	C,(IX+-13)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-16)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_y_x
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,12582912
-	LD	E,65
-	CALL	__fmul
-	LD	E,A
-	LD	HL,BC
-	LD	BC,9437184
-	LD	A,67
-	CALL	__fsub
-	CALL	__ftol
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_gfx_Line_NoClip
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-;  239	        gfx_PrintStringXY("y", (int) (288 + (y_x(a1, b1, c1) * 25)), (int) (32 - (y_y(a1, b1, c1) * 25)));
-	LD	C,0
-	LD	B,0
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	LD	C,(IX+-17)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-20)
-	PUSH	BC
-	LD	C,(IX+-13)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-16)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_y_y
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,65
-	CALL	__fmul
-	LD	E,A
-	LD	HL,BC
-	LD	BC,0
-	LD	A,66
-	CALL	__fsub
-	CALL	__ftol
-	PUSH	BC
-	LD	C,0
-	LD	B,0
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	LD	C,(IX+-17)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-20)
-	PUSH	BC
-	LD	C,(IX+-13)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-16)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_y_x
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,65
-	CALL	__fmul
-	LD	HL,9437184
-	LD	E,67
-	CALL	__fadd
-	CALL	__ftol
-	PUSH	BC
-	LD	BC,L__12
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_gfx_PrintStringXY
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-;  240	        //z-axis
-;  241	        gfx_Line_NoClip(288 - (z_x(a1, b1, c1) * 24), 32 + (z_y(a1, b1, c1) * 24), (int) (288 + (z_x(a1, b1, c1) * 24)),
-;  242	                        (int) (32 - (z_y(a1, b1, c1) * 24)));
-	LD	C,0
-	LD	B,0
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	LD	C,(IX+-17)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-20)
-	PUSH	BC
-	LD	C,(IX+-13)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-16)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_z_y
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,12582912
-	LD	E,65
-	CALL	__fmul
-	LD	E,A
-	LD	HL,BC
-	LD	BC,0
-	LD	A,66
-	CALL	__fsub
-	CALL	__ftol
-	LD	B,0
-	PUSH	BC
-	LD	C,0
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	LD	C,(IX+-17)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-20)
-	PUSH	BC
-	LD	C,(IX+-13)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-16)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_z_x
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,12582912
-	LD	E,65
-	CALL	__fmul
-	LD	HL,9437184
-	LD	E,67
-	CALL	__fadd
-	CALL	__ftol
-	PUSH	BC
-	LD	C,0
-	LD	B,0
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	LD	C,(IX+-17)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-20)
-	PUSH	BC
-	LD	C,(IX+-13)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-16)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_z_y
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,12582912
-	LD	E,65
-	CALL	__fmul
-	OR	A,A
-	SBC	HL,HL
-	LD	E,66
-	CALL	__fadd
-	CALL	__ftol
-	LD	B,0
-	PUSH	BC
-	LD	C,0
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	LD	C,(IX+-17)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-20)
-	PUSH	BC
-	LD	C,(IX+-13)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-16)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_z_x
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,12582912
-	LD	E,65
-	CALL	__fmul
-	LD	E,A
-	LD	HL,BC
-	LD	BC,9437184
-	LD	A,67
-	CALL	__fsub
-	CALL	__ftol
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_gfx_Line_NoClip
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-;  243	        gfx_PrintStringXY("z", (int) (288 + (z_x(a1, b1, c1) * 25)), (int) (32 - (z_y(a1, b1, c1) * 25)));
-	LD	C,0
-	LD	B,0
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	LD	C,(IX+-17)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-20)
-	PUSH	BC
-	LD	C,(IX+-13)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-16)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_z_y
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,65
-	CALL	__fmul
-	LD	E,A
-	LD	HL,BC
-	LD	BC,0
-	LD	A,66
-	CALL	__fsub
-	CALL	__ftol
-	PUSH	BC
-	LD	C,0
-	LD	B,0
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	LD	C,(IX+-17)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-20)
-	PUSH	BC
-	LD	C,(IX+-13)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-16)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_z_x
 	PUSH	BC
 	LD	BC,-3281
 	PUSH	HL
@@ -1936,13 +1378,665 @@ L_11:
 	POP	BC
 	POP	BC
 	POP	BC
-;  244	        if (!lol3)
-	LD	A,(IX+-24)
+;  249	        //y-axis
+;  250	        gfx_Line_NoClip(288 - (y_x(a1, b1, c1) * 24), 32 + (y_y(a1, b1, c1) * 24), (int) (288 + (y_x(a1, b1, c1) * 24)),
+;  251	                        (int) (32 - (y_y(a1, b1, c1) * 24)));
+	LD	C,0
+	LD	B,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-17)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-20)
+	PUSH	BC
+	LD	C,(IX+-13)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-16)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_y_y
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,12582912
+	LD	E,65
+	CALL	__fmul
+	LD	E,A
+	LD	HL,BC
+	LD	BC,0
+	LD	A,66
+	CALL	__fsub
+	CALL	__ftol
+	LD	B,0
+	PUSH	BC
+	LD	C,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-17)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-20)
+	PUSH	BC
+	LD	C,(IX+-13)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-16)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_y_x
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,12582912
+	LD	E,65
+	CALL	__fmul
+	LD	HL,9437184
+	LD	E,67
+	CALL	__fadd
+	CALL	__ftol
+	PUSH	BC
+	LD	C,0
+	LD	B,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-17)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-20)
+	PUSH	BC
+	LD	C,(IX+-13)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-16)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_y_y
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,12582912
+	LD	E,65
+	CALL	__fmul
 	OR	A,A
-	JR	NZ,L_14
-;  245	        {
-;  246	            gfx_BlitRectangle(gfx_buffer, 320 - 64, 0, 64,
-;  247	                              65); //blit the corner; take from the buffer and draw it on screen
+	SBC	HL,HL
+	LD	E,66
+	CALL	__fadd
+	CALL	__ftol
+	LD	B,0
+	PUSH	BC
+	LD	C,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-17)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-20)
+	PUSH	BC
+	LD	C,(IX+-13)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-16)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_y_x
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,12582912
+	LD	E,65
+	CALL	__fmul
+	LD	E,A
+	LD	HL,BC
+	LD	BC,9437184
+	LD	A,67
+	CALL	__fsub
+	CALL	__ftol
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_gfx_Line_NoClip
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+;  252	        gfx_PrintStringXY("y", (int) (288 + (y_x(a1, b1, c1) * 25)), (int) (32 - (y_y(a1, b1, c1) * 25)));
+	LD	C,0
+	LD	B,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-17)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-20)
+	PUSH	BC
+	LD	C,(IX+-13)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-16)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_y_y
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,65
+	CALL	__fmul
+	LD	E,A
+	LD	HL,BC
+	LD	BC,0
+	LD	A,66
+	CALL	__fsub
+	CALL	__ftol
+	PUSH	BC
+	LD	C,0
+	LD	B,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-17)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-20)
+	PUSH	BC
+	LD	C,(IX+-13)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-16)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_y_x
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,65
+	CALL	__fmul
+	LD	HL,9437184
+	LD	E,67
+	CALL	__fadd
+	CALL	__ftol
+	PUSH	BC
+	LD	BC,L__14
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_gfx_PrintStringXY
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+;  253	        //z-axis
+;  254	        gfx_Line_NoClip(288 - (z_x(a1, b1, c1) * 24), 32 + (z_y(a1, b1, c1) * 24), (int) (288 + (z_x(a1, b1, c1) * 24)),
+;  255	                        (int) (32 - (z_y(a1, b1, c1) * 24)));
+	LD	C,0
+	LD	B,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-17)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-20)
+	PUSH	BC
+	LD	C,(IX+-13)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-16)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_z_y
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,12582912
+	LD	E,65
+	CALL	__fmul
+	LD	E,A
+	LD	HL,BC
+	LD	BC,0
+	LD	A,66
+	CALL	__fsub
+	CALL	__ftol
+	LD	B,0
+	PUSH	BC
+	LD	C,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-17)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-20)
+	PUSH	BC
+	LD	C,(IX+-13)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-16)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_z_x
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,12582912
+	LD	E,65
+	CALL	__fmul
+	LD	HL,9437184
+	LD	E,67
+	CALL	__fadd
+	CALL	__ftol
+	PUSH	BC
+	LD	C,0
+	LD	B,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-17)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-20)
+	PUSH	BC
+	LD	C,(IX+-13)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-16)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_z_y
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,12582912
+	LD	E,65
+	CALL	__fmul
+	OR	A,A
+	SBC	HL,HL
+	LD	E,66
+	CALL	__fadd
+	CALL	__ftol
+	LD	B,0
+	PUSH	BC
+	LD	C,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-17)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-20)
+	PUSH	BC
+	LD	C,(IX+-13)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-16)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_z_x
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,12582912
+	LD	E,65
+	CALL	__fmul
+	LD	E,A
+	LD	HL,BC
+	LD	BC,9437184
+	LD	A,67
+	CALL	__fsub
+	CALL	__ftol
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_gfx_Line_NoClip
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+;  256	        gfx_PrintStringXY("z", (int) (288 + (z_x(a1, b1, c1) * 25)), (int) (32 - (z_y(a1, b1, c1) * 25)));
+	LD	C,0
+	LD	B,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-17)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-20)
+	PUSH	BC
+	LD	C,(IX+-13)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-16)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_z_y
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,65
+	CALL	__fmul
+	LD	E,A
+	LD	HL,BC
+	LD	BC,0
+	LD	A,66
+	CALL	__fsub
+	CALL	__ftol
+	PUSH	BC
+	LD	C,0
+	LD	B,0
+	PUSH	BC
+	LD	BC,0
+	PUSH	BC
+	LD	C,(IX+-17)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-20)
+	PUSH	BC
+	LD	C,(IX+-13)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-16)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_z_x
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,65
+	CALL	__fmul
+	LD	HL,9437184
+	LD	E,67
+	CALL	__fadd
+	CALL	__ftol
+	PUSH	BC
+	LD	BC,L__15
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_gfx_PrintStringXY
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+;  257	        if (!lol3)
+	LD	A,(IX+-32)
+	OR	A,A
+	JR	NZ,L_20
+;  258	        {
+;  259	            gfx_BlitRectangle(gfx_buffer, 320 - 64, 0, 64,
+;  260	                              65); //blit the corner; take from the buffer and draw it on screen
 	LD	BC,65
 	PUSH	BC
 	LD	BC,64
@@ -1973,19 +2067,19 @@ L_11:
 	POP	BC
 	POP	BC
 	POP	BC
-;  248	            lol3 = true; //we don't want this to keep running
-	LD	(IX+-24),1
-;  249	        }
-L_14:
-;  250	        if (kb_Data[kb_group_6] == kb_Enter)
+;  261	            lol3 = true; //we don't want this to keep running
+	LD	(IX+-32),1
+;  262	        }
+L_20:
+;  263	        if (kb_Data[kb_group_6] == kb_Enter)
 	LD	A,(16056348)
 	CP	A,1
-	JR	NZ,L_27
-;  251	        {
-;  252	            gfx_PrintStringXY(graph, 320 - gfx_GetStringWidth(graph), 230);
+	JR	NZ,L_33
+;  264	        {
+;  265	            gfx_PrintStringXY(graph, 320 - gfx_GetStringWidth(graph), 230);
 	LD	BC,230
 	PUSH	BC
-	LD	BC,(IX+-27)
+	LD	BC,(IX+-39)
 	PUSH	BC
 	PUSH	BC
 	PUSH	HL
@@ -2008,7 +2102,7 @@ L_14:
 	OR	A,A
 	SBC	HL,BC
 	PUSH	HL
-	LD	BC,(IX+-27)
+	LD	BC,(IX+-39)
 	PUSH	BC
 	PUSH	BC
 	PUSH	HL
@@ -2028,10 +2122,10 @@ L_14:
 	POP	BC
 	POP	BC
 	POP	BC
-;  253	            gfx_BlitRectangle(gfx_buffer, 320 - gfx_GetStringWidth(graph), 230, gfx_GetStringWidth(graph), 10);
+;  266	            gfx_BlitRectangle(gfx_buffer, 320 - gfx_GetStringWidth(graph), 230, gfx_GetStringWidth(graph), 10);
 	LD	BC,10
 	PUSH	BC
-	LD	BC,(IX+-27)
+	LD	BC,(IX+-39)
 	PUSH	BC
 	PUSH	BC
 	PUSH	HL
@@ -2052,7 +2146,7 @@ L_14:
 	PUSH	HL
 	LD	BC,230
 	PUSH	BC
-	LD	BC,(IX+-27)
+	LD	BC,(IX+-39)
 	PUSH	BC
 	PUSH	BC
 	PUSH	HL
@@ -2097,37 +2191,37 @@ L_14:
 	POP	BC
 	POP	BC
 	POP	BC
-;  254	            a = a1;
+;  267	            a = a1;
 	LD	BC,(IX+-16)
 	LD	A,(IX+-13)
 	LD	(IX+-4),BC
 	LD	(IX+-1),A
-;  255	            b = b1;
+;  268	            b = b1;
 	LD	BC,(IX+-20)
 	LD	A,(IX+-17)
 	LD	(IX+-8),BC
 	LD	(IX+-5),A
-;  256	            c = c1;
+;  269	            c = c1;
 	LD	BC,0
 	LD	(IX+-12),BC
 	XOR	A,A
 	LD	(IX+-9),A
-;  257	            lol2 = false;
-	LD	(IX+-39),0
-;  258	        }
-L_27:
-;  259	
-;  260	
-;  261	        if (!lol2)
-	LD	A,(IX+-39)
+;  270	            lol2 = false;
+	LD	(IX+-46),0
+;  271	        }
+L_33:
+;  272	
+;  273	
+;  274	        if (!lol2)
+	LD	A,(IX+-46)
 	OR	A,A
-	JR	NZ,L_29
-;  262	        {
-;  263	            //basically, this is the for-loop that controls graphing
-;  264	            //initial condition: t=0
-;  265	            //go until t is greater than one
-;  266	            //add dx to t each time
-;  267	            gfx_FillScreen(gfx_white);
+	JR	NZ,L_35
+;  275	        {
+;  276	            //basically, this is the for-loop that controls graphing
+;  277	            //initial condition: t=0
+;  278	            //go until t is greater than one
+;  279	            //add dx to t each time
+;  280	            gfx_FillScreen(gfx_white);
 	LD	BC,255
 	PUSH	BC
 	PUSH	BC
@@ -2146,7 +2240,7 @@ L_27:
 	POP	HL
 	POP	BC
 	POP	BC
-;  268	            gfx_SetColor(gfx_black); //we want to draw in black
+;  281	            gfx_SetColor(gfx_black); //we want to draw in black
 	LD	BC,0
 	PUSH	BC
 	PUSH	BC
@@ -2165,11 +2259,11 @@ L_27:
 	POP	HL
 	POP	BC
 	POP	BC
-;  269	            //x-axis
-;  270	            //apparently the _NoClip functions are faster than their clipped counterparts
-;  271	            gfx_Line_NoClip(160 - (x_x(a, b, c) * 100), 120 + (x_y(a, b, c) * 100), (int) (160 + (x_x(a, b, c) * 100)),
-;  272	                            (int) (120 - (x_y(a, b, c) *
-;  273	                                          100))); //we're casting doubles to ints here, but i think that is redundant since gfx_Line converts doubles automatically
+;  282	            //x-axis
+;  283	            //apparently the _NoClip functions are faster than their clipped counterparts
+;  284	            gfx_Line_NoClip(160 - (x_x(a, b, c) * 100), 120 + (x_y(a, b, c) * 100), (int) (160 + (x_x(a, b, c) * 100)),
+;  285	                            (int) (120 - (x_y(a, b, c) *
+;  286	                                          100))); //we're casting doubles to ints here, but i think that is redundant since gfx_Line converts doubles automatically
 	LD	C,(IX+-9)
 	LD	B,0
 	PUSH	BC
@@ -2377,8 +2471,8 @@ L_27:
 	POP	BC
 	POP	BC
 	POP	BC
-;  274	            gfx_PrintStringXY("x", (int) (160 + (x_x(a, b, c) * 100)),
-;  275	                              (int) (120 - (x_y(a, b, c) * 100))); //axis labels
+;  287	            gfx_PrintStringXY("x", (int) (160 + (x_x(a, b, c) * 100)),
+;  288	                              (int) (120 - (x_y(a, b, c) * 100))); //axis labels
 	LD	C,(IX+-9)
 	LD	B,0
 	PUSH	BC
@@ -2450,657 +2544,6 @@ L_27:
 	POP	HL
 	POP	BC
 	CALL	_x_x
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,66
-	CALL	__fmul
-	LD	HL,2097152
-	LD	E,67
-	CALL	__fadd
-	CALL	__ftol
-	PUSH	BC
-	LD	BC,L__17
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_gfx_PrintStringXY
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-;  276	            //y-axis
-;  277	            gfx_Line_NoClip(160 - (y_x(a, b, c) * 100), 120 + (y_y(a, b, c) * 100), (int) (160 + (y_x(a, b, c) * 100)),
-;  278	                            (int) (120 - (y_y(a, b, c) *
-;  279	                                          100))); //btw (160,120) is the center of the screen, counting from the top left corner as (0,0)
-	LD	C,(IX+-9)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-12)
-	PUSH	BC
-	LD	C,(IX+-5)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-8)
-	PUSH	BC
-	LD	C,(IX+-1)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-4)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_y_y
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,66
-	CALL	__fmul
-	LD	E,A
-	LD	HL,BC
-	LD	BC,15728640
-	LD	A,66
-	CALL	__fsub
-	CALL	__ftol
-	LD	B,0
-	PUSH	BC
-	LD	C,(IX+-9)
-	PUSH	BC
-	LD	BC,(IX+-12)
-	PUSH	BC
-	LD	C,(IX+-5)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-8)
-	PUSH	BC
-	LD	C,(IX+-1)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-4)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_y_x
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,66
-	CALL	__fmul
-	LD	HL,2097152
-	LD	E,67
-	CALL	__fadd
-	CALL	__ftol
-	PUSH	BC
-	LD	C,(IX+-9)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-12)
-	PUSH	BC
-	LD	C,(IX+-5)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-8)
-	PUSH	BC
-	LD	C,(IX+-1)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-4)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_y_y
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,66
-	CALL	__fmul
-	LD	HL,15728640
-	LD	E,66
-	CALL	__fadd
-	CALL	__ftol
-	LD	B,0
-	PUSH	BC
-	LD	C,(IX+-9)
-	PUSH	BC
-	LD	BC,(IX+-12)
-	PUSH	BC
-	LD	C,(IX+-5)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-8)
-	PUSH	BC
-	LD	C,(IX+-1)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-4)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_y_x
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,66
-	CALL	__fmul
-	LD	E,A
-	LD	HL,BC
-	LD	BC,2097152
-	LD	A,67
-	CALL	__fsub
-	CALL	__ftol
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_gfx_Line_NoClip
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-;  280	            gfx_PrintStringXY("y", (int) (160 + (y_x(a, b, c) * 100)), (int) (120 - (y_y(a, b, c) * 100)));
-	LD	C,(IX+-9)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-12)
-	PUSH	BC
-	LD	C,(IX+-5)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-8)
-	PUSH	BC
-	LD	C,(IX+-1)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-4)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_y_y
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,66
-	CALL	__fmul
-	LD	E,A
-	LD	HL,BC
-	LD	BC,15728640
-	LD	A,66
-	CALL	__fsub
-	CALL	__ftol
-	PUSH	BC
-	LD	C,(IX+-9)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-12)
-	PUSH	BC
-	LD	C,(IX+-5)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-8)
-	PUSH	BC
-	LD	C,(IX+-1)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-4)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_y_x
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,66
-	CALL	__fmul
-	LD	HL,2097152
-	LD	E,67
-	CALL	__fadd
-	CALL	__ftol
-	PUSH	BC
-	LD	BC,L__18
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_gfx_PrintStringXY
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-;  281	            //z-axis
-;  282	            gfx_Line_NoClip(160 - (z_x(a, b, c) * 100), 120 + (z_y(a, b, c) * 100), (int) (160 + (z_x(a, b, c) * 100)),
-;  283	                            (int) (120 - (z_y(a, b, c) * 100))); //the resolution of the TI84+CE is 320*240
-	LD	C,(IX+-9)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-12)
-	PUSH	BC
-	LD	C,(IX+-5)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-8)
-	PUSH	BC
-	LD	C,(IX+-1)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-4)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_z_y
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,66
-	CALL	__fmul
-	LD	E,A
-	LD	HL,BC
-	LD	BC,15728640
-	LD	A,66
-	CALL	__fsub
-	CALL	__ftol
-	LD	B,0
-	PUSH	BC
-	LD	C,(IX+-9)
-	PUSH	BC
-	LD	BC,(IX+-12)
-	PUSH	BC
-	LD	C,(IX+-5)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-8)
-	PUSH	BC
-	LD	C,(IX+-1)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-4)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_z_x
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,66
-	CALL	__fmul
-	LD	HL,2097152
-	LD	E,67
-	CALL	__fadd
-	CALL	__ftol
-	PUSH	BC
-	LD	C,(IX+-9)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-12)
-	PUSH	BC
-	LD	C,(IX+-5)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-8)
-	PUSH	BC
-	LD	C,(IX+-1)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-4)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_z_y
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,66
-	CALL	__fmul
-	LD	HL,15728640
-	LD	E,66
-	CALL	__fadd
-	CALL	__ftol
-	LD	B,0
-	PUSH	BC
-	LD	C,(IX+-9)
-	PUSH	BC
-	LD	BC,(IX+-12)
-	PUSH	BC
-	LD	C,(IX+-5)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-8)
-	PUSH	BC
-	LD	C,(IX+-1)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-4)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_z_x
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,66
-	CALL	__fmul
-	LD	E,A
-	LD	HL,BC
-	LD	BC,2097152
-	LD	A,67
-	CALL	__fsub
-	CALL	__ftol
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_gfx_Line_NoClip
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-;  284	            gfx_PrintStringXY("z", (int) (160 + (z_x(a, b, c) * 100)), (int) (120 - (z_y(a, b, c) * 100)));
-	LD	C,(IX+-9)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-12)
-	PUSH	BC
-	LD	C,(IX+-5)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-8)
-	PUSH	BC
-	LD	C,(IX+-1)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-4)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_z_y
-	PUSH	BC
-	LD	BC,-3281
-	PUSH	HL
-	CALL	__ildix
-	LD	IY,HL
-	POP	HL
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	LD	HL,13107200
-	LD	E,66
-	CALL	__fmul
-	LD	E,A
-	LD	HL,BC
-	LD	BC,15728640
-	LD	A,66
-	CALL	__fsub
-	CALL	__ftol
-	PUSH	BC
-	LD	C,(IX+-9)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-12)
-	PUSH	BC
-	LD	C,(IX+-5)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-8)
-	PUSH	BC
-	LD	C,(IX+-1)
-	LD	B,0
-	PUSH	BC
-	LD	BC,(IX+-4)
-	PUSH	BC
-	PUSH	BC
-	PUSH	HL
-	LD	HL,IY
-	LD	BC,-3281
-	CALL	__istix
-	POP	HL
-	POP	BC
-	CALL	_z_x
 	PUSH	BC
 	LD	BC,-3281
 	PUSH	HL
@@ -3144,15 +2587,25 @@ L_27:
 	POP	BC
 	POP	BC
 	POP	BC
-;  285	            i = 0;
-	LD	BC,0
-	LD	(IX+-23),BC
-;  286	            for (t = 0; t < 1 && kb_Data[kb_group_1] != kb_2nd; t += .00909)
-	LD	(IX+-47),BC
-	XOR	A,A
-	LD	(IX+-44),A
-	JR	L_24
-L_22:
+;  289	            //y-axis
+;  290	            gfx_Line_NoClip(160 - (y_x(a, b, c) * 100), 120 + (y_y(a, b, c) * 100), (int) (160 + (y_x(a, b, c) * 100)),
+;  291	                            (int) (120 - (y_y(a, b, c) *
+;  292	                                          100))); //btw (160,120) is the center of the screen, counting from the top left corner as (0,0)
+	LD	C,(IX+-9)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-12)
+	PUSH	BC
+	LD	C,(IX+-5)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-8)
+	PUSH	BC
+	LD	C,(IX+-1)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-4)
+	PUSH	BC
 	PUSH	BC
 	PUSH	HL
 	LD	HL,IY
@@ -3160,8 +2613,649 @@ L_22:
 	CALL	__istix
 	POP	HL
 	POP	BC
-;  287	            {
-;  288	                kb_Scan(); //keep scanning for key presses
+	CALL	_y_y
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,66
+	CALL	__fmul
+	LD	E,A
+	LD	HL,BC
+	LD	BC,15728640
+	LD	A,66
+	CALL	__fsub
+	CALL	__ftol
+	LD	B,0
+	PUSH	BC
+	LD	C,(IX+-9)
+	PUSH	BC
+	LD	BC,(IX+-12)
+	PUSH	BC
+	LD	C,(IX+-5)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-8)
+	PUSH	BC
+	LD	C,(IX+-1)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-4)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_y_x
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,66
+	CALL	__fmul
+	LD	HL,2097152
+	LD	E,67
+	CALL	__fadd
+	CALL	__ftol
+	PUSH	BC
+	LD	C,(IX+-9)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-12)
+	PUSH	BC
+	LD	C,(IX+-5)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-8)
+	PUSH	BC
+	LD	C,(IX+-1)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-4)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_y_y
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,66
+	CALL	__fmul
+	LD	HL,15728640
+	LD	E,66
+	CALL	__fadd
+	CALL	__ftol
+	LD	B,0
+	PUSH	BC
+	LD	C,(IX+-9)
+	PUSH	BC
+	LD	BC,(IX+-12)
+	PUSH	BC
+	LD	C,(IX+-5)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-8)
+	PUSH	BC
+	LD	C,(IX+-1)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-4)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_y_x
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,66
+	CALL	__fmul
+	LD	E,A
+	LD	HL,BC
+	LD	BC,2097152
+	LD	A,67
+	CALL	__fsub
+	CALL	__ftol
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_gfx_Line_NoClip
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+;  293	            gfx_PrintStringXY("y", (int) (160 + (y_x(a, b, c) * 100)), (int) (120 - (y_y(a, b, c) * 100)));
+	LD	C,(IX+-9)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-12)
+	PUSH	BC
+	LD	C,(IX+-5)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-8)
+	PUSH	BC
+	LD	C,(IX+-1)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-4)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_y_y
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,66
+	CALL	__fmul
+	LD	E,A
+	LD	HL,BC
+	LD	BC,15728640
+	LD	A,66
+	CALL	__fsub
+	CALL	__ftol
+	PUSH	BC
+	LD	C,(IX+-9)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-12)
+	PUSH	BC
+	LD	C,(IX+-5)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-8)
+	PUSH	BC
+	LD	C,(IX+-1)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-4)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_y_x
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,66
+	CALL	__fmul
+	LD	HL,2097152
+	LD	E,67
+	CALL	__fadd
+	CALL	__ftol
+	PUSH	BC
+	LD	BC,L__20
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_gfx_PrintStringXY
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+;  294	            //z-axis
+;  295	            gfx_Line_NoClip(160 - (z_x(a, b, c) * 100), 120 + (z_y(a, b, c) * 100), (int) (160 + (z_x(a, b, c) * 100)),
+;  296	                            (int) (120 - (z_y(a, b, c) * 100))); //the resolution of the TI84+CE is 320*240
+	LD	C,(IX+-9)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-12)
+	PUSH	BC
+	LD	C,(IX+-5)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-8)
+	PUSH	BC
+	LD	C,(IX+-1)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-4)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_z_y
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,66
+	CALL	__fmul
+	LD	E,A
+	LD	HL,BC
+	LD	BC,15728640
+	LD	A,66
+	CALL	__fsub
+	CALL	__ftol
+	LD	B,0
+	PUSH	BC
+	LD	C,(IX+-9)
+	PUSH	BC
+	LD	BC,(IX+-12)
+	PUSH	BC
+	LD	C,(IX+-5)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-8)
+	PUSH	BC
+	LD	C,(IX+-1)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-4)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_z_x
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,66
+	CALL	__fmul
+	LD	HL,2097152
+	LD	E,67
+	CALL	__fadd
+	CALL	__ftol
+	PUSH	BC
+	LD	C,(IX+-9)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-12)
+	PUSH	BC
+	LD	C,(IX+-5)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-8)
+	PUSH	BC
+	LD	C,(IX+-1)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-4)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_z_y
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,66
+	CALL	__fmul
+	LD	HL,15728640
+	LD	E,66
+	CALL	__fadd
+	CALL	__ftol
+	LD	B,0
+	PUSH	BC
+	LD	C,(IX+-9)
+	PUSH	BC
+	LD	BC,(IX+-12)
+	PUSH	BC
+	LD	C,(IX+-5)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-8)
+	PUSH	BC
+	LD	C,(IX+-1)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-4)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_z_x
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,66
+	CALL	__fmul
+	LD	E,A
+	LD	HL,BC
+	LD	BC,2097152
+	LD	A,67
+	CALL	__fsub
+	CALL	__ftol
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_gfx_Line_NoClip
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+;  297	            gfx_PrintStringXY("z", (int) (160 + (z_x(a, b, c) * 100)), (int) (120 - (z_y(a, b, c) * 100)));
+	LD	C,(IX+-9)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-12)
+	PUSH	BC
+	LD	C,(IX+-5)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-8)
+	PUSH	BC
+	LD	C,(IX+-1)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-4)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_z_y
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,66
+	CALL	__fmul
+	LD	E,A
+	LD	HL,BC
+	LD	BC,15728640
+	LD	A,66
+	CALL	__fsub
+	CALL	__ftol
+	PUSH	BC
+	LD	C,(IX+-9)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-12)
+	PUSH	BC
+	LD	C,(IX+-5)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-8)
+	PUSH	BC
+	LD	C,(IX+-1)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+-4)
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_z_x
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,13107200
+	LD	E,66
+	CALL	__fmul
+	LD	HL,2097152
+	LD	E,67
+	CALL	__fadd
+	CALL	__ftol
+	PUSH	BC
+	LD	BC,L__21
+	PUSH	BC
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_gfx_PrintStringXY
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+;  298	            i = 0;
+	LD	BC,0
+	LD	(IX+-23),BC
+;  299	            for (t = 0; t < 1 && kb_Data[kb_group_1] != kb_2nd; t += .00909)
+	LD	(IX+-31),BC
+	XOR	A,A
+	LD	(IX+-28),A
+	JR	L_30
+L_28:
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+;  300	            {
+;  301	                kb_Scan(); //keep scanning for key presses
 	CALL	_kb_Scan
 	PUSH	BC
 	LD	BC,-3281
@@ -3170,7 +3264,7 @@ L_22:
 	LD	IY,HL
 	POP	HL
 	POP	BC
-;  289	                gfx_SetColor(gfx_green); //we want to graph in green
+;  302	                gfx_SetColor(gfx_green); //we want to graph in green
 	LD	BC,3
 	PUSH	BC
 	PUSH	BC
@@ -3189,10 +3283,10 @@ L_22:
 	POP	HL
 	POP	BC
 	POP	BC
-;  290	                //equations for the grid/graph
-;  291	                g = 2 * s2 * ((floor(t * (n + 1)) / n) - .5);
-	LD	BC,(IX+-47)
-	LD	A,(IX+-44)
+;  303	                //equations for the grid/graph
+;  304	                g = 2 * s2 * ((floor(t * (n + 1)) / n) - .5);
+	LD	BC,(IX+-31)
+	LD	A,(IX+-28)
 	LD	HL,3145728
 	LD	E,65
 	CALL	__fmul
@@ -3230,10 +3324,9 @@ L_22:
 	LD	HL,15728640
 	LD	E,64
 	CALL	__fmul
-	LD	(IX+-31),BC
-	LD	(IX+-28),A
-;  292	                //	_g = 2*s2*((floor((t+dx)*(n+1))/n)-.5); //unused for now
-;  293	                h = 2 * s2 * (mod(t * (n + 1), 1) - .5);
+	LD	(IX+-27),BC
+	LD	(IX+-24),A
+;  305	                h = 2 * s2 * (mod(t * (n + 1), 1) - .5);
 	LD	C,63
 	LD	B,0
 	PUSH	BC
@@ -3241,8 +3334,8 @@ L_22:
 	LD	E,65
 	LD	BC,8388608
 	PUSH	BC
-	LD	BC,(IX+-47)
-	LD	A,(IX+-44)
+	LD	BC,(IX+-31)
+	LD	A,(IX+-28)
 	CALL	__fmul
 	LD	DE,BC
 	LD	C,A
@@ -3277,14 +3370,15 @@ L_22:
 	LD	HL,15728640
 	LD	E,64
 	CALL	__fmul
-	LD	(IX+-35),BC
-	LD	(IX+-32),A
-;  294	                //	_h = 2*s2*(mod((t+dx)*(n+1),1)-.5); //unused for now
-;  295	
-;  296	
-;  297	
-;  298	                xxNodes[i][0] = (uint8_t)(160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
-;  299	                                                      (z_x(a, b, c) * parseRPN(equ, g, h))))); //fill out the arrays of nodes
+	LD	(IX+-36),BC
+	LD	(IX+-33),A
+;  306	                //	_g = 2*s2*((floor((t+dx)*(n+1))/n)-.5); //unused for now
+;  307	                //	_h = 2*s2*(mod((t+dx)*(n+1),1)-.5); //unused for now
+;  308	
+;  309	
+;  310	
+;  311	                xxNodes[i][0] = (uint8_t)(160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
+;  312	                                                      (z_x(a, b, c) * parseRPN(equ,g, h) * .25)))); //fill out the arrays of nodes
 	LD	C,(IX+-9)
 	LD	B,0
 	PUSH	BC
@@ -3323,8 +3417,8 @@ L_22:
 	POP	BC
 	LD	A,E
 	LD	BC,HL
-	LD	HL,(IX+-31)
-	LD	E,(IX+-28)
+	LD	HL,(IX+-27)
+	LD	E,(IX+-24)
 	CALL	__fmul
 	LD	HL,BC
 	PUSH	BC
@@ -3378,8 +3472,8 @@ L_22:
 	POP	BC
 	LD	A,E
 	LD	BC,HL
-	LD	HL,(IX+-35)
-	LD	E,(IX+-32)
+	LD	HL,(IX+-36)
+	LD	E,(IX+-33)
 	CALL	__fmul
 	LD	E,A
 	LD	HL,BC
@@ -3421,15 +3515,15 @@ L_22:
 	LD	BC,-3273	; spill
 	CALL	__istix
 	POP	BC
-	LD	C,(IX+-32)
+	LD	C,(IX+-33)
 	LD	B,0
 	PUSH	BC
-	LD	BC,(IX+-35)
+	LD	BC,(IX+-36)
 	PUSH	BC
-	LD	C,(IX+-28)
+	LD	C,(IX+-24)
 	LD	B,0
 	PUSH	BC
-	LD	BC,(IX+-31)
+	LD	BC,(IX+-27)
 	PUSH	BC
 	PEA	IX+-95
 	LD	H,A
@@ -3528,6 +3622,9 @@ L_22:
 	CALL	__ildix
 	POP	BC
 	CALL	__fmul
+	LD	HL,8388608
+	LD	E,62
+	CALL	__fmul
 	LD	E,A
 	LD	HL,BC
 	PUSH	BC
@@ -3614,8 +3711,8 @@ L_22:
 	POP	BC
 	ADD	HL,DE
 	LD	(HL),C
-;  300	                xyNodes[i][0] = (uint8_t)(
-;  301	                        120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * parseRPN(equ, g, h)))));
+;  313	                xyNodes[i][0] = (uint8_t)(
+;  314	                        120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * parseRPN(equ,g, h) * .25))));
 	LD	C,(IX+-9)
 	LD	B,0
 	PUSH	BC
@@ -3654,8 +3751,8 @@ L_22:
 	POP	BC
 	LD	A,E
 	LD	BC,HL
-	LD	HL,(IX+-31)
-	LD	E,(IX+-28)
+	LD	HL,(IX+-27)
+	LD	E,(IX+-24)
 	CALL	__fmul
 	LD	HL,BC
 	PUSH	BC
@@ -3709,8 +3806,8 @@ L_22:
 	POP	BC
 	LD	A,E
 	LD	BC,HL
-	LD	HL,(IX+-35)
-	LD	E,(IX+-32)
+	LD	HL,(IX+-36)
+	LD	E,(IX+-33)
 	CALL	__fmul
 	LD	E,A
 	LD	HL,BC
@@ -3752,15 +3849,15 @@ L_22:
 	LD	BC,-3256	; spill
 	CALL	__istix
 	POP	BC
-	LD	C,(IX+-32)
+	LD	C,(IX+-33)
 	LD	B,0
 	PUSH	BC
-	LD	BC,(IX+-35)
+	LD	BC,(IX+-36)
 	PUSH	BC
-	LD	C,(IX+-28)
+	LD	C,(IX+-24)
 	LD	B,0
 	PUSH	BC
-	LD	BC,(IX+-31)
+	LD	BC,(IX+-27)
 	PUSH	BC
 	PEA	IX+-95
 	LD	H,A
@@ -3859,6 +3956,9 @@ L_22:
 	CALL	__ildix
 	POP	BC
 	CALL	__fmul
+	LD	HL,8388608
+	LD	E,62
+	CALL	__fmul
 	LD	E,A
 	LD	HL,BC
 	PUSH	BC
@@ -3947,8 +4047,8 @@ L_22:
 	POP	BC
 	ADD	HL,DE
 	LD	(HL),C
-;  302	                yxNodes[i][0] = (uint8_t)(
-;  303	                        160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) * parseRPN(equ, h, g)))));
+;  315	                yxNodes[i][0] = (uint8_t)(
+;  316	                        160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) * parseRPN(equ,h, g) * .25))));
 	LD	C,(IX+-9)
 	LD	B,0
 	PUSH	BC
@@ -3987,8 +4087,8 @@ L_22:
 	POP	BC
 	LD	A,E
 	LD	BC,HL
-	LD	HL,(IX+-35)
-	LD	E,(IX+-32)
+	LD	HL,(IX+-36)
+	LD	E,(IX+-33)
 	CALL	__fmul
 	LD	HL,BC
 	PUSH	BC
@@ -4042,8 +4142,8 @@ L_22:
 	POP	BC
 	LD	A,E
 	LD	BC,HL
-	LD	HL,(IX+-31)
-	LD	E,(IX+-28)
+	LD	HL,(IX+-27)
+	LD	E,(IX+-24)
 	CALL	__fmul
 	LD	E,A
 	LD	HL,BC
@@ -4085,15 +4185,15 @@ L_22:
 	LD	BC,-3239	; spill
 	CALL	__istix
 	POP	BC
-	LD	C,(IX+-28)
+	LD	C,(IX+-24)
 	LD	B,0
 	PUSH	BC
-	LD	BC,(IX+-31)
+	LD	BC,(IX+-27)
 	PUSH	BC
-	LD	C,(IX+-32)
+	LD	C,(IX+-33)
 	LD	B,0
 	PUSH	BC
-	LD	BC,(IX+-35)
+	LD	BC,(IX+-36)
 	PUSH	BC
 	PEA	IX+-95
 	LD	H,A
@@ -4192,6 +4292,9 @@ L_22:
 	CALL	__ildix
 	POP	BC
 	CALL	__fmul
+	LD	HL,8388608
+	LD	E,62
+	CALL	__fmul
 	LD	E,A
 	LD	HL,BC
 	PUSH	BC
@@ -4278,15 +4381,15 @@ L_22:
 	POP	BC
 	ADD	HL,DE
 	LD	(HL),C
-;  304	                yyNodes[i][0] = (uint8_t)(
-;  305	                        120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * parseRPN(equ, h, g)))));
+;  317	                yyNodes[i][0] = (uint8_t)(
+;  318	                        120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * parseRPN(equ,h, g) * .25))));
 	LD	HL,(IX+-23)
 	ADD	HL,HL
 	ADD	HL,HL
 	OR	A,A
 	LD	BC,(IX+-23)
 	SBC	HL,BC
-	LD	(IX+-38),HL
+	LD	(IX+-42),HL
 	LD	(IX+-55),HL
 	LD	C,(IX+-9)
 	LD	B,0
@@ -4326,8 +4429,8 @@ L_22:
 	POP	BC
 	LD	A,E
 	LD	BC,HL
-	LD	HL,(IX+-35)
-	LD	E,(IX+-32)
+	LD	HL,(IX+-36)
+	LD	E,(IX+-33)
 	CALL	__fmul
 	LD	HL,BC
 	PUSH	BC
@@ -4381,8 +4484,8 @@ L_22:
 	POP	BC
 	LD	A,E
 	LD	BC,HL
-	LD	HL,(IX+-31)
-	LD	E,(IX+-28)
+	LD	HL,(IX+-27)
+	LD	E,(IX+-24)
 	CALL	__fmul
 	LD	E,A
 	LD	HL,BC
@@ -4424,15 +4527,15 @@ L_22:
 	LD	BC,-3221	; spill
 	CALL	__istix
 	POP	BC
-	LD	C,(IX+-28)
+	LD	C,(IX+-24)
 	LD	B,0
 	PUSH	BC
-	LD	BC,(IX+-31)
+	LD	BC,(IX+-27)
 	PUSH	BC
-	LD	C,(IX+-32)
+	LD	C,(IX+-33)
 	LD	B,0
 	PUSH	BC
-	LD	BC,(IX+-35)
+	LD	BC,(IX+-36)
 	PUSH	BC
 	PEA	IX+-95
 	LD	H,A
@@ -4525,6 +4628,9 @@ L_22:
 	POP	BC
 	POP	IY
 	CALL	__fmul
+	LD	HL,8388608
+	LD	E,62
+	CALL	__fmul
 	LD	E,A
 	LD	HL,BC
 	PUSH	BC
@@ -4568,21 +4674,21 @@ L_22:
 	LD	BC,15728640
 	LD	A,66
 	CALL	__fsub
-;  306	
-;  307	
-;  308	
-;  309	                //testing purposes
-;  310	//                xxNodes[i][0] = (uint8_t)(160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
-;  311	//                                                      (z_x(a, b, c) * function(g, h))))); //fill out the arrays of nodes
-;  312	//                xyNodes[i][0] = (uint8_t)(
-;  313	//                        120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * function( g, h)))));
-;  314	//                yxNodes[i][0] = (uint8_t)(
-;  315	//                        160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) *function( h, g)))));
-;  316	//                yyNodes[i][0] = (uint8_t)(
-;  317	//                        120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * function( h, g)))));
-;  318	
 ;  319	
-;  320	                if (i >= 12) //for some reason the first 12 nodes don't connect to the rest, so we omit them
+;  320	
+;  321	
+;  322	                //testing purposes
+;  323	//                xxNodes[i][0] = (uint8_t)(160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
+;  324	//                                                      (z_x(a, b, c) * function(g, h))))); //fill out the arrays of nodes
+;  325	//                xyNodes[i][0] = (uint8_t)(
+;  326	//                        120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * function( g, h)))));
+;  327	//                yxNodes[i][0] = (uint8_t)(
+;  328	//                        160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) *function( h, g)))));
+;  329	//                yyNodes[i][0] = (uint8_t)(
+;  330	//                        120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * function( h, g)))));
+;  331	
+;  332	
+;  333	                if (i >= 12) //for some reason the first 12 nodes don't connect to the rest, so we omit them
 	PUSH	BC
 	PUSH	HL
 	LD	HL,BC
@@ -4613,7 +4719,7 @@ L_22:
 	LD	HL,IX
 	PUSH	BC
 	PUSH	HL
-	LD	HL,(IX+-38)
+	LD	HL,(IX+-42)
 	LD	BC,-3212	; spill
 	CALL	__istix
 	POP	HL
@@ -4655,12 +4761,12 @@ L_22:
 	LD	BC,HL
 	POP	HL
 	SBC	HL,BC
-	JP	M,L_21
-;  321	                {
-;  322	                    if ((i - 1) % (int) (n) != 0) // we don't want to connect the nodes that are on opposite sides
+	JP	M,L_27
+;  334	                {
+;  335	                    if ((i - 1) % (int) (n) != 0) // we don't want to connect the nodes that are on opposite sides
 	LD	BC,(IX+-23)
 	DEC	BC
-	LD	(IX+-42),BC
+	LD	(IX+-45),BC
 	LD	(IX+-52),BC
 	LD	HL,BC
 	LD	BC,10
@@ -4668,33 +4774,33 @@ L_22:
 	OR	A,A
 	LD	BC,0
 	SBC	HL,BC
-	JR	NZ,L__22
+	JR	NZ,L__24
 	LD	A,1
-	JR	L__23
-L__22:
+	JR	L__25
+L__24:
 	XOR	A,A
-L__23:
-	LD	(IX+-43),A
+L__25:
+	LD	(IX+-48),A
 	OR	A,A
-	JR	NZ,L_17
-;  323	                    {
-;  324	                        gfx_Line(xxNodes[i - 1][0], xyNodes[i - 1][0], xxNodes[i][0],
-;  325	                                 xyNodes[i][0]); //connect the nodes
-	LD	BC,(IX+-38)
+	JR	NZ,L_23
+;  336	                    {
+;  337	                        gfx_Line(xxNodes[i - 1][0], xyNodes[i - 1][0], xxNodes[i][0],
+;  338	                                 xyNodes[i][0]); //connect the nodes
+	LD	BC,(IX+-42)
 	LD	(IX+-55),BC
-	LD	BC,(IX+-42)
+	LD	BC,(IX+-45)
 	LD	(IX+-52),BC
-	LD	HL,(IX+-42)
+	LD	HL,(IX+-45)
 	ADD	HL,HL
 	ADD	HL,HL
 	OR	A,A
-	LD	BC,(IX+-42)
+	LD	BC,(IX+-45)
 	SBC	HL,BC
 	LD	BC,HL
 	LD	HL,IX
 	LD	DE,-1631
 	ADD	HL,DE
-	LD	DE,(IX+-38)
+	LD	DE,(IX+-42)
 	ADD	HL,DE
 	LD	A,(HL)
 	UEXT	HL
@@ -4703,7 +4809,7 @@ L__23:
 	PUSH	HL
 	LD	HL,IX
 	ADD	HL,DE
-	LD	DE,(IX+-38)
+	LD	DE,(IX+-42)
 	ADD	HL,DE
 	LD	A,(HL)
 	UEXT	HL
@@ -4771,9 +4877,9 @@ L__23:
 	POP	BC
 	POP	BC
 	POP	BC
-;  326	                    }
-L_17:
-;  327	                    gfx_SetColor(gfx_blue); //we want graph in blue
+;  339	                    }
+L_23:
+;  340	                    gfx_SetColor(gfx_blue); //we want graph in blue
 	LD	BC,16
 	PUSH	BC
 	PUSH	BC
@@ -4792,12 +4898,12 @@ L_17:
 	POP	HL
 	POP	BC
 	POP	BC
-;  328	                    if ((i - 1) % (int) (n) != 0)
-	LD	A,(IX+-43)
+;  341	                    if ((i - 1) % (int) (n) != 0)
+	LD	A,(IX+-48)
 	OR	A,A
-	JR	NZ,L_21
-;  329	                    { //do the same thing
-;  330	                        gfx_Line(yxNodes[i - 1][0], yyNodes[i - 1][0], yxNodes[i][0], yyNodes[i][0]);
+	JR	NZ,L_27
+;  342	                    { //do the same thing
+;  343	                        gfx_Line(yxNodes[i - 1][0], yyNodes[i - 1][0], yxNodes[i][0], yyNodes[i][0]);
 	LD	BC,(IX+-52)
 	LD	HL,BC
 	ADD	HL,HL
@@ -5001,39 +5107,24 @@ L_17:
 	POP	BC
 	POP	BC
 	POP	BC
-;  331	                    }
-;  332	                }
-L_21:
-;  333	                i++; //increment i
+;  344	                    }
+;  345	                }
+L_27:
+;  346	                i++; //increment i
 	LD	BC,(IX+-23)
 	INC	BC
 	LD	(IX+-23),BC
-	LD	BC,(IX+-47)
-	LD	A,(IX+-44)
-	LD	HL,1371705
-	LD	E,60
-	CALL	__fadd
-	LD	(IX+-47),BC
-	LD	(IX+-44),A
-;  334	
-;  335	                //really inefficient pixel plotter. slow af
-;  336	                //use this at your own risk
-;  337	                //	gfx_SetPixel( 160 + (s*((x_x(a,b,c)*g)+(y_x(a,b,c)*h)+(z_x(a,b,c)*function(g,h)))) ,   120-(s*((x_y(a,b,c)*g) + (y_y(a,b,c)*h) + (z_y(a,b,c)*function(g,h)))));
-;  338	                //	gfx_SetColor(gfx_blue);
-;  339	                //	gfx_SetPixel(160+(s*((x_x(a,b,c)*h)+(y_x(a,b,c)*g)+(z_x(a,b,c)*function(h,g)))),120-(s*((x_y(a,b,c)*h) + (y_y(a,b,c)*g) + (z_y(a,b,c)*function(h,g)))));
-;  340	
-;  341	            }
-L_24:
-	LD	HL,(IX+-47)
-	LD	E,(IX+-44)
-	LD	BC,8388608
-	LD	A,63
-	CALL	__fcmp
-	JP	P,L_25
-	LD	A,(16056338)
-	CP	A,32
-	JR	NZ,L_22
-L_25:
+;  347	                g = 2 * s2 * ((floor(t * (n + 1)) / n) - .5);
+	LD	BC,(IX+-31)
+	LD	A,(IX+-28)
+	LD	HL,3145728
+	LD	E,65
+	CALL	__fmul
+	LD	DE,BC
+	LD	C,A
+	LD	B,0
+	PUSH	BC
+	PUSH	DE
 	PUSH	BC
 	PUSH	HL
 	LD	HL,IY
@@ -5041,7 +5132,109 @@ L_25:
 	CALL	__istix
 	POP	HL
 	POP	BC
-;  342	            gfx_SwapDraw();
+	CALL	_floor
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	LD	HL,2097152
+	LD	E,65
+	CALL	__fdiv
+	OR	A,A
+	SBC	HL,HL
+	LD	E,63
+	CALL	__fsub
+	LD	HL,15728640
+	LD	E,64
+	CALL	__fmul
+	LD	(IX+-27),BC
+	LD	(IX+-24),A
+;  348	                h = 2 * s2 * (mod(t * (n + 1), 1) - .5);
+	LD	C,63
+	LD	B,0
+	PUSH	BC
+	LD	HL,3145728
+	LD	E,65
+	LD	BC,8388608
+	PUSH	BC
+	LD	BC,(IX+-31)
+	LD	A,(IX+-28)
+	CALL	__fmul
+	LD	DE,BC
+	LD	C,A
+	LD	B,0
+	PUSH	BC
+	PUSH	DE
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+	CALL	_mod
+	PUSH	BC
+	LD	BC,-3281
+	PUSH	HL
+	CALL	__ildix
+	LD	IY,HL
+	POP	HL
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	POP	BC
+	LD	A,E
+	LD	BC,HL
+	OR	A,A
+	SBC	HL,HL
+	LD	E,63
+	CALL	__fsub
+	LD	HL,15728640
+	LD	E,64
+	CALL	__fmul
+	LD	(IX+-36),BC
+	LD	(IX+-33),A
+	LD	BC,(IX+-31)
+	LD	A,(IX+-28)
+	LD	HL,1371705
+	LD	E,60
+	CALL	__fadd
+	LD	(IX+-31),BC
+	LD	(IX+-28),A
+;  349	                //really inefficient pixel plotter. slow af
+;  350	                //use this at your own risk
+;  351	                //	gfx_SetPixel( 160 + (s*((x_x(a,b,c)*g)+(y_x(a,b,c)*h)+(z_x(a,b,c)*function(g,h)))) ,   120-(s*((x_y(a,b,c)*g) + (y_y(a,b,c)*h) + (z_y(a,b,c)*function(g,h)))));
+;  352	                //	gfx_SetColor(gfx_blue);
+;  353	                //	gfx_SetPixel(160+(s*((x_x(a,b,c)*h)+(y_x(a,b,c)*g)+(z_x(a,b,c)*function(h,g)))),120-(s*((x_y(a,b,c)*h) + (y_y(a,b,c)*g) + (z_y(a,b,c)*function(h,g)))));
+;  354	
+;  355	            }
+L_30:
+	LD	HL,(IX+-31)
+	LD	E,(IX+-28)
+	LD	BC,8388608
+	LD	A,63
+	CALL	__fcmp
+	JP	P,L_31
+	LD	A,(16056338)
+	CP	A,32
+	JR	NZ,L_28
+L_31:
+	PUSH	BC
+	PUSH	HL
+	LD	HL,IY
+	LD	BC,-3281
+	CALL	__istix
+	POP	HL
+	POP	BC
+;  356	            gfx_SwapDraw();
 	CALL	_gfx_SwapDraw
 	PUSH	BC
 	LD	BC,-3281
@@ -5050,23 +5243,22 @@ L_25:
 	LD	IY,HL
 	POP	HL
 	POP	BC
-;  343	            lol2 = true; // this is so that it only plots the function once
-	LD	(IX+-39),1
-;  344	            lol3 = false;
-	LD	(IX+-24),0
-;  345	        }
-;  346	
-;  347	    } while (kb_Data[kb_group_1] != kb_2nd);
-L_29:
+;  357	            lol2 = true; // this is so that it only plots the function once
+	LD	(IX+-46),1
+;  358	            lol3 = false;
+	LD	(IX+-32),0
+;  359	        }
+;  360	
+;  361	    } while (kb_Data[kb_group_1] != kb_2nd);
+L_35:
 	LD	A,(16056338)
 	CP	A,32
-	JR	NZ,L_28
-;  348	    gfx_End(); //stop the gfx
+	JR	NZ,L_34
+;  362	    gfx_End(); //stop the gfx
 	CALL	_gfx_End
-;  349	    prgm_CleanUp(); //clear the screen
-	CALL	_prgm_CleanUp
-;  350	    //end of program
-;  351	}
+;  363	    prgm_CleanUp(); //clear the screen
+;  364	    //end of program
+;  365	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5076,7 +5268,6 @@ L_29:
 ;Name                         Addr/Register   Size   Type
 ;_gfx_End                            IMPORT  -----   function
 ;_gfx_Line                           IMPORT  -----   function
-;_parseRPN                           IMPORT  -----   function
 ;_mod                                IMPORT  -----   function
 ;_floor                              IMPORT  -----   function
 ;_z_x                                IMPORT  -----   function
@@ -5094,10 +5285,10 @@ L_29:
 ;_gfx_BlitRectangle                  IMPORT  -----   function
 ;_gfx_GetStringWidth                 IMPORT  -----   function
 ;_gfx_FillScreen                     IMPORT  -----   function
-;_prgm_CleanUp                       IMPORT  -----   function
 ;_os_GetCSC                          IMPORT  -----   function
 ;_gfx_SwapDraw                       IMPORT  -----   function
-;_text                               STATIC      3   variable
+;_parseRPN                           IMPORT  -----   function
+;_text                               STATIC     15   variable
 ;_gfx_PrintStringXY                  IMPORT  -----   function
 ;_floatToStr                         IMPORT  -----   function
 ;_gfx_SetTextFGColor                 IMPORT  -----   function
@@ -5112,16 +5303,16 @@ L_29:
 ;G_3                                  IX-55      3   variable
 ;G_4                                  IX-52      3   variable
 ;key7                                 IX-49      1   variable
-;lol                                  IX-48      1   variable
-;t                                    IX-47      4   variable
-;G_2                                  IX-43      1   variable
-;G_1                                  IX-42      3   variable
-;lol2                                 IX-39      1   variable
-;G_0                                  IX-38      3   variable
-;h                                    IX-35      4   variable
-;g                                    IX-31      4   variable
-;graph                                IX-27      3   variable
-;lol3                                 IX-24      1   variable
+;G_2                                  IX-48      1   variable
+;lol                                  IX-47      1   variable
+;lol2                                 IX-46      1   variable
+;G_1                                  IX-45      3   variable
+;G_0                                  IX-42      3   variable
+;graph                                IX-39      3   variable
+;h                                    IX-36      4   variable
+;lol3                                 IX-32      1   variable
+;t                                    IX-31      4   variable
+;g                                    IX-27      4   variable
 ;i                                    IX-23      3   variable
 ;b1                                   IX-20      4   variable
 ;a1                                   IX-16      4   variable
@@ -5138,44 +5329,44 @@ L_29:
 L__1:
 	DB	"Graphing..."
 	DB	0
-L__2:
+L__4:
 	DB	"R3 - 3D grapher for the TI84PCE"
 	DB	0
-L__11:
+L__13:
 	DB	"x"
 	DB	0
-L__12:
+L__14:
 	DB	"y"
 	DB	0
-L__13:
+L__15:
 	DB	"z"
 	DB	0
-L__17:
+L__19:
 	DB	"x"
 	DB	0
-L__18:
+L__20:
 	DB	"y"
 	DB	0
-L__19:
+L__21:
 	DB	"z"
 	DB	0
 	SEGMENT TEXT
 _0temp0:
 	DB	32
-	DB	53
+	DB	120
 	DB	32
-	DB	54
+	DB	120
 	DB	32
-	DB	53
+	DB	42
 	DB	32
-	DB	43
+	DB	121
 	DB	32
-	DB	43
+	DB	121
 	DB	32
-	DB	0
-	DB	0
-	DB	0
-	DB	0
+	DB	42
+	DB	32
+	DB	45
+	DB	32
 	DB	0
 	DB	0
 	DB	0
@@ -5202,14 +5393,14 @@ _0temp0:
 	DB	0
 	DB	0
 	SEGMENT CODE
-;  352	
-;  353	//function that prints simple text on screen
-;  354	//similar to the Output() function of TI-BASIC
-;  355	void printText(const char *text, uint8_t xpos, uint8_t ypos)
-;  356	{
+;  366	
+;  367	//function that prints simple text on screen
+;  368	//similar to the Output() function of TI-BASIC
+;  369	void printText(const char *text, uint8_t xpos, uint8_t ypos)
+;  370	{
 _printText:
 	CALL	__frameset0
-;  357	    os_SetCursorPos(ypos, xpos); //set the place to start putting text
+;  371	    os_SetCursorPos(ypos, xpos); //set the place to start putting text
 	LD	C,(IX+9)
 	LD	B,0
 	PUSH	BC
@@ -5218,12 +5409,12 @@ _printText:
 	CALL	_os_SetCursorPos
 	POP	BC
 	POP	BC
-;  358	    os_PutStrFull(text); //output the string
+;  372	    os_PutStrFull(text); //output the string
 	LD	BC,(IX+6)
 	PUSH	BC
 	CALL	_os_PutStrFull
 	POP	BC
-;  359	}
+;  373	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5242,13 +5433,13 @@ _printText:
 ;       Spill Code: 0 (instruction)
 
 
-;  360	
-;  361	/* Simple way to fill the screen with a given color */
-;  362	void fillScreen(uint8_t color)
-;  363	{
+;  374	
+;  375	/* Simple way to fill the screen with a given color */
+;  376	void fillScreen(uint8_t color)
+;  377	{
 _fillScreen:
 	CALL	__frameset0
-;  364	    memset_fast(lcd_Ram, color, LCD_SIZE);
+;  378	    memset_fast(lcd_Ram, color, LCD_SIZE);
 	LD	BC,153600
 	PUSH	BC
 	LD	A,(IX+6)
@@ -5257,11 +5448,11 @@ _fillScreen:
 	PUSH	HL
 	LD	BC,13893632
 	PUSH	BC
-	CALL	_memset_fast
+	CALL	_memset
 	POP	BC
 	POP	BC
 	POP	BC
-;  365	}
+;  379	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5269,7 +5460,7 @@ _fillScreen:
 
 ;**************************** _fillScreen ***************************
 ;Name                         Addr/Register   Size   Type
-;_memset_fast                        IMPORT  -----   function
+;_memset                             IMPORT  -----   function
 ;color                                 IX+6      1   parameter
 
 
@@ -5277,15 +5468,15 @@ _fillScreen:
 ;       Spill Code: 0 (instruction)
 
 
-;  366	
-;  367	//used to calculate the position of points in the 3d world and translate them into 2d coordinates to draw onto the screen
-;  368	//when using these, ALWAYS type (a,b,c) as the arguments of the function.
-;  369	double x_x(double a, double b, double c)
-;  370	{
+;  380	
+;  381	//used to calculate the position of points in the 3d world and translate them into 2d coordinates to draw onto the screen
+;  382	//when using these, ALWAYS type (a,b,c) as the arguments of the function.
+;  383	double x_x(double a, double b, double c)
+;  384	{
 _x_x:
 	LD	HL,-11
 	CALL	__frameset
-;  371	    return (cos(c) * cos(a)) - (sin(c) * sin(a) * sin(b));
+;  385	    return (cos(c) * cos(a)) - (sin(c) * sin(a) * sin(b));
 	LD	C,(IX+21)
 	LD	B,0
 	PUSH	BC
@@ -5356,7 +5547,7 @@ _x_x:
 	CALL	__fsub
 	LD	E,A
 	LD	HL,BC
-;  372	}
+;  386	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5375,13 +5566,13 @@ _x_x:
 ;       Spill Code: 0 (instruction)
 
 
-;  373	
-;  374	double x_y(double a, double b, double c)
-;  375	{
+;  387	
+;  388	double x_y(double a, double b, double c)
+;  389	{
 _x_y:
 	LD	HL,-11
 	CALL	__frameset
-;  376	    return (cos(c) * sin(a) * sin(b)) + (sin(c) * cos(a));
+;  390	    return (cos(c) * sin(a) * sin(b)) + (sin(c) * cos(a));
 	LD	C,(IX+21)
 	LD	B,0
 	PUSH	BC
@@ -5452,7 +5643,7 @@ _x_y:
 	CALL	__fadd
 	LD	E,A
 	LD	HL,BC
-;  377	}
+;  391	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5471,13 +5662,13 @@ _x_y:
 ;       Spill Code: 0 (instruction)
 
 
-;  378	
-;  379	double y_x(double a, double b, double c)
-;  380	{
+;  392	
+;  393	double y_x(double a, double b, double c)
+;  394	{
 _y_x:
 	LD	HL,-14
 	CALL	__frameset
-;  381	    return (-1 * cos(c) * sin(a)) - (sin(c) * cos(a) * sin(b));
+;  395	    return (-1 * cos(c) * sin(a)) - (sin(c) * cos(a) * sin(b));
 	LD	C,(IX+21)
 	LD	B,0
 	PUSH	BC
@@ -5553,7 +5744,7 @@ _y_x:
 	CALL	__fsub
 	LD	E,A
 	LD	HL,BC
-;  382	}
+;  396	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5572,13 +5763,13 @@ _y_x:
 ;       Spill Code: 0 (instruction)
 
 
-;  383	
-;  384	double y_y(double a, double b, double c)
-;  385	{
+;  397	
+;  398	double y_y(double a, double b, double c)
+;  399	{
 _y_y:
 	LD	HL,-11
 	CALL	__frameset
-;  386	    return (cos(c) * cos(a) * sin(b)) - (sin(c) * sin(a));
+;  400	    return (cos(c) * cos(a) * sin(b)) - (sin(c) * sin(a));
 	LD	C,(IX+21)
 	LD	B,0
 	PUSH	BC
@@ -5649,7 +5840,7 @@ _y_y:
 	CALL	__fsub
 	LD	E,A
 	LD	HL,BC
-;  387	}
+;  401	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5668,13 +5859,13 @@ _y_y:
 ;       Spill Code: 0 (instruction)
 
 
-;  388	
-;  389	double z_x(double a, double b, double c)
-;  390	{
+;  402	
+;  403	double z_x(double a, double b, double c)
+;  404	{
 _z_x:
 	LD	HL,-6
 	CALL	__frameset
-;  391	    return -1 * sin(c) * cos(b);
+;  405	    return -1 * sin(c) * cos(b);
 	LD	C,(IX+21)
 	LD	B,0
 	PUSH	BC
@@ -5705,7 +5896,7 @@ _z_x:
 	CALL	__fmul
 	LD	E,A
 	LD	HL,BC
-;  392	}
+;  406	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5724,13 +5915,13 @@ _z_x:
 ;       Spill Code: 0 (instruction)
 
 
-;  393	
-;  394	double z_y(double a, double b, double c)
-;  395	{
+;  407	
+;  408	double z_y(double a, double b, double c)
+;  409	{
 _z_y:
 	LD	HL,-4
 	CALL	__frameset
-;  396	    return cos(c) * cos(b);
+;  410	    return cos(c) * cos(b);
 	LD	C,(IX+21)
 	LD	B,0
 	PUSH	BC
@@ -5756,7 +5947,7 @@ _z_y:
 	CALL	__fmul
 	LD	E,A
 	LD	HL,BC
-;  397	}
+;  411	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5774,44 +5965,25 @@ _z_y:
 ;       Spill Code: 0 (instruction)
 
 
-;  398	
-;  399	//the 3d function you want to graph
-;  400	//note that this is in the format f(x,y)=
-;  401	//for example: for f(x,y)=cos(xy)-y^2, type in
-;  402	//	return cos(x*y)-(pow(y,2));
-;  403	//soon i should have user input
-;  404	double function(double x, double y)
-;  405	{
+;  412	
+;  413	//the 3d function you want to graph
+;  414	//note that this is in the format f(x,y)=
+;  415	//for example: for f(x,y)=cos(xy)-y^2, type in
+;  416	//	return cos(x*y)-(pow(y,2));
+;  417	//soon i should have user input
+;  418	double function(double x, double y)
+;  419	{
 _function:
-	LD	HL,-4
-	CALL	__frameset
-;  406	    return .25 * x * x - .25 * y * y;
-	LD	HL,8388608
-	LD	E,62
-	LD	BC,(IX+6)
-	LD	A,(IX+9)
-	CALL	__fmul
-	LD	HL,(IX+6)
-	LD	E,(IX+9)
-	CALL	__fmul
-	LD	(IX+-4),BC
-	LD	(IX+-1),A
-	LD	A,(IX+15)
-	LD	BC,(IX+12)
-	LD	HL,8388608
-	LD	E,62
-	CALL	__fmul
+	CALL	__frameset0
+;  420	    return x-y;
 	LD	HL,(IX+12)
 	LD	E,(IX+15)
-	CALL	__fmul
-	LD	E,A
-	LD	A,(IX+-1)
-	LD	HL,BC
-	LD	BC,(IX+-4)
+	LD	BC,(IX+6)
+	LD	A,(IX+9)
 	CALL	__fsub
 	LD	E,A
 	LD	HL,BC
-;  407	}
+;  421	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5823,19 +5995,19 @@ _function:
 ;x                                     IX+6      4   parameter
 
 
-; Stack Frame Size: 22 (bytes)
+; Stack Frame Size: 18 (bytes)
 ;       Spill Code: 0 (instruction)
 
 
-;  408	
-;  409	//proper modulus function
-;  410	//the % operator only works with integers
-;  411	//and the fmod() function can't handle negative numbers properly
-;  412	double mod(double a, double N)
-;  413	{
+;  422	
+;  423	//proper modulus function
+;  424	//the % operator only works with integers
+;  425	//and the fmod() function can't handle negative numbers properly
+;  426	double mod(double a, double N)
+;  427	{
 _mod:
 	CALL	__frameset0
-;  414	    return a - N * floor(a / N);
+;  428	    return a - N * floor(a / N);
 	LD	HL,(IX+12)
 	LD	E,(IX+15)
 	LD	BC,(IX+6)
@@ -5861,7 +6033,7 @@ _mod:
 	CALL	__fsub
 	LD	E,A
 	LD	HL,BC
-;  415	}
+;  429	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5878,16 +6050,16 @@ _mod:
 ;       Spill Code: 0 (instruction)
 
 
-;  416	
-;  417	char *tokenize(char *input)
-;  418	{
+;  430	
+;  431	char *tokenize(char *input)
+;  432	{
 _tokenize:
 	LD	HL,-3
 	CALL	__frameset
-;  419	    int i = 0;
-;  420	    char *output;
-;  421	    output = strtok(input, ",");
-	LD	BC,L__40
+;  433	    int i = 0;
+;  434	    char *output;
+;  435	    output = strtok(input, ",");
+	LD	BC,L__42
 	PUSH	BC
 	LD	BC,(IX+6)
 	PUSH	BC
@@ -5895,8 +6067,8 @@ _tokenize:
 	POP	BC
 	POP	BC
 	LD	(IX+-3),HL
-;  422	    return output;
-;  423	}
+;  436	    return output;
+;  437	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5914,17 +6086,17 @@ _tokenize:
 
 
 	SEGMENT STRSECT
-L__40:
+L__42:
 	DB	","
 	DB	0
 	SEGMENT CODE
-;  424	
-;  425	char *floatToStr(float arg)
-;  426	{
+;  438	
+;  439	char *floatToStr(float arg)
+;  440	{
 _floatToStr:
-	LD	HL,-24
+	LD	HL,-18
 	CALL	__frameset
-;  427	    const real_t arg2 = os_FloatToReal(arg);
+;  441	    const real_t arg2 = os_FloatToReal(arg);
 	LD	C,(IX+9)
 	LD	B,0
 	PUSH	BC
@@ -5936,33 +6108,27 @@ _floatToStr:
 	POP	BC
 	POP	BC
 	LEA	DE,IX+-9
-;  428	    os_RealToStr(text, &arg2, -1, 1, -1);
+;  442	    os_RealToStr(text, &arg2, -1, 1, -1);
 	LD	BC,16777215
 	PUSH	BC
 	LD	BC,1
 	PUSH	BC
-	LD	BC,9
-	LD	(IX+-21),HL	; spill
-	LD	HL,16777215
-	LD	(IX+-24),HL	; spill
-	LD	HL,(IX+-21)	; unspill
-	LD	(IX+-21),HL	; spill
-	LD	HL,(IX+-24)	; unspill
-	PUSH	HL
-	LD	HL,(IX+-21)	; unspill
-	PEA	IX+-9
-	LDIR	
-	LD	BC,(_text)
+	LD	BC,16777215
 	PUSH	BC
+	PEA	IX+-9
+	LD	BC,_text
+	PUSH	BC
+	LD	BC,9
+	LDIR	
 	CALL	_os_RealToStr
 	POP	BC
 	POP	BC
 	POP	BC
 	POP	BC
 	POP	BC
-;  429	    return text;
-	LD	HL,(_text)
-;  430	}
+;  443	    return text;
+	LD	HL,_text
+;  444	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -5970,47 +6136,87 @@ _floatToStr:
 
 ;**************************** _floatToStr ***************************
 ;Name                         Addr/Register   Size   Type
-;_text                               STATIC      3   variable
+;_text                               STATIC     15   variable
 ;_os_RealToStr                       IMPORT  -----   function
 ;_os_FloatToReal                     IMPORT  -----   function
 ;arg2                                  IX-9      9   variable
 ;arg                                   IX+6      4   parameter
 
 
-; Stack Frame Size: 36 (bytes)
+; Stack Frame Size: 30 (bytes)
 ;       Spill Code: 0 (instruction)
 
 
-;  431	//sets the size of the stack to 0
-;  432	void initRPN()
-;  433	{
+;  445	float strToFloat(char *arg, char *end)
+;  446	{
+_strToFloat:
+	LD	HL,-18
+	CALL	__frameset
+;  447		const real_t arg2 = os_StrToReal(arg,&end);
+	PEA	IX+9
+	LD	BC,(IX+6)
+	PUSH	BC
+	PEA	IX+-18
+	CALL	_os_StrToReal
+	POP	BC
+	POP	BC
+	POP	BC
+	LEA	DE,IX+-9
+;  448		return os_RealToFloat(&arg2);
+	PEA	IX+-9
+	LD	BC,9
+	LDIR	
+	CALL	_os_RealToFloat
+	POP	BC
+;  449	}
+	LD	SP,IX
+	POP	IX
+	RET	
+
+
+;**************************** _strToFloat ***************************
+;Name                         Addr/Register   Size   Type
+;_os_RealToFloat                     IMPORT  -----   function
+;_os_StrToReal                       IMPORT  -----   function
+;arg2                                  IX-9      9   variable
+;end                                   IX+9      3   parameter
+;arg                                   IX+6      3   parameter
+
+
+; Stack Frame Size: 30 (bytes)
+;       Spill Code: 0 (instruction)
+
+
+;  450	//sets the size of the stack to 0
+;  451	void initRPN()
+;  452	{
 _initRPN:
-;  434	    RPN.size = 0;
+;  453	    size = 0;
 	LD	BC,0
-	LD	(_RPN+96),BC
-;  435	}
+	LD	(_size),BC
+;  454	}
 	RET	
 
 
 ;**************************** _initRPN ***************************
 ;Name                         Addr/Register   Size   Type
-;_RPN                                STATIC     99   variable
+;_size                               STATIC      3   variable
 
 
 ; Stack Frame Size: 6 (bytes)
 ;       Spill Code: 0 (instruction)
 
 
-;  436	//pushes the argument to the stack
-;  437	void pushRPN(double val)
-;  438	{
+;  455	//pushes the argument to the stack
+;  456	void pushRPN(double v)
+;  457	{
 _pushRPN:
 	CALL	__frameset0
-;  439	    RPN.val[RPN.size++] = val;
-	LD	HL,(_RPN+96)
+;  458	    val[size++] = v;
+	LD	HL,(_size)
 	ADD	HL,HL
 	ADD	HL,HL
-	LD	BC,_RPN
+	LD	BC,_val
 	ADD	HL,BC
 	LD	BC,(IX+6)
 	LD	A,(IX+9)
@@ -6019,10 +6225,10 @@ _pushRPN:
 	INC	HL
 	INC	HL
 	LD	(HL),A
-	LD	BC,(_RPN+96)
+	LD	BC,(_size)
 	INC	BC
-	LD	(_RPN+96),BC
-;  440	}
+	LD	(_size),BC
+;  459	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -6030,54 +6236,56 @@ _pushRPN:
 
 ;**************************** _pushRPN ***************************
 ;Name                         Addr/Register   Size   Type
-;_RPN                                STATIC     99   variable
-;val                                   IX+6      4   parameter
+;_size                               STATIC      3   variable
+;_val                                STATIC     96   variable
+;v                                     IX+6      4   parameter
 
 
 ; Stack Frame Size: 12 (bytes)
 ;       Spill Code: 0 (instruction)
 
 
-;  441	//returns the value of the element on top of the stack and removes it
-;  442	double popRPN(void)
-;  443	{
+;  460	//returns the value of the element on top of the stack and removes it
+;  461	double popRPN(void)
+;  462	{
 _popRPN:
-;  444	    return RPN.val[--RPN.size];
-	LD	BC,(_RPN+96)
+;  463	    return val[--size];
+	LD	BC,(_size)
 	DEC	BC
-	LD	(_RPN+96),BC
-	LD	HL,(_RPN+96)
+	LD	(_size),BC
+	LD	HL,(_size)
 	ADD	HL,HL
 	ADD	HL,HL
-	LD	BC,_RPN
+	LD	BC,_val
 	ADD	HL,BC
 	LD	IY,HL
 	LD	HL,(IY)
 	LD	E,(IY+3)
-;  445	}
+;  464	}
 	RET	
 
 
 ;**************************** _popRPN ***************************
 ;Name                         Addr/Register   Size   Type
-;_RPN                                STATIC     99   variable
+;_val                                STATIC     96   variable
+;_size                               STATIC      3   variable
 
 
 ; Stack Frame Size: 6 (bytes)
 ;       Spill Code: 0 (instruction)
 
 
-;  446	
-;  447	double parseRPN(char *s, double X, double Y)
-;  448	{
+;  465	//THIS FINALLY WORKS AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+;  466	//actually it still doesn't work with constants lol
+;  467	double parseRPN(char *s, double X, double Y)
+;  468	{
 _parseRPN:
 	LD	HL,-8
 	CALL	__frameset
-;  449	    double a, b;
-;  450	    RPN.size = 0;
-	LD	BC,0
-	LD	(_RPN+96),BC
-;  451	    strcpy(c,s);
+;  469	    double a, b;
+;  470	    initRPN();
+	CALL	_initRPN
+;  471	    strcpy(c,s);
 	LD	BC,(IX+6)
 	PUSH	BC
 	LD	BC,_c
@@ -6085,13 +6293,12 @@ _parseRPN:
 	CALL	_strcpy
 	POP	BC
 	POP	BC
-;  452	    d = &c[0];
+;  472	    d = &c[0];
 	LD	BC,_c
 	LD	(_d),BC
-;  453	
-;  454	
-;  455	
-;  456	    for (d = strtok(d, w); d; d = strtok(0, w))
+;  473	
+;  474	
+;  475	    for (d = strtok(d, w); d; d = strtok(NULL, w)) {
 	LD	BC,(_w)
 	PUSH	BC
 	LD	BC,_c
@@ -6100,27 +6307,24 @@ _parseRPN:
 	POP	BC
 	POP	BC
 	LD	(_d),HL
-	JR	L_61
-L_59:
-;  457	    {
-;  458	        a = strtod(d, &e);
-	LD	BC,_e
+	JR	L_72
+L_70:
+;  476	        a = strToFloat(d,e);
+	LD	BC,(_e)
 	PUSH	BC
 	LD	BC,(_d)
 	PUSH	BC
-	CALL	_strtod
+	CALL	_strToFloat
 	POP	BC
 	POP	BC
 	LD	(IX+-4),HL
 	LD	(IX+-1),E
-;  459	        if (e > d)
+;  477	        if (e > d)       pushRPN(a);
 	LD	BC,(_e)
 	LD	HL,(_d)
 	OR	A,A
 	SBC	HL,BC
-	JR	NC,L_58
-;  460	        {
-;  461	            pushRPN(a);
+	JR	NC,L_69
 	LD	C,(IX+-1)
 	LD	B,0
 	PUSH	BC
@@ -6129,19 +6333,50 @@ L_59:
 	CALL	_pushRPN
 	POP	BC
 	POP	BC
-;  462	        }
-;  463	//        else if (*d == 'x')
-;  464	//        {
-;  465	//            pushRPN(X);
-;  466	//        }
-;  467	//        else if (*d == 'y')
-;  468	//        {
-;  469	//            pushRPN(Y);
-;  470	//        }
-;  471	#define binop(x) b = popRPN(), a = popRPN(), pushRPN(x) //pop, pop, perform operator, push
-;  472	        else if (*d == '+')
-	JR	L_60
-L_58:
+;  478	        else if (*d == 'x') pushRPN(X);
+	JR	L_71
+L_69:
+	LD	HL,(_d)
+	LD	A,(HL)
+	LD	B,A
+	SEXT	HL
+	LD	L,B
+	OR	A,A
+	LD	BC,120
+	SBC	HL,BC
+	JR	NZ,L_67
+	LD	C,(IX+12)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+9)
+	PUSH	BC
+	CALL	_pushRPN
+	POP	BC
+	POP	BC
+;  479	        else if (*d == 'y') pushRPN(Y);
+	JR	L_71
+L_67:
+	LD	HL,(_d)
+	LD	A,(HL)
+	LD	B,A
+	SEXT	HL
+	LD	L,B
+	OR	A,A
+	LD	BC,121
+	SBC	HL,BC
+	JR	NZ,L_65
+	LD	C,(IX+18)
+	LD	B,0
+	PUSH	BC
+	LD	BC,(IX+15)
+	PUSH	BC
+	CALL	_pushRPN
+	POP	BC
+	POP	BC
+;  480	#define binop(x)  b = popRPN(), a = popRPN(), pushRPN(x)
+;  481	        else if (*d == '+')    binop(a + b);
+	JR	L_71
+L_65:
 	LD	HL,(_d)
 	LD	A,(HL)
 	LD	B,A
@@ -6150,9 +6385,7 @@ L_58:
 	OR	A,A
 	LD	BC,43
 	SBC	HL,BC
-	JR	NZ,L_56
-;  473	        {
-;  474	            binop(a + b);
+	JR	NZ,L_63
 	CALL	_popRPN
 	LD	(IX+-8),HL
 	LD	(IX+-5),E
@@ -6172,10 +6405,9 @@ L_58:
 	CALL	_pushRPN
 	POP	BC
 	POP	BC
-;  475	        }
-;  476	        else if (*d == '-')
-	JR	L_60
-L_56:
+;  482	        else if (*d == '-')    binop(a - b);
+	JR	L_71
+L_63:
 	LD	HL,(_d)
 	LD	A,(HL)
 	LD	B,A
@@ -6184,9 +6416,7 @@ L_56:
 	OR	A,A
 	LD	BC,45
 	SBC	HL,BC
-	JR	NZ,L_54
-;  477	        {
-;  478	            binop(a - b);
+	JR	NZ,L_61
 	CALL	_popRPN
 	LD	(IX+-8),HL
 	LD	(IX+-5),E
@@ -6206,10 +6436,9 @@ L_56:
 	CALL	_pushRPN
 	POP	BC
 	POP	BC
-;  479	        }
-;  480	        else if (*d == '*')
-	JR	L_60
-L_54:
+;  483	        else if (*d == '*')    binop(a * b);
+	JR	L_71
+L_61:
 	LD	HL,(_d)
 	LD	A,(HL)
 	LD	B,A
@@ -6218,9 +6447,7 @@ L_54:
 	OR	A,A
 	LD	BC,42
 	SBC	HL,BC
-	JR	NZ,L_52
-;  481	        {
-;  482	            binop(a * b);
+	JR	NZ,L_59
 	CALL	_popRPN
 	LD	(IX+-8),HL
 	LD	(IX+-5),E
@@ -6240,10 +6467,9 @@ L_54:
 	CALL	_pushRPN
 	POP	BC
 	POP	BC
-;  483	        }
-;  484	        else if (*d == '/')
-	JR	L_60
-L_52:
+;  484	        else if (*d == '/')    binop(a / b);
+	JR	L_71
+L_59:
 	LD	HL,(_d)
 	LD	A,(HL)
 	LD	B,A
@@ -6252,9 +6478,7 @@ L_52:
 	OR	A,A
 	LD	BC,47
 	SBC	HL,BC
-	JR	NZ,L_50
-;  485	        {
-;  486	            binop(a / b);
+	JR	NZ,L_57
 	CALL	_popRPN
 	LD	(IX+-8),HL
 	LD	(IX+-5),E
@@ -6274,10 +6498,9 @@ L_52:
 	CALL	_pushRPN
 	POP	BC
 	POP	BC
-;  487	        }
-;  488	        else if (*d == '^')
-	JR	L_60
-L_50:
+;  485	        else if (*d == '^')    binop(pow(a, b));
+	JR	L_71
+L_57:
 	LD	HL,(_d)
 	LD	A,(HL)
 	LD	B,A
@@ -6286,9 +6509,7 @@ L_50:
 	OR	A,A
 	LD	BC,94
 	SBC	HL,BC
-	JR	NZ,L_60
-;  489	        {
-;  490	            binop(pow(a, b));
+	JR	NZ,L_71
 	CALL	_popRPN
 	LD	(IX+-8),HL
 	LD	(IX+-5),E
@@ -6317,10 +6538,9 @@ L_50:
 	CALL	_pushRPN
 	POP	BC
 	POP	BC
-;  491	        }
-;  492	#undef binop
-;  493	    }
-L_60:
+;  486	#undef binop
+;  487	    }
+L_71:
 	LD	BC,(_w)
 	PUSH	BC
 	LD	BC,0
@@ -6329,16 +6549,18 @@ L_60:
 	POP	BC
 	POP	BC
 	LD	(_d),HL
-L_61:
+L_72:
 	LD	BC,0
 	LD	HL,(_d)
 	OR	A,A
 	SBC	HL,BC
-	JR	NZ,L_59
-;  494	
-;  495	    return popRPN();
+	JR	NZ,L_70
+;  488	
+;  489	
+;  490	
+;  491	    return popRPN();
 	CALL	_popRPN
-;  496	}
+;  492	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -6350,13 +6572,12 @@ L_61:
 ;_popRPN                             IMPORT  -----   function
 ;_pushRPN                            IMPORT  -----   function
 ;_e                                  STATIC      3   variable
-;_strtod                             IMPORT  -----   function
 ;_w                                  STATIC      3   variable
 ;_strtok                             IMPORT  -----   function
 ;_d                                  STATIC      3   variable
 ;_c                                  STATIC     40   variable
 ;_strcpy                             IMPORT  -----   function
-;_RPN                                STATIC     99   variable
+;_initRPN                            IMPORT  -----   function
 ;b                                     IX-8      4   variable
 ;a                                     IX-4      4   variable
 ;Y                                    IX+15      4   parameter
@@ -6368,11 +6589,12 @@ L_61:
 ;       Spill Code: 0 (instruction)
 
 
-;  497	double pushOP(char op)
-;  498	{
+;  493	
+;  494	void pushOP(char op)
+;  495	{
 _pushOP:
 	CALL	__frameset0
-;  499	    OP.op[OP.size++] = op;
+;  496	    OP.op[OP.size++] = op;
 	LD	HL,(_OP+96)
 	LD	BC,_OP
 	ADD	HL,BC
@@ -6381,7 +6603,7 @@ _pushOP:
 	LD	BC,(_OP+96)
 	INC	BC
 	LD	(_OP+96),BC
-;  500	}
+;  497	}
 	LD	SP,IX
 	POP	IX
 	RET	
@@ -6397,10 +6619,10 @@ _pushOP:
 ;       Spill Code: 0 (instruction)
 
 
-;  501	double popOP(void)
-;  502	{
+;  498	double popOP(void)
+;  499	{
 _popOP:
-;  503	    return OP.op[--OP.size];
+;  500	    return OP.op[--OP.size];
 	LD	BC,(_OP+96)
 	DEC	BC
 	LD	(_OP+96),BC
@@ -6416,7 +6638,7 @@ _popOP:
 	CALL	__ltof
 	LD	E,A
 	LD	HL,BC
-;  504	}
+;  501	}
 	RET	
 
 
@@ -6429,99 +6651,22 @@ _popOP:
 ;       Spill Code: 0 (instruction)
 
 
-;  505	void shunt(void)
-;  506	{
+;  502	void shunt(void)
+;  503	{
 _shunt:
-	LD	HL,-12
-	CALL	__frameset
-;  507	    int i = 0;
-	LD	BC,0
-	LD	(IX+-6),BC
-;  508	    char **num = &text;
-	LD	BC,_text
-	LD	(IX+-9),BC
-;  509	    char *s = text;
-	LD	BC,(_text)
-	LD	(IX+-3),BC
-;  510	    char *t;
-;  511	    for(s = strtok(s, "+-*/^"); s; s = strtok(0,"+-*/^"))
-	LD	BC,L__56
-	PUSH	BC
-	LD	BC,(IX+-3)
-	PUSH	BC
-	CALL	_strtok
-	POP	BC
-	POP	BC
-	LD	(IX+-3),HL
-	JR	L_70
-L_68:
-;  512	    {
-;  513	        *num[i] = strtod(s, &t);
-	PEA	IX+-12
-	LD	BC,(IX+-3)
-	PUSH	BC
-	CALL	_strtod
-	POP	BC
-	POP	BC
-	LD	A,E
-	LD	BC,HL
-	CALL	__ftol
-	LD	HL,(IX+-6)
-	ADD	HL,HL
-	ADD	HL,HL
-	OR	A,A
-	LD	DE,(IX+-6)
-	SBC	HL,DE
-	LD	DE,(IX+-9)
-	ADD	HL,DE
-	LD	HL,(HL)
-	LD	(HL),C
-;  514	        i++;
-	LD	BC,(IX+-6)
-	INC	BC
-	LD	(IX+-6),BC
-	LD	BC,L__57
-	PUSH	BC
-	LD	BC,0
-	PUSH	BC
-	CALL	_strtok
-	POP	BC
-	POP	BC
-	LD	(IX+-3),HL
-;  515	    }
-L_70:
-	LD	BC,0
-	LD	HL,(IX+-3)
-	OR	A,A
-	SBC	HL,BC
-	JR	NZ,L_68
-	LD	SP,IX
-	POP	IX
+;  504	
+;  505	}
 	RET	
 
 
 ;**************************** _shunt ***************************
 ;Name                         Addr/Register   Size   Type
-;_strtod                             IMPORT  -----   function
-;_strtok                             IMPORT  -----   function
-;_text                               STATIC      3   variable
-;t                                    IX-12      3   variable
-;num                                   IX-9      3   variable
-;i                                     IX-6      3   variable
-;s                                     IX-3      3   variable
 
 
-; Stack Frame Size: 18 (bytes)
+; Stack Frame Size: 6 (bytes)
 ;       Spill Code: 0 (instruction)
 
 
-	SEGMENT STRSECT
-L__56:
-	DB	"+-*/^"
-	DB	0
-L__57:
-	DB	"+-*/^"
-	DB	0
 	XREF _gfx_GetStringWidth:ROM
 	XREF _gfx_SetTextFGColor:ROM
 	XREF _gfx_PrintStringXY:ROM
@@ -6540,18 +6685,18 @@ L__57:
 	XREF _kb_Scan:ROM
 	XREF _strtok:ROM
 	XREF _strcpy:ROM
-	XREF _strtod:ROM
+	XREF _memset:ROM
 	XREF _floor:ROM
 	XREF _pow:ROM
 	XREF _sin:ROM
 	XREF _cos:ROM
 	XREF _os_GetCSC:ROM
+	XREF _os_StrToReal:ROM
 	XREF _os_RealToStr:ROM
 	XREF _os_FloatToReal:ROM
+	XREF _os_RealToFloat:ROM
 	XREF _os_PutStrFull:ROM
 	XREF _os_SetCursorPos:ROM
-	XREF _memset_fast:ROM
-	XREF _prgm_CleanUp:ROM
 	XREF __irems:ROM
 	XREF __fadd:ROM
 	XREF __fsub:ROM
@@ -6560,6 +6705,7 @@ L__57:
 	XREF __fcmp:ROM
 	XREF __ftol:ROM
 	XREF __ltof:ROM
+	XREF __itol:ROM
 	XREF __ildix:ROM
 	XREF __istix:ROM
 	XREF __frameset0:ROM
@@ -6571,6 +6717,7 @@ L__57:
 	XDEF _popRPN
 	XDEF _pushRPN
 	XDEF _initRPN
+	XDEF _strToFloat
 	XDEF _floatToStr
 	XDEF _tokenize
 	XDEF _mod
@@ -6585,7 +6732,8 @@ L__57:
 	XDEF _printText
 	XDEF _main
 	XDEF _OP
-	XDEF _RPN
+	XDEF _size
+	XDEF _val
 	XDEF _w
 	XDEF _e
 	XDEF _d

@@ -60,37 +60,35 @@ double mod(double a, double b);
 
 char *tokenize(char *input);
 
+//global vars
 char text[15];
-
 float r;
-
 float aa;
 float bb;
 char c[40];
 char *d;
-char *e;
-char *w = " \t\n\r\f";
+char *e, *w = " \t\n\r\f";
 
 char *floatToStr(float arg);
-
-typedef struct stack
+typedef struct node
 {
-    float val[24];
-    int size;
-} stack;
+	double val;
+	struct Node* next;
+} node;
+
+double val[24];
+int size;
+
 typedef struct opStack
 {
     char op[96];
     int size;
 } opStack;
-stack RPN;
 opStack OP;
 
 void initRPN(void);
 
-void pushRPN(float val);
-
-float peekRPN(void);
+void pushRPN(double val);
 
 double popRPN(void);
 
@@ -147,7 +145,7 @@ void main(void)
     double d2;
 
     double aaa;
-    char equ[40] = " 5 6 5 + + ";
+    char equ[40] = " x x * y y * - ";
     uint8_t xxNodes[256][3]; //create the node arrays
     uint8_t xyNodes[256][3]; //why are they multidimensional? this is like 2am code so who knows
     uint8_t yxNodes[256][3];
@@ -164,8 +162,23 @@ void main(void)
     gfx_SetTextFGColor(gfx_black);
 
     floatToStr(5);
+
+    //testing purposes
+    for (t = 0; t < 1 && kb_Data[kb_group_1] != kb_2nd; t += .1)
+    {
+    	g = i;
+    	h = 8;
+    	floatToStr(g);
+    	gfx_PrintStringXY(text, 12, 21 + (9 * i));
+    	floatToStr(parseRPN(equ,g,h));
+    	gfx_PrintStringXY(text, 150, 21 + (9 * i));
+    	i++;
+    }
+
+
+
     gfx_PrintStringXY("R3 - 3D grapher for the TI84PCE", 12, 12); //print title text
-    gfx_PrintStringXY(text, 12, 21);
+//    gfx_PrintStringXY(text, 12, 21);
 
 //    gfx_PrintStringXY(text, 12, 30);
 
@@ -289,20 +302,20 @@ void main(void)
                 gfx_SetColor(gfx_green); //we want to graph in green
                 //equations for the grid/graph
                 g = 2 * s2 * ((floor(t * (n + 1)) / n) - .5);
-                //	_g = 2*s2*((floor((t+dx)*(n+1))/n)-.5); //unused for now
                 h = 2 * s2 * (mod(t * (n + 1), 1) - .5);
+                //	_g = 2*s2*((floor((t+dx)*(n+1))/n)-.5); //unused for now
                 //	_h = 2*s2*(mod((t+dx)*(n+1),1)-.5); //unused for now
 
 
 
                 xxNodes[i][0] = (uint8_t)(160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
-                                                      (z_x(a, b, c) * parseRPN(equ, g, h))))); //fill out the arrays of nodes
+                                                      (z_x(a, b, c) * parseRPN(equ,g, h) * .25)))); //fill out the arrays of nodes
                 xyNodes[i][0] = (uint8_t)(
-                        120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * parseRPN(equ, g, h)))));
+                        120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * parseRPN(equ,g, h) * .25))));
                 yxNodes[i][0] = (uint8_t)(
-                        160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) * parseRPN(equ, h, g)))));
+                        160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) * parseRPN(equ,h, g) * .25))));
                 yyNodes[i][0] = (uint8_t)(
-                        120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * parseRPN(equ, h, g)))));
+                        120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * parseRPN(equ,h, g) * .25))));
 
 
 
@@ -331,7 +344,8 @@ void main(void)
                     }
                 }
                 i++; //increment i
-
+                g = 2 * s2 * ((floor(t * (n + 1)) / n) - .5);
+                h = 2 * s2 * (mod(t * (n + 1), 1) - .5);
                 //really inefficient pixel plotter. slow af
                 //use this at your own risk
                 //	gfx_SetPixel( 160 + (s*((x_x(a,b,c)*g)+(y_x(a,b,c)*h)+(z_x(a,b,c)*function(g,h)))) ,   120-(s*((x_y(a,b,c)*g) + (y_y(a,b,c)*h) + (z_y(a,b,c)*function(g,h)))));
@@ -403,7 +417,7 @@ double z_y(double a, double b, double c)
 //soon i should have user input
 double function(double x, double y)
 {
-    return .25 * x * x - .25 * y * y;
+    return x-y;
 }
 
 //proper modulus function
@@ -428,73 +442,56 @@ char *floatToStr(float arg)
     os_RealToStr(text, &arg2, -1, 1, -1);
     return text;
 }
+float strToFloat(char *arg, char *end)
+{
+	const real_t arg2 = os_StrToReal(arg,&end);
+	return os_RealToFloat(&arg2);
+}
 //sets the size of the stack to 0
 void initRPN()
 {
-    RPN.size = 0;
+    size = 0;
 }
 //pushes the argument to the stack
-void pushRPN(double val)
+void pushRPN(double v)
 {
-    RPN.val[RPN.size++] = val;
+    val[size++] = v;
 }
 //returns the value of the element on top of the stack and removes it
 double popRPN(void)
 {
-    return RPN.val[--RPN.size];
+    return val[--size];
 }
-
+//THIS FINALLY WORKS AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+//actually it still doesn't work with constants lol
 double parseRPN(char *s, double X, double Y)
 {
     double a, b;
-    RPN.size = 0;
+    initRPN();
     strcpy(c,s);
     d = &c[0];
 
 
-
-    for (d = strtok(d, w); d; d = strtok(0, w))
-    {
-        a = strtod(d, &e);
-        if (e > d)
-        {
-            pushRPN(a);
-        }
-//        else if (*d == 'x')
-//        {
-//            pushRPN(X);
-//        }
-//        else if (*d == 'y')
-//        {
-//            pushRPN(Y);
-//        }
-#define binop(x) b = popRPN(), a = popRPN(), pushRPN(x) //pop, pop, perform operator, push
-        else if (*d == '+')
-        {
-            binop(a + b);
-        }
-        else if (*d == '-')
-        {
-            binop(a - b);
-        }
-        else if (*d == '*')
-        {
-            binop(a * b);
-        }
-        else if (*d == '/')
-        {
-            binop(a / b);
-        }
-        else if (*d == '^')
-        {
-            binop(pow(a, b));
-        }
+    for (d = strtok(d, w); d; d = strtok(NULL, w)) {
+        a = strToFloat(d,e);
+        if (e > d)       pushRPN(a);
+        else if (*d == 'x') pushRPN(X);
+        else if (*d == 'y') pushRPN(Y);
+#define binop(x)  b = popRPN(), a = popRPN(), pushRPN(x)
+        else if (*d == '+')    binop(a + b);
+        else if (*d == '-')    binop(a - b);
+        else if (*d == '*')    binop(a * b);
+        else if (*d == '/')    binop(a / b);
+        else if (*d == '^')    binop(pow(a, b));
 #undef binop
     }
 
+
+
     return popRPN();
 }
-double pushOP(char op)
+
+void pushOP(char op)
 {
     OP.op[OP.size++] = op;
 }
@@ -504,13 +501,5 @@ double popOP(void)
 }
 void shunt(void)
 {
-    int i = 0;
-    char **num = &text;
-    char *s = text;
-    char *t;
-    for(s = strtok(s, "+-*/^"); s; s = strtok(0,"+-*/^"))
-    {
-        *num[i] = strtod(s, &t);
-        i++;
-    }
+
 }

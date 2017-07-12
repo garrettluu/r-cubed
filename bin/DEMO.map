@@ -4,7 +4,7 @@ Copyright (C) 1999-2008 Zilog, Inc. All Rights Reserved
 
 LINK MAP:
 
-DATE:      Thu Jun 08 23:08:41 2017
+DATE:      Wed Jul 12 13:00:41 2017
 PROCESSOR: assembler
 FILES:     obj\cstartup.obj
            obj\libheader.obj
@@ -28,8 +28,8 @@ SPACE ALLOCATION:
 
 Space                     Base         Top      Size      Used    Unused
 ------------------ ----------- ----------- --------- --------- ---------
-RAM                   D:D031F6    D:D1DA15   300000H     329AH   2FCD66H
-                                          (  3145728     12954   3132774)
+RAM                   D:D031F6    D:D1DB40   300000H     33D1H   2FCC2FH
+                                          (  3145728     13265   3132463)
 
 
 SEGMENTS WITHIN SPACE:
@@ -43,194 +43,187 @@ RAM                Type                Base        Top         Size
 .keypadc           normal data            D:D1A8DC    D:D1A8DF        4h
 .keypadc_header    normal data            D:D1A8D2    D:D1A8DB        ah
 .launcher          normal data            D:D1A882    D:D1A8D1       50h
-.startup           normal data            D:D1A925    D:D1A962       3eh
-BSS                normal data            D:D031F6    D:D032F8      103h
-CODE               normal data            D:D1A963    D:D1D97C     301ah
-DATA               normal data            D:D1D97D    D:D1D9A1       25h
-TEXT               normal data            D:D1D9A2    D:D1DA15       74h
+.startup           normal data            D:D1A925    D:D1A975       51h
+BSS                normal data            D:D031F6    D:D03304      10fh
+CODE               normal data            D:D1A976    D:D1DAB3     313eh
+DATA               normal data            D:D1DAB4    D:D1DAD8       25h
+TEXT               normal data            D:D1DAD9    D:D1DB40       68h
 
 SEGMENTS WITHIN MODULES:
 ========================
 
-Module: ..\SRC\MAIN.C (File: main.obj) Version: 1:0 06/08/2017 23:08:41
+Module: ..\SRC\MAIN.C (File: main.obj) Version: 1:0 07/12/2017 13:00:40
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: BSS                               D:D031F6    D:D032F8      103h
-    Segment: CODE                              D:D1A963    D:D1D92B     2fc9h
-    Segment: DATA                              D:D1D99F    D:D1D9A1        3h
-    Segment: TEXT                              D:D1D9A2    D:D1D9C9       28h
-    Segment: TEXT (was STRSECT)                D:D1D9CA    D:D1DA15       4ch
+    Segment: BSS                               D:D031F6    D:D03304      10fh
+    Segment: CODE                              D:D1A976    D:D1DA83     310eh
+    Segment: DATA                              D:D1DAD6    D:D1DAD8        3h
+    Segment: TEXT                              D:D1DAD9    D:D1DB00       28h
+    Segment: TEXT (was STRSECT)                D:D1DB01    D:D1DB40       40h
 
 
-Module: C:\CEdev\lib\asm\cstartup.asm (File: cstartup.obj) Version: 1:0 04/30/2017 13:10:54
-
-    Name                                        Base        Top      Size
-    --------------------------------------- ----------- ----------- ---------
-    Segment: .header                           D:D1A87F    D:D1A881        3h
-    Segment: .startup                          D:D1A925    D:D1A962       3eh
-
-
-Module: C:\CEdev\lib\asm\graphx_header.asm (File: graphx_header.obj) Version: 1:0 06/08/2017 23:08:39
+Module: C:\CEdev\lib\asm\graphx_header.asm (File: graphx_header.obj) Version: 1:0 07/12/2017 13:00:41
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx_header                    D:D1A8E0    D:D1A8E8        9h
 
 
-Module: C:\CEdev\lib\asm\keypadc_header.asm (File: keypadc_header.obj) Version: 1:0 06/08/2017 23:08:39
+Module: C:\CEdev\lib\asm\keypadc_header.asm (File: keypadc_header.obj) Version: 1:0 07/12/2017 13:00:41
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .keypadc_header                   D:D1A8D2    D:D1A8DB        ah
 
 
-Module: C:\CEdev\lib\asm\libheader.asm (File: libheader.obj) Version: 1:0 06/08/2017 23:08:39
+Module: C:\CEdev\lib\asm\libheader.asm (File: libheader.obj) Version: 1:0 07/12/2017 13:00:41
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .launcher                         D:D1A882    D:D1A8D1       50h
-    Segment: DATA                              D:D1D97D    D:D1D99E       22h
+    Segment: DATA                              D:D1DAB4    D:D1DAD5       22h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\ce\memset_fast.src (Library: cce.lib) Version: 1:0 04/29/2017 14:56:07
-
-    Name                                        Base        Top      Size
-    --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1D92C    D:D1D942       17h
-
-
-Module: Z:\home\waltz\Documents\git\toolchain\src\ce\prgmcleanup.src (Library: cce.lib) Version: 1:0 04/29/2017 14:56:06
+Module: frameset.src (Library: cshared.lib) Version: 1:0 07/03/2017 16:16:57
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1D95C    D:D1D97C       21h
+    Segment: CODE                              D:D1DA8F    D:D1DA9C        eh
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_Begin.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:00
+Module: frameset0.src (Library: cshared.lib) Version: 1:0 07/03/2017 16:16:39
+
+    Name                                        Base        Top      Size
+    --------------------------------------- ----------- ----------- ---------
+    Segment: CODE                              D:D1DA84    D:D1DA8E        bh
+
+
+Module: gfx_Begin.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:21
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A919    D:D1A91C        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_BlitRectangle.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:55:59
+Module: gfx_BlitRectangle.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:33
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A8F5    D:D1A8F8        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_End.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:00
+Module: gfx_End.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:23
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A921    D:D1A924        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_FillRectangle.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:55:57
+Module: gfx_FillRectangle.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:39
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A901    D:D1A904        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_FillScreen.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:02
+Module: gfx_FillScreen.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:45
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A90D    D:D1A910        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_GetStringWidth.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:01
+Module: gfx_GetStringWidth.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:15
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A8F1    D:D1A8F4        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_HorizLine_NoClip.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:01
+Module: gfx_HorizLine_NoClip.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:20
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A911    D:D1A914        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_Line.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:03
+Module: gfx_Line.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:20
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A909    D:D1A90C        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_Line_NoClip.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:01
+Module: gfx_Line_NoClip.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:15
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A915    D:D1A918        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_PrintStringXY.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:01
+Module: gfx_PrintStringXY.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:19
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A8F9    D:D1A8FC        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SetColor.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:02
+Module: gfx_SetColor.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:13
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A91D    D:D1A920        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SetDraw.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:00
+Module: gfx_SetDraw.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:25
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A905    D:D1A908        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SetTextFGColor.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:55:58
+Module: gfx_SetTextFGColor.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:38
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A8ED    D:D1A8F0        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SwapDraw.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:56:00
+Module: gfx_SwapDraw.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:21
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A8E9    D:D1A8EC        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_VertLine_NoClip.src (Library: graphx.lib) Version: 1:0 04/29/2017 14:55:59
+Module: gfx_VertLine_NoClip.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:29
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx                           D:D1A8FD    D:D1A900        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\keypadc\kb_Scan.src (Library: keypadc.lib) Version: 1:0 04/29/2017 14:56:06
+Module: kb_Scan.src (Library: keypadc.lib) Version: 1:0 07/03/2017 16:16:05
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .keypadc                          D:D1A8DC    D:D1A8DF        4h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\std\shared\frameset.src (Library: cshared.lib) Version: 1:0 04/29/2017 14:56:20
+Module: memset.src (Library: cshared.lib) Version: 1:0 07/03/2017 16:17:27
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1D94E    D:D1D95B        eh
+    Segment: CODE                              D:D1DA9D    D:D1DAB3       17h
 
 
-Module: Z:\home\waltz\Documents\git\toolchain\src\std\shared\frameset0.src (Library: cshared.lib) Version: 1:0 04/29/2017 14:56:18
+Module: Z:\home\waltz\CEdev\lib\asm\cstartup.asm (File: cstartup.obj) Version: 1:0 05/30/2017 19:13:17
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1D943    D:D1D94D        bh
+    Segment: .header                           D:D1A87F    D:D1A881        3h
+    Segment: .startup                          D:D1A925    D:D1A975       51h
 
 EXTERNAL DEFINITIONS:
 =====================
@@ -238,9 +231,9 @@ EXTERNAL DEFINITIONS:
 Symbol                             Address   Module          Segment
 -------------------------------- ----------- --------------- --------------------------------
 __copy_code_to_ram                  00000000 (User Defined)
-__len_bss                           00000103 (User Defined)
+__len_bss                           0000010F (User Defined)
 __low_bss                           00D031F6 (User Defined)
-__heapbot                           00D032F9 (User Defined)
+__heapbot                           00D03305 (User Defined)
 __heaptop                           00D13FD6 (User Defined)
 __stack                             00D1A87E (User Defined)
 _boot_GetBootMajorVer               D:000080 tice            CODE                            
@@ -252,6 +245,7 @@ _strtok                             D:0000F4 strtok          CODE
 __ildix                             D:000148 ildix           CODE                            
 __irems                             D:00016C irems           CODE                            
 __istix                             D:00018C istix           CODE                            
+__itol                              D:000194 itol            CODE                            
 __fadd                              D:000270 fpadd           CODE                            
 __fcmp                              D:000274 fpcmp           CODE                            
 __fdiv                              D:000278 fpdiv           CODE                            
@@ -276,11 +270,16 @@ _boot_SetTime                       D:0005B4 tice            CODE
 _boot_IsAfterNoon                   D:0005C8 tice            CODE                            
 _asm_MoveDown                       D:0207F4 tice            CODE                            
 _asm_MoveUp                         D:020800 tice            CODE                            
+_asm_ClrLCDFull                     D:020808 tice            CODE                            
+_asm_ClrLCD                         D:02080C tice            CODE                            
+_asm_ClrTxtShd                      D:020818 tice            CODE                            
 _asm_HomeUp                         D:020828 tice            CODE                            
 _asm_RunIndicOn                     D:020844 tice            CODE                            
 _asm_RunIndicOff                    D:020848 tice            CODE                            
+_asm_DelRes                         D:020E5C tice            CODE                            
 _asm_DisableAPD                     D:021134 tice            CODE                            
 _asm_EnableAPD                      D:021138 tice            CODE                            
+_asm_DrawStatusBar                  D:021A3C tice            CODE                            
 _os_PushErrorHandler                D:021C78 tice            CODE                            
 _os_PopErrorHandler                 D:021C7C tice            CODE                            
 _os_ThrowError                      D:021C80 tice            CODE                            
@@ -357,7 +356,6 @@ _os_MemChk                          D:021FF0 tice            CODE
 _asm_ArcChk                         D:022040 tice            CODE                            
 _os_SetTimer2                       D:022080 tice            CODE                            
 _os_DisableTimer2                   D:022084 tice            CODE                            
-_strtod                             D:0220E0 strtod          CODE                            
 _floor                              D:0220F4 floor           CODE                            
 _pow                                D:0220F8 pow             CODE                            
 _sin                                D:022118 sin             CODE                            
@@ -368,15 +366,17 @@ _os_FontDrawTransText               D:022178 tice            CODE
 _os_CreateAppVar                    D:022184 tice            CODE                            
 _errno                              D:D008DC cstartup        CODE                            
 _text                               D:D031F6 MAIN            BSS                             
-_r                                  D:D031F9 MAIN            BSS                             
-_aa                                 D:D031FD MAIN            BSS                             
-_bb                                 D:D03201 MAIN            BSS                             
-_c                                  D:D03205 MAIN            BSS                             
-_d                                  D:D0322D MAIN            BSS                             
-_e                                  D:D03230 MAIN            BSS                             
-_RPN                                D:D03233 MAIN            BSS                             
-_OP                                 D:D03296 MAIN            BSS                             
+_r                                  D:D03205 MAIN            BSS                             
+_aa                                 D:D03209 MAIN            BSS                             
+_bb                                 D:D0320D MAIN            BSS                             
+_c                                  D:D03211 MAIN            BSS                             
+_d                                  D:D03239 MAIN            BSS                             
+_e                                  D:D0323C MAIN            BSS                             
+_val                                D:D0323F MAIN            BSS                             
+_size                               D:D0329F MAIN            BSS                             
+_OP                                 D:D032A2 MAIN            BSS                             
 _init                               D:D1A882 cstartup        .header                         
+__program_description_end           D:D1A882 cstartup        .header                         
 _kb_Scan                            D:D1A8DC kb_Scan         .keypadc                        
 _gfx_SwapDraw                       D:D1A8E9 gfx_SwapDraw    .graphx                         
 _gfx_SetTextFGColor                 D:D1A8ED gfx_SetTextFGCo .graphx                         
@@ -394,34 +394,34 @@ _gfx_Begin                          D:D1A919 gfx_Begin       .graphx
 _gfx_SetColor                       D:D1A91D gfx_SetColor    .graphx                         
 _gfx_End                            D:D1A921 gfx_End         .graphx                         
 __exit                              D:D1A94E cstartup        .startup                        
-_exit                               D:D1A95F cstartup        .startup                        
-_main                               D:D1A963 MAIN            CODE                            
-_printText                          D:D1D13A MAIN            CODE                            
-_fillScreen                         D:D1D15C MAIN            CODE                            
-_x_x                                D:D1D17E MAIN            CODE                            
-_x_y                                D:D1D22F MAIN            CODE                            
-_y_x                                D:D1D2E0 MAIN            CODE                            
-_y_y                                D:D1D39D MAIN            CODE                            
-_z_x                                D:D1D44E MAIN            CODE                            
-_z_y                                D:D1D49F MAIN            CODE                            
-_function                           D:D1D4E4 MAIN            CODE                            
-_mod                                D:D1D53B MAIN            CODE                            
-_tokenize                           D:D1D57E MAIN            CODE                            
-_floatToStr                         D:D1D59D MAIN            CODE                            
-_initRPN                            D:D1D5FE MAIN            CODE                            
-_pushRPN                            D:D1D608 MAIN            CODE                            
-_popRPN                             D:D1D633 MAIN            CODE                            
-_parseRPN                           D:D1D653 MAIN            CODE                            
-_pushOP                             D:D1D863 MAIN            CODE                            
-_popOP                              D:D1D884 MAIN            CODE                            
-_shunt                              D:D1D8A9 MAIN            CODE                            
-_memset_fast                        D:D1D92C memset_fast     CODE                            
-__frameset0                         D:D1D943 frameset0       CODE                            
-__frameset                          D:D1D94E frameset        CODE                            
-_prgm_CleanUp                       D:D1D95C prgmcleanup     CODE                            
-_w                                  D:D1D99F MAIN            DATA                            
+_exit                               D:D1A972 cstartup        .startup                        
+_main                               D:D1A976 MAIN            CODE                            
+_printText                          D:D1D2E9 MAIN            CODE                            
+_fillScreen                         D:D1D30B MAIN            CODE                            
+_x_x                                D:D1D32D MAIN            CODE                            
+_x_y                                D:D1D3DE MAIN            CODE                            
+_y_x                                D:D1D48F MAIN            CODE                            
+_y_y                                D:D1D54C MAIN            CODE                            
+_z_x                                D:D1D5FD MAIN            CODE                            
+_z_y                                D:D1D64E MAIN            CODE                            
+_function                           D:D1D693 MAIN            CODE                            
+_mod                                D:D1D6AF MAIN            CODE                            
+_tokenize                           D:D1D6F2 MAIN            CODE                            
+_floatToStr                         D:D1D711 MAIN            CODE                            
+_strToFloat                         D:D1D75F MAIN            CODE                            
+_initRPN                            D:D1D78E MAIN            CODE                            
+_pushRPN                            D:D1D798 MAIN            CODE                            
+_popRPN                             D:D1D7C3 MAIN            CODE                            
+_parseRPN                           D:D1D7E3 MAIN            CODE                            
+_pushOP                             D:D1DA3D MAIN            CODE                            
+_popOP                              D:D1DA5E MAIN            CODE                            
+_shunt                              D:D1DA83 MAIN            CODE                            
+__frameset0                         D:D1DA84 frameset0       CODE                            
+__frameset                          D:D1DA8F frameset        CODE                            
+_memset                             D:D1DA9D memset          CODE                            
+_w                                  D:D1DAD6 MAIN            DATA                            
 
-183 external symbol(s).
+190 external symbol(s).
 
 SYMBOL CROSS REFERENCE:
 =======================
@@ -430,156 +430,163 @@ Name                              Use         Module
 __copy_code_to_ram                Defined     LINKER
 __len_bss                         Defined     LINKER
 __low_bss                         Defined     LINKER
-                                  Referenced  C:\CEdev\lib\asm\cstartup.asm
+                                  Referenced  Z:\home\waltz\CEdev\lib\asm\cstartup.asm
 __heapbot                         Defined     LINKER
 __heaptop                         Defined     LINKER
 __stack                           Defined     LINKER
-_boot_GetBootMajorVer             Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_GetHardwareVer              Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_GetBootMinorVer             Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_DebugPrintf                 Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_strcpy                           Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\strcpy.src
+_boot_GetBootMajorVer             Defined     tice.src
+_boot_GetHardwareVer              Defined     tice.src
+_boot_GetBootMinorVer             Defined     tice.src
+_boot_DebugPrintf                 Defined     tice.src
+_strcpy                           Defined     strcpy.src
                                   Referenced  ..\SRC\MAIN.C
-_strtok                           Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\strtok.src
+_strtok                           Defined     strtok.src
                                   Referenced  ..\SRC\MAIN.C
-__ildix                           Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\ildix.src
+__ildix                           Defined     ildix.src
                                   Referenced  ..\SRC\MAIN.C
-__irems                           Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\irems.src
+__irems                           Defined     irems.src
                                   Referenced  ..\SRC\MAIN.C
-__istix                           Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\istix.src
+__istix                           Defined     istix.src
                                   Referenced  ..\SRC\MAIN.C
-__fadd                            Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\fpadd.src
+__itol                            Defined     itol.src
                                   Referenced  ..\SRC\MAIN.C
-__fcmp                            Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\fpcmp.src
+__fadd                            Defined     fpadd.src
                                   Referenced  ..\SRC\MAIN.C
-__fdiv                            Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\fpdiv.src
+__fcmp                            Defined     fpcmp.src
                                   Referenced  ..\SRC\MAIN.C
-__ftol                            Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\fpftol.src
+__fdiv                            Defined     fpdiv.src
                                   Referenced  ..\SRC\MAIN.C
-__ltof                            Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\fpltof.src
+__ftol                            Defined     fpftol.src
                                   Referenced  ..\SRC\MAIN.C
-__fmul                            Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\fpmul.src
+__ltof                            Defined     fpltof.src
                                   Referenced  ..\SRC\MAIN.C
-__fsub                            Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\fpsub.src
+__fmul                            Defined     fpmul.src
                                   Referenced  ..\SRC\MAIN.C
-_boot_ClearVRAM                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_TurnOff                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_NewLine                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_Set6MHzMode                 Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_Set48MHzMode                Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_Set6MHzModeI                Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_Set48MHzModeI               Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_GetBatteryStatus            Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_WaitShort                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_CheckOnPressed              Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_SetDate                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_GetDate                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_GetTime                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_SetTime                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_boot_IsAfterNoon                 Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_asm_MoveDown                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_asm_MoveUp                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_asm_HomeUp                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_asm_RunIndicOn                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_asm_RunIndicOff                  Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_asm_DisableAPD                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_asm_EnableAPD                    Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_PushErrorHandler              Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_PopErrorHandler               Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_ThrowError                    Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealCopy                      Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealAsinRad                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealAcosRad                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealAtanRad                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealAdd                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_CplxSquare                    Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealCompare                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealCosRad                    Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealRadToDeg                  Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealDiv                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealExp                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealFloor                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealToStr                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
+__fsub                            Defined     fpsub.src
                                   Referenced  ..\SRC\MAIN.C
-_os_RealFrac                      Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealGcd                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealRoundInt                  Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealLcm                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealLog                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealMax                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealMin                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealMul                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealNcr                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealNeg                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealNpr                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealPow                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealDegToRad                  Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealRandInt                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealInv                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealMod                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealRound                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealSinRad                    Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealSqrt                      Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealSub                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealTanRad                    Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_StrToReal                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealInt                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_SetFlagBits                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_ResetFlagBits                 Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_TestFlagBits                  Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_SetFlagByte                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_GetFlagByte                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_GetCursorPos                  Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_PutStrFull                    Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
+_boot_ClearVRAM                   Defined     tice.src
+_boot_TurnOff                     Defined     tice.src
+_boot_NewLine                     Defined     tice.src
+_boot_Set6MHzMode                 Defined     tice.src
+_boot_Set48MHzMode                Defined     tice.src
+_boot_Set6MHzModeI                Defined     tice.src
+_boot_Set48MHzModeI               Defined     tice.src
+_boot_GetBatteryStatus            Defined     tice.src
+_boot_WaitShort                   Defined     tice.src
+_boot_CheckOnPressed              Defined     tice.src
+_boot_SetDate                     Defined     tice.src
+_boot_GetDate                     Defined     tice.src
+_boot_GetTime                     Defined     tice.src
+_boot_SetTime                     Defined     tice.src
+_boot_IsAfterNoon                 Defined     tice.src
+_asm_MoveDown                     Defined     tice.src
+_asm_MoveUp                       Defined     tice.src
+_asm_ClrLCDFull                   Defined     tice.src
+_asm_ClrLCD                       Defined     tice.src
+_asm_ClrTxtShd                    Defined     tice.src
+_asm_HomeUp                       Defined     tice.src
+_asm_RunIndicOn                   Defined     tice.src
+_asm_RunIndicOff                  Defined     tice.src
+_asm_DelRes                       Defined     tice.src
+_asm_DisableAPD                   Defined     tice.src
+_asm_EnableAPD                    Defined     tice.src
+_asm_DrawStatusBar                Defined     tice.src
+_os_PushErrorHandler              Defined     tice.src
+_os_PopErrorHandler               Defined     tice.src
+_os_ThrowError                    Defined     tice.src
+_os_RealCopy                      Defined     tice.src
+_os_RealAsinRad                   Defined     tice.src
+_os_RealAcosRad                   Defined     tice.src
+_os_RealAtanRad                   Defined     tice.src
+_os_RealAdd                       Defined     tice.src
+_os_CplxSquare                    Defined     tice.src
+_os_RealCompare                   Defined     tice.src
+_os_RealCosRad                    Defined     tice.src
+_os_RealRadToDeg                  Defined     tice.src
+_os_RealDiv                       Defined     tice.src
+_os_RealExp                       Defined     tice.src
+_os_RealFloor                     Defined     tice.src
+_os_RealToStr                     Defined     tice.src
                                   Referenced  ..\SRC\MAIN.C
-_os_PutStrLine                    Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_SetCursorPos                  Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
+_os_RealFrac                      Defined     tice.src
+_os_RealGcd                       Defined     tice.src
+_os_RealRoundInt                  Defined     tice.src
+_os_RealLcm                       Defined     tice.src
+_os_RealLog                       Defined     tice.src
+_os_RealMax                       Defined     tice.src
+_os_RealMin                       Defined     tice.src
+_os_RealMul                       Defined     tice.src
+_os_RealNcr                       Defined     tice.src
+_os_RealNeg                       Defined     tice.src
+_os_RealNpr                       Defined     tice.src
+_os_RealPow                       Defined     tice.src
+_os_RealDegToRad                  Defined     tice.src
+_os_RealRandInt                   Defined     tice.src
+_os_RealInv                       Defined     tice.src
+_os_RealMod                       Defined     tice.src
+_os_RealRound                     Defined     tice.src
+_os_RealSinRad                    Defined     tice.src
+_os_RealSqrt                      Defined     tice.src
+_os_RealSub                       Defined     tice.src
+_os_RealTanRad                    Defined     tice.src
+_os_StrToReal                     Defined     tice.src
                                   Referenced  ..\SRC\MAIN.C
-_os_GetKey                        Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_GetCSC                        Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
+_os_RealInt                       Defined     tice.src
+_os_SetFlagBits                   Defined     tice.src
+_os_ResetFlagBits                 Defined     tice.src
+_os_TestFlagBits                  Defined     tice.src
+_os_SetFlagByte                   Defined     tice.src
+_os_GetFlagByte                   Defined     tice.src
+_os_GetCursorPos                  Defined     tice.src
+_os_PutStrFull                    Defined     tice.src
                                   Referenced  ..\SRC\MAIN.C
-_os_AppInit                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_DisableCursor                 Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_EnableCursor                  Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_FontDrawText                  Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_FontGetHeight                 Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_FontGetWidth                  Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_InitDrawing                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_SetDrawBGColor                Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_SetDrawFGColor                Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_FontSelect                    Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_SetTimer1                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_DisableTimer1                 Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_GetSystemStats                Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_GetDrawBGColor                Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_GetDrawFGColor                Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_FontGetID                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_RealToInt24                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_Int24ToReal                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_ForceCmdNoChar                Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_GetSymTablePtr                Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_NextSymEntry                  Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_ChkFindSym                    Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_MemChk                        Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_asm_ArcChk                       Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_SetTimer2                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_DisableTimer2                 Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_strtod                           Defined     Z:\home\waltz\Documents\git\toolchain\src\std\linked\strtod.src
+_os_PutStrLine                    Defined     tice.src
+_os_SetCursorPos                  Defined     tice.src
                                   Referenced  ..\SRC\MAIN.C
-_floor                            Defined     Z:\home\waltz\Documents\git\toolchain\src\std\linked\floor.src
+_os_GetKey                        Defined     tice.src
+_os_GetCSC                        Defined     tice.src
                                   Referenced  ..\SRC\MAIN.C
-_pow                              Defined     Z:\home\waltz\Documents\git\toolchain\src\std\linked\pow.src
+_os_AppInit                       Defined     tice.src
+_os_DisableCursor                 Defined     tice.src
+_os_EnableCursor                  Defined     tice.src
+_os_FontDrawText                  Defined     tice.src
+_os_FontGetHeight                 Defined     tice.src
+_os_FontGetWidth                  Defined     tice.src
+_os_InitDrawing                   Defined     tice.src
+_os_SetDrawBGColor                Defined     tice.src
+_os_SetDrawFGColor                Defined     tice.src
+_os_FontSelect                    Defined     tice.src
+_os_SetTimer1                     Defined     tice.src
+_os_DisableTimer1                 Defined     tice.src
+_os_GetSystemStats                Defined     tice.src
+_os_GetDrawBGColor                Defined     tice.src
+_os_GetDrawFGColor                Defined     tice.src
+_os_FontGetID                     Defined     tice.src
+_os_RealToInt24                   Defined     tice.src
+_os_Int24ToReal                   Defined     tice.src
+_os_ForceCmdNoChar                Defined     tice.src
+_os_GetSymTablePtr                Defined     tice.src
+_os_NextSymEntry                  Defined     tice.src
+_os_ChkFindSym                    Defined     tice.src
+_os_MemChk                        Defined     tice.src
+_asm_ArcChk                       Defined     tice.src
+_os_SetTimer2                     Defined     tice.src
+_os_DisableTimer2                 Defined     tice.src
+_floor                            Defined     floor.src
                                   Referenced  ..\SRC\MAIN.C
-_sin                              Defined     Z:\home\waltz\Documents\git\toolchain\src\std\linked\sin.src
+_pow                              Defined     pow.src
                                   Referenced  ..\SRC\MAIN.C
-_cos                              Defined     Z:\home\waltz\Documents\git\toolchain\src\std\linked\cos.src
+_sin                              Defined     sin.src
                                   Referenced  ..\SRC\MAIN.C
-_os_FloatToReal                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
+_cos                              Defined     cos.src
                                   Referenced  ..\SRC\MAIN.C
-_os_RealToFloat                   Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_FontDrawTransText             Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_os_CreateAppVar                  Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\tice.src
-_errno                            Defined     C:\CEdev\lib\asm\cstartup.asm
+_os_FloatToReal                   Defined     tice.src
+                                  Referenced  ..\SRC\MAIN.C
+_os_RealToFloat                   Defined     tice.src
+                                  Referenced  ..\SRC\MAIN.C
+_os_FontDrawTransText             Defined     tice.src
+_os_CreateAppVar                  Defined     tice.src
+_errno                            Defined     Z:\home\waltz\CEdev\lib\asm\cstartup.asm
 _text                             Defined     ..\SRC\MAIN.C
 _r                                Defined     ..\SRC\MAIN.C
 _aa                               Defined     ..\SRC\MAIN.C
@@ -587,45 +594,47 @@ _bb                               Defined     ..\SRC\MAIN.C
 _c                                Defined     ..\SRC\MAIN.C
 _d                                Defined     ..\SRC\MAIN.C
 _e                                Defined     ..\SRC\MAIN.C
-_RPN                              Defined     ..\SRC\MAIN.C
+_val                              Defined     ..\SRC\MAIN.C
+_size                             Defined     ..\SRC\MAIN.C
 _OP                               Defined     ..\SRC\MAIN.C
-_init                             Defined     C:\CEdev\lib\asm\cstartup.asm
-_kb_Scan                          Defined     Z:\home\waltz\Documents\git\toolchain\src\keypadc\kb_Scan.src
+_init                             Defined     Z:\home\waltz\CEdev\lib\asm\cstartup.asm
+__program_description_end         Defined     Z:\home\waltz\CEdev\lib\asm\cstartup.asm
+_kb_Scan                          Defined     kb_Scan.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_SwapDraw                     Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SwapDraw.src
+_gfx_SwapDraw                     Defined     gfx_SwapDraw.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_SetTextFGColor               Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SetTextFGColor.src
+_gfx_SetTextFGColor               Defined     gfx_SetTextFGColor.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_GetStringWidth               Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_GetStringWidth.src
+_gfx_GetStringWidth               Defined     gfx_GetStringWidth.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_BlitRectangle                Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_BlitRectangle.src
+_gfx_BlitRectangle                Defined     gfx_BlitRectangle.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_PrintStringXY                Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_PrintStringXY.src
+_gfx_PrintStringXY                Defined     gfx_PrintStringXY.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_VertLine_NoClip              Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_VertLine_NoClip.src
+_gfx_VertLine_NoClip              Defined     gfx_VertLine_NoClip.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_FillRectangle                Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_FillRectangle.src
+_gfx_FillRectangle                Defined     gfx_FillRectangle.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_SetDraw                      Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SetDraw.src
+_gfx_SetDraw                      Defined     gfx_SetDraw.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_Line                         Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_Line.src
+_gfx_Line                         Defined     gfx_Line.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_FillScreen                   Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_FillScreen.src
+_gfx_FillScreen                   Defined     gfx_FillScreen.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_HorizLine_NoClip             Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_HorizLine_NoClip.src
+_gfx_HorizLine_NoClip             Defined     gfx_HorizLine_NoClip.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_Line_NoClip                  Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_Line_NoClip.src
+_gfx_Line_NoClip                  Defined     gfx_Line_NoClip.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_Begin                        Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_Begin.src
+_gfx_Begin                        Defined     gfx_Begin.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_SetColor                     Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_SetColor.src
+_gfx_SetColor                     Defined     gfx_SetColor.src
                                   Referenced  ..\SRC\MAIN.C
-_gfx_End                          Defined     Z:\home\waltz\Documents\git\toolchain\src\graphx\gfx_End.src
+_gfx_End                          Defined     gfx_End.src
                                   Referenced  ..\SRC\MAIN.C
-__exit                            Defined     C:\CEdev\lib\asm\cstartup.asm
-_exit                             Defined     C:\CEdev\lib\asm\cstartup.asm
+__exit                            Defined     Z:\home\waltz\CEdev\lib\asm\cstartup.asm
+_exit                             Defined     Z:\home\waltz\CEdev\lib\asm\cstartup.asm
 _main                             Defined     ..\SRC\MAIN.C
-                                  Referenced  C:\CEdev\lib\asm\cstartup.asm
+                                  Referenced  Z:\home\waltz\CEdev\lib\asm\cstartup.asm
 _printText                        Defined     ..\SRC\MAIN.C
 _fillScreen                       Defined     ..\SRC\MAIN.C
 _x_x                              Defined     ..\SRC\MAIN.C
@@ -638,6 +647,7 @@ _function                         Defined     ..\SRC\MAIN.C
 _mod                              Defined     ..\SRC\MAIN.C
 _tokenize                         Defined     ..\SRC\MAIN.C
 _floatToStr                       Defined     ..\SRC\MAIN.C
+_strToFloat                       Defined     ..\SRC\MAIN.C
 _initRPN                          Defined     ..\SRC\MAIN.C
 _pushRPN                          Defined     ..\SRC\MAIN.C
 _popRPN                           Defined     ..\SRC\MAIN.C
@@ -645,19 +655,17 @@ _parseRPN                         Defined     ..\SRC\MAIN.C
 _pushOP                           Defined     ..\SRC\MAIN.C
 _popOP                            Defined     ..\SRC\MAIN.C
 _shunt                            Defined     ..\SRC\MAIN.C
-_memset_fast                      Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\memset_fast.src
+__frameset0                       Defined     frameset0.src
                                   Referenced  ..\SRC\MAIN.C
-__frameset0                       Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\frameset0.src
+__frameset                        Defined     frameset.src
                                   Referenced  ..\SRC\MAIN.C
-__frameset                        Defined     Z:\home\waltz\Documents\git\toolchain\src\std\shared\frameset.src
-                                  Referenced  ..\SRC\MAIN.C
-_prgm_CleanUp                     Defined     Z:\home\waltz\Documents\git\toolchain\src\ce\prgmcleanup.src
+_memset                           Defined     memset.src
                                   Referenced  ..\SRC\MAIN.C
 _w                                Defined     ..\SRC\MAIN.C
 
 OUTPUT CHECKSUM
 ===============
-bin/DEMO.hex         1B4230
+bin/DEMO.hex         1BD654
 
 
 
