@@ -67,8 +67,8 @@ float aa;
 float bb;
 char c[40];
 char *d;
-char *e, *w = " \t\n\r\f";
-
+char *e, *w = " ";
+char *tokens;
 char *floatToStr(float arg);
 typedef struct node
 {
@@ -113,16 +113,19 @@ void main(void)
 
     //initialize strings
     const char *graph = "Graphing...";
+    const char *menuTitle = "Main Menu";
 
     //declare variables and some constants
     //uint8_t is the best thing ever
     //it's basically an unsigned 8bit integer that takes up less space than an int
     //but functions the same as an int for all intents and purposes (except negatives)
-    uint8_t sel = 1; //used for menu selections
+    int8_t sel = 0; //used for menu selections
     bool kill = false; //used to terminate program
-    bool lol = false; //used to initialize graphx
-    bool lol2 = false; //used to plot points
+    bool firstLoopIsComplete = false; //used to initialize graphx
+    bool graphingIsComplete = false; //used to plot points
     bool lol3 = false; //used to draw the perspective changer
+    bool main = true;
+    bool keyPressed = false;
     uint8_t mode = 0; //used for menu selections
     int i = 0;
     double t; //parameter for plotting points
@@ -145,7 +148,9 @@ void main(void)
     double d2;
 
     double aaa;
-    char equ[40] = " x x * y y * - ";
+    char equtest[40] = " x x * y y * - 4 /";
+    char equ[40] = "x 2 ^ y 2 ^ - .75 *";
+    char *test = "shrek is love";
     uint8_t xxNodes[256][3]; //create the node arrays
     uint8_t xyNodes[256][3]; //why are they multidimensional? this is like 2am code so who knows
     uint8_t yxNodes[256][3];
@@ -164,42 +169,102 @@ void main(void)
     floatToStr(5);
 
     //testing purposes
-    for (t = 0; t < 1 && kb_Data[kb_group_1] != kb_2nd; t += .1)
-    {
-    	g = i;
-    	h = 8;
-    	floatToStr(g);
-    	gfx_PrintStringXY(text, 12, 21 + (9 * i));
-    	floatToStr(parseRPN(equ,g,h));
-    	gfx_PrintStringXY(text, 150, 21 + (9 * i));
-    	i++;
-    }
+//    for (t = 0; t < 1 && kb_Data[kb_group_1] != kb_2nd; t += .1)
+//    for(tokens = strtok(equtest, " "); tokens != NULL; tokens = strtok(NULL," "))
+//    {
+//    	g = 2*strtod(tokens,&e);
+//    	h = 8;
+//    	floatToStr(g);
+//    	if (e > tokens && *tokens != '+') gfx_PrintStringXY(text, 12, 21 + (9 * i));
+////    	floatToStr(parseRPN(equ,g,h));
+//    	gfx_PrintStringXY(tokens, 150, 21 + (9 * i));
+//    	i++;
+//    }
 
 
 
-    gfx_PrintStringXY("R3 - 3D grapher for the TI84PCE", 12, 12); //print title text
+    gfx_PrintStringXY("R3 - 3D grapher for the TI84PCE ", 12, 12); //print title text
 //    gfx_PrintStringXY(text, 12, 21);
 
 //    gfx_PrintStringXY(text, 12, 30);
 
     gfx_SwapDraw(); //update the screen
 
+
     while (!os_GetCSC()); //wait for input
+    gfx_FillScreen(gfx_white);
+    gfx_SwapDraw();
 
     prgm_CleanUp(); //clear the screen
-
-
+//
+//    do
+//    {
+//    	boot_WaitShort();
+//    	kb_Scan();
+//    	if (sel > 1) sel = 1;
+//    	else if (sel < 0) sel = 0;
+//    	if (!firstLoopIsComplete)
+//    	{
+//    		gfx_SetDraw(gfx_buffer);
+//    		gfx_FillScreen(gfx_white);
+//    		gfx_PrintStringXY(menuTitle, 160-gfx_GetStringWidth(menuTitle),12);
+//    		gfx_PrintStringXY("1. Enter equation ", 12, 21);
+//    		gfx_PrintStringXY("2. Graph", 12, 30);
+//    		gfx_PrintStringXY("*",4,21+(sel*9));
+//    		gfx_SwapDraw();
+//    		firstLoopIsComplete = true;
+//    	}
+//
+//    	key7 = kb_Data[kb_group_7]; //load the group 7 registers
+//    	switch(key7)
+//    	{
+//    		case kb_Up:
+//    			--sel;
+//    			if (sel > 1) sel = 1;
+//    			    	else if (sel < 0) sel = 0;
+//    			firstLoopIsComplete = false;
+//    			keyPressed = true;
+//    			key7 = kb_Left;
+//    			break;
+//    		case kb_Down:
+//    			++sel;
+//    			if (sel > 1) sel = 1;
+//    			    	else if (sel < 0) sel = 0;
+//    			gfx_SwapDraw();
+//    			firstLoopIsComplete = false;
+//    			key7 = kb_Left;
+//				break;
+//    		default:
+//    			break;
+//    	}
+//    	if (key6 == kb_Enter && main)
+//    	{
+//    		main = false;
+//    		if (sel == 0)
+//    		{
+//    			kill = true;
+//    		}
+//    		else if (sel == 1)
+//    		{
+//
+//    		}
+//    	}
+//    	if (sel > 1) sel = 1;
+//    	else if (sel < 0) sel = 0;
+//
+//    }
+//    while(main && kb_Data[kb_group_1] != kb_2nd);
     do
     {
         //THIS IS WHERE THE FUN BEGINS
-        if (!lol)
+        if (!firstLoopIsComplete)
         {
             i = 0;
             //the stuff here will only happen the first time this loop is run
             gfx_FillScreen(gfx_white); //fill the screen with white
             gfx_PrintStringXY(graph, 320 - gfx_GetStringWidth(graph), 230);
             gfx_BlitRectangle(gfx_buffer, 320 - gfx_GetStringWidth(graph), 230, gfx_GetStringWidth(graph), 10);
-            lol = true; //make sure these aren't run again
+            firstLoopIsComplete = true; //make sure these aren't run again
         }
         kb_Scan(); //scan the keyboard for inputs
         key7 = kb_Data[kb_group_7]; //load the group 7 registers
@@ -267,11 +332,11 @@ void main(void)
             a = a1;
             b = b1;
             c = c1;
-            lol2 = false;
+            graphingIsComplete = false;
         }
 
 
-        if (!lol2)
+        if (!graphingIsComplete)
         {
             //basically, this is the for-loop that controls graphing
             //initial condition: t=0
@@ -285,7 +350,7 @@ void main(void)
                             (int) (120 - (x_y(a, b, c) *
                                           100))); //we're casting doubles to ints here, but i think that is redundant since gfx_Line converts doubles automatically
             gfx_PrintStringXY("x", (int) (160 + (x_x(a, b, c) * 100)),
-                              (int) (120 - (x_y(a, b, c) * 100))); //axis labels
+                              (int) (120 - (x_y(a, b, c) * 100))); //axis labels, according to the right-hand rule
             //y-axis
             gfx_Line_NoClip(160 - (y_x(a, b, c) * 100), 120 + (y_y(a, b, c) * 100), (int) (160 + (y_x(a, b, c) * 100)),
                             (int) (120 - (y_y(a, b, c) *
@@ -354,11 +419,11 @@ void main(void)
 
             }
             gfx_SwapDraw();
-            lol2 = true; // this is so that it only plots the function once
+            graphingIsComplete = true; // this is so that it only plots the function once
             lol3 = false;
         }
 
-    } while (kb_Data[kb_group_1] != kb_2nd);
+    } while (!kill && kb_Data[kb_group_1] != kb_2nd);
     gfx_End(); //stop the gfx
     prgm_CleanUp(); //clear the screen
     //end of program
@@ -463,31 +528,51 @@ double popRPN(void)
     return val[--size];
 }
 //THIS FINALLY WORKS AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-//actually it still doesn't work with constants lol
-double parseRPN(char *s, double X, double Y)
+double parseRPN(char *s, double X, double Y) //THE REVERSE POLISH NOTATION PARSER IS HERE
 {
-    double a, b;
-    initRPN();
-    strcpy(c,s);
-    d = &c[0];
-
-
-    for (d = strtok(d, w); d; d = strtok(NULL, w)) {
-        a = strToFloat(d,e);
-        if (e > d)       pushRPN(a);
-        else if (*d == 'x') pushRPN(X);
-        else if (*d == 'y') pushRPN(Y);
-#define binop(x)  b = popRPN(), a = popRPN(), pushRPN(x)
-        else if (*d == '+')    binop(a + b);
-        else if (*d == '-')    binop(a - b);
-        else if (*d == '*')    binop(a * b);
-        else if (*d == '/')    binop(a / b);
-        else if (*d == '^')    binop(pow(a, b));
+    double a, b; //declare my vars
+    initRPN(); //set stack size to 0;
+    strcpy(c,s); //copy the string s to c, so we can mess with c all we want without damaging s
+    for(tokens = strtok(c,w); tokens != NULL; tokens = strtok(NULL,w)) //chop c into tokens, separated by spaces as delims
+    {
+    	//for each token we will:
+    	a = strtod(tokens,&e); //convert it to a number and store it in a
+        if (e > tokens && *tokens != '+' && *tokens != '-' && *tokens != '/' && *tokens != '*' && *tokens != '^' && *tokens != 'x' && *tokens != 'y' ) //stupid
+        {
+        	pushRPN(a); //push a to the stack if the token was an actual number
+        }
+        else if (*tokens == 'x')
+        {
+        	pushRPN(X); //push the value of argument X to stack
+        }
+        else if (*tokens == 'y')
+        {
+        	pushRPN(Y); //push argument Y to stack
+        }
+	#define binop(x)  b = popRPN(), a = popRPN(), pushRPN(x) //pop, pop, push
+        else if (*tokens == '+')
+        {
+        	binop(a + b);
+        }
+        else if (*tokens == '-')
+        {
+        	binop(a - b);
+        }
+        else if (*tokens == '*')
+        {
+        	binop(a * b);
+        }
+        else if (*tokens == '/')
+        {
+        	binop(a / b);
+        }
+        else if (*tokens == '^')
+        {
+        	binop(pow(a, b));
+        }
 #undef binop
+
     }
-
-
-
     return popRPN();
 }
 
