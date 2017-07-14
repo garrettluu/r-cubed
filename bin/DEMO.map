@@ -4,7 +4,7 @@ Copyright (C) 1999-2008 Zilog, Inc. All Rights Reserved
 
 LINK MAP:
 
-DATE:      Wed Jul 12 18:53:34 2017
+DATE:      Thu Jul 13 23:37:19 2017
 PROCESSOR: assembler
 FILES:     obj\cstartup.obj
            obj\libheader.obj
@@ -28,8 +28,8 @@ SPACE ALLOCATION:
 
 Space                     Base         Top      Size      Used    Unused
 ------------------ ----------- ----------- --------- --------- ---------
-RAM                   D:D031F6    D:D1DB01   300000H     3395H   2FCC6BH
-                                          (  3145728     13205   3132523)
+RAM                   D:D031F6    D:D1E578   300000H     3E0CH   2FC1F4H
+                                          (  3145728     15884   3129844)
 
 
 SEGMENTS WITHIN SPACE:
@@ -45,58 +45,65 @@ RAM                Type                Base        Top         Size
 .launcher          normal data            D:D1A882    D:D1A8D1       50h
 .startup           normal data            D:D1A925    D:D1A975       51h
 BSS                normal data            D:D031F6    D:D03307      112h
-CODE               normal data            D:D1A976    D:D1DA4F     30dah
-DATA               normal data            D:D1DA50    D:D1DA74       25h
-TEXT               normal data            D:D1DA75    D:D1DB01       8dh
+CODE               normal data            D:D1A976    D:D1E46C     3af7h
+DATA               normal data            D:D1E46D    D:D1E491       25h
+TEXT               normal data            D:D1E492    D:D1E578       e7h
 
 SEGMENTS WITHIN MODULES:
 ========================
 
-Module: ..\SRC\MAIN.C (File: main.obj) Version: 1:0 07/12/2017 18:53:33
+Module: ..\SRC\MAIN.C (File: main.obj) Version: 1:0 07/13/2017 23:37:18
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: BSS                               D:D031F6    D:D03307      112h
-    Segment: CODE                              D:D1A976    D:D1DA1F     30aah
-    Segment: DATA                              D:D1DA72    D:D1DA74        3h
-    Segment: TEXT                              D:D1DA75    D:D1DAC4       50h
-    Segment: TEXT (was STRSECT)                D:D1DAC5    D:D1DB01       3dh
+    Segment: CODE                              D:D1A976    D:D1E3F3     3a7eh
+    Segment: DATA                              D:D1E48F    D:D1E491        3h
+    Segment: TEXT                              D:D1E492    D:D1E4B9       28h
+    Segment: TEXT (was STRSECT)                D:D1E4BA    D:D1E578       bfh
 
 
-Module: C:\CEdev\lib\asm\graphx_header.asm (File: graphx_header.obj) Version: 1:0 07/12/2017 18:53:34
+Module: C:\CEdev\lib\asm\graphx_header.asm (File: graphx_header.obj) Version: 1:0 07/13/2017 23:37:15
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx_header                    D:D1A8E0    D:D1A8E8        9h
 
 
-Module: C:\CEdev\lib\asm\keypadc_header.asm (File: keypadc_header.obj) Version: 1:0 07/12/2017 18:53:34
+Module: C:\CEdev\lib\asm\keypadc_header.asm (File: keypadc_header.obj) Version: 1:0 07/13/2017 23:37:15
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .keypadc_header                   D:D1A8D2    D:D1A8DB        ah
 
 
-Module: C:\CEdev\lib\asm\libheader.asm (File: libheader.obj) Version: 1:0 07/12/2017 18:53:34
+Module: C:\CEdev\lib\asm\libheader.asm (File: libheader.obj) Version: 1:0 07/13/2017 23:37:15
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .launcher                         D:D1A882    D:D1A8D1       50h
-    Segment: DATA                              D:D1DA50    D:D1DA71       22h
+    Segment: DATA                              D:D1E46D    D:D1E48E       22h
+
+
+Module: delay.src (Library: cce.lib) Version: 1:0 07/03/2017 16:16:07
+
+    Name                                        Base        Top      Size
+    --------------------------------------- ----------- ----------- ---------
+    Segment: CODE                              D:D1E40D    D:D1E455       49h
 
 
 Module: frameset.src (Library: cshared.lib) Version: 1:0 07/03/2017 16:16:57
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1DA2B    D:D1DA38        eh
+    Segment: CODE                              D:D1E3FF    D:D1E40C        eh
 
 
 Module: frameset0.src (Library: cshared.lib) Version: 1:0 07/03/2017 16:16:39
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1DA20    D:D1DA2A        bh
+    Segment: CODE                              D:D1E3F4    D:D1E3FE        bh
 
 
 Module: gfx_Begin.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:21
@@ -215,7 +222,7 @@ Module: memset.src (Library: cshared.lib) Version: 1:0 07/03/2017 16:17:27
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1DA39    D:D1DA4F       17h
+    Segment: CODE                              D:D1E456    D:D1E46C       17h
 
 
 Module: Z:\home\waltz\CEdev\lib\asm\cstartup.asm (File: cstartup.obj) Version: 1:0 05/30/2017 19:13:17
@@ -240,6 +247,8 @@ _boot_GetBootMajorVer               D:000080 tice            CODE
 _boot_GetHardwareVer                D:000084 tice            CODE                            
 _boot_GetBootMinorVer               D:00008C tice            CODE                            
 _boot_DebugPrintf                   D:0000B4 tice            CODE                            
+_strcat                             D:0000C0 strcat          CODE                            
+_strcmp                             D:0000C8 strcmp          CODE                            
 _strcpy                             D:0000CC strcpy          CODE                            
 _strtok                             D:0000F4 strtok          CODE                            
 __ildix                             D:000148 ildix           CODE                            
@@ -360,6 +369,7 @@ _floor                              D:0220F4 floor           CODE
 _pow                                D:0220F8 pow             CODE                            
 _sin                                D:022118 sin             CODE                            
 _cos                                D:02211C cos             CODE                            
+_tan                                D:022120 tan             CODE                            
 _os_FloatToReal                     D:022170 tice            CODE                            
 _os_RealToFloat                     D:022174 tice            CODE                            
 _os_FontDrawTransText               D:022178 tice            CODE                            
@@ -397,32 +407,33 @@ _gfx_End                            D:D1A921 gfx_End         .graphx
 __exit                              D:D1A94E cstartup        .startup                        
 _exit                               D:D1A972 cstartup        .startup                        
 _main                               D:D1A976 MAIN            CODE                            
-_printText                          D:D1D206 MAIN            CODE                            
-_fillScreen                         D:D1D228 MAIN            CODE                            
-_x_x                                D:D1D24A MAIN            CODE                            
-_x_y                                D:D1D2FB MAIN            CODE                            
-_y_x                                D:D1D3AC MAIN            CODE                            
-_y_y                                D:D1D469 MAIN            CODE                            
-_z_x                                D:D1D51A MAIN            CODE                            
-_z_y                                D:D1D56B MAIN            CODE                            
-_function                           D:D1D5B0 MAIN            CODE                            
-_mod                                D:D1D5CC MAIN            CODE                            
-_tokenize                           D:D1D60F MAIN            CODE                            
-_floatToStr                         D:D1D62E MAIN            CODE                            
-_strToFloat                         D:D1D67C MAIN            CODE                            
-_initRPN                            D:D1D6AB MAIN            CODE                            
-_pushRPN                            D:D1D6B5 MAIN            CODE                            
-_popRPN                             D:D1D6E0 MAIN            CODE                            
-_parseRPN                           D:D1D700 MAIN            CODE                            
-_pushOP                             D:D1D9D9 MAIN            CODE                            
-_popOP                              D:D1D9FA MAIN            CODE                            
-_shunt                              D:D1DA1F MAIN            CODE                            
-__frameset0                         D:D1DA20 frameset0       CODE                            
-__frameset                          D:D1DA2B frameset        CODE                            
-_memset                             D:D1DA39 memset          CODE                            
-_w                                  D:D1DA72 MAIN            DATA                            
+_printText                          D:D1DA8B MAIN            CODE                            
+_fillScreen                         D:D1DAAD MAIN            CODE                            
+_x_x                                D:D1DACF MAIN            CODE                            
+_x_y                                D:D1DB80 MAIN            CODE                            
+_y_x                                D:D1DC31 MAIN            CODE                            
+_y_y                                D:D1DCEE MAIN            CODE                            
+_z_x                                D:D1DD9F MAIN            CODE                            
+_z_y                                D:D1DDF0 MAIN            CODE                            
+_function                           D:D1DE35 MAIN            CODE                            
+_mod                                D:D1DE51 MAIN            CODE                            
+_tokenize                           D:D1DE94 MAIN            CODE                            
+_floatToStr                         D:D1DEB3 MAIN            CODE                            
+_strToFloat                         D:D1DF01 MAIN            CODE                            
+_initRPN                            D:D1DF30 MAIN            CODE                            
+_pushRPN                            D:D1DF3A MAIN            CODE                            
+_popRPN                             D:D1DF65 MAIN            CODE                            
+_parseRPN                           D:D1DF85 MAIN            CODE                            
+_pushOP                             D:D1E3AD MAIN            CODE                            
+_popOP                              D:D1E3CE MAIN            CODE                            
+_shunt                              D:D1E3F3 MAIN            CODE                            
+__frameset0                         D:D1E3F4 frameset0       CODE                            
+__frameset                          D:D1E3FF frameset        CODE                            
+_delay                              D:D1E40D delay           CODE                            
+_memset                             D:D1E456 memset          CODE                            
+_w                                  D:D1E48F MAIN            DATA                            
 
-191 external symbol(s).
+195 external symbol(s).
 
 SYMBOL CROSS REFERENCE:
 =======================
@@ -439,6 +450,10 @@ _boot_GetBootMajorVer             Defined     tice.src
 _boot_GetHardwareVer              Defined     tice.src
 _boot_GetBootMinorVer             Defined     tice.src
 _boot_DebugPrintf                 Defined     tice.src
+_strcat                           Defined     strcat.src
+                                  Referenced  ..\SRC\MAIN.C
+_strcmp                           Defined     strcmp.src
+                                  Referenced  ..\SRC\MAIN.C
 _strcpy                           Defined     strcpy.src
                                   Referenced  ..\SRC\MAIN.C
 _strtok                           Defined     strtok.src
@@ -581,6 +596,8 @@ _sin                              Defined     sin.src
                                   Referenced  ..\SRC\MAIN.C
 _cos                              Defined     cos.src
                                   Referenced  ..\SRC\MAIN.C
+_tan                              Defined     tan.src
+                                  Referenced  ..\SRC\MAIN.C
 _os_FloatToReal                   Defined     tice.src
                                   Referenced  ..\SRC\MAIN.C
 _os_RealToFloat                   Defined     tice.src
@@ -661,13 +678,15 @@ __frameset0                       Defined     frameset0.src
                                   Referenced  ..\SRC\MAIN.C
 __frameset                        Defined     frameset.src
                                   Referenced  ..\SRC\MAIN.C
+_delay                            Defined     delay.src
+                                  Referenced  ..\SRC\MAIN.C
 _memset                           Defined     memset.src
                                   Referenced  ..\SRC\MAIN.C
 _w                                Defined     ..\SRC\MAIN.C
 
 OUTPUT CHECKSUM
 ===============
-bin/DEMO.hex         1B5D3C
+bin/DEMO.hex         215794
 
 
 
