@@ -4,7 +4,7 @@ Copyright (C) 1999-2008 Zilog, Inc. All Rights Reserved
 
 LINK MAP:
 
-DATE:      Thu Jul 13 23:37:19 2017
+DATE:      Sun Jul 16 10:46:51 2017
 PROCESSOR: assembler
 FILES:     obj\cstartup.obj
            obj\libheader.obj
@@ -28,8 +28,8 @@ SPACE ALLOCATION:
 
 Space                     Base         Top      Size      Used    Unused
 ------------------ ----------- ----------- --------- --------- ---------
-RAM                   D:D031F6    D:D1E578   300000H     3E0CH   2FC1F4H
-                                          (  3145728     15884   3129844)
+RAM                   D:D031F6    D:D1E911   300000H     41ABH   2FBE55H
+                                          (  3145728     16811   3128917)
 
 
 SEGMENTS WITHIN SPACE:
@@ -44,66 +44,74 @@ RAM                Type                Base        Top         Size
 .keypadc_header    normal data            D:D1A8D2    D:D1A8DB        ah
 .launcher          normal data            D:D1A882    D:D1A8D1       50h
 .startup           normal data            D:D1A925    D:D1A975       51h
-BSS                normal data            D:D031F6    D:D03307      112h
-CODE               normal data            D:D1A976    D:D1E46C     3af7h
-DATA               normal data            D:D1E46D    D:D1E491       25h
-TEXT               normal data            D:D1E492    D:D1E578       e7h
+BSS                normal data            D:D031F6    D:D0330D      118h
+CODE               normal data            D:D1A976    D:D1E7F8     3e83h
+DATA               normal data            D:D1E7F9    D:D1E820       28h
+TEXT               normal data            D:D1E821    D:D1E911       f1h
 
 SEGMENTS WITHIN MODULES:
 ========================
 
-Module: ..\SRC\MAIN.C (File: main.obj) Version: 1:0 07/13/2017 23:37:18
+Module: ..\SRC\MAIN.C (File: main.obj) Version: 1:0 07/16/2017 10:46:50
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: BSS                               D:D031F6    D:D03307      112h
-    Segment: CODE                              D:D1A976    D:D1E3F3     3a7eh
-    Segment: DATA                              D:D1E48F    D:D1E491        3h
-    Segment: TEXT                              D:D1E492    D:D1E4B9       28h
-    Segment: TEXT (was STRSECT)                D:D1E4BA    D:D1E578       bfh
+    Segment: CODE                              D:D1A976    D:D1E681     3d0ch
+    Segment: DATA                              D:D1E81B    D:D1E81D        3h
+    Segment: TEXT                              D:D1E821    D:D1E848       28h
+    Segment: TEXT (was STRSECT)                D:D1E849    D:D1E911       c9h
 
 
-Module: C:\CEdev\lib\asm\graphx_header.asm (File: graphx_header.obj) Version: 1:0 07/13/2017 23:37:15
+Module: .\MALLOC.C (Library: cshared.lib) Version: 1:0 07/03/2017 16:17:40
+
+    Name                                        Base        Top      Size
+    --------------------------------------- ----------- ----------- ---------
+    Segment: BSS                               D:D03308    D:D0330D        6h
+    Segment: CODE                              D:D1E69B    D:D1E773       d9h
+
+
+Module: C:\CEdev\lib\asm\graphx_header.asm (File: graphx_header.obj) Version: 1:0 07/16/2017 10:46:51
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .graphx_header                    D:D1A8E0    D:D1A8E8        9h
 
 
-Module: C:\CEdev\lib\asm\keypadc_header.asm (File: keypadc_header.obj) Version: 1:0 07/13/2017 23:37:15
+Module: C:\CEdev\lib\asm\keypadc_header.asm (File: keypadc_header.obj) Version: 1:0 07/16/2017 10:46:50
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .keypadc_header                   D:D1A8D2    D:D1A8DB        ah
 
 
-Module: C:\CEdev\lib\asm\libheader.asm (File: libheader.obj) Version: 1:0 07/13/2017 23:37:15
+Module: C:\CEdev\lib\asm\libheader.asm (File: libheader.obj) Version: 1:0 07/16/2017 10:46:51
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
     Segment: .launcher                         D:D1A882    D:D1A8D1       50h
-    Segment: DATA                              D:D1E46D    D:D1E48E       22h
+    Segment: DATA                              D:D1E7F9    D:D1E81A       22h
 
 
 Module: delay.src (Library: cce.lib) Version: 1:0 07/03/2017 16:16:07
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1E40D    D:D1E455       49h
+    Segment: CODE                              D:D1E799    D:D1E7E1       49h
 
 
 Module: frameset.src (Library: cshared.lib) Version: 1:0 07/03/2017 16:16:57
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1E3FF    D:D1E40C        eh
+    Segment: CODE                              D:D1E68D    D:D1E69A        eh
 
 
 Module: frameset0.src (Library: cshared.lib) Version: 1:0 07/03/2017 16:16:39
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1E3F4    D:D1E3FE        bh
+    Segment: CODE                              D:D1E682    D:D1E68C        bh
 
 
 Module: gfx_Begin.src (Library: graphx.lib) Version: 1:0 07/03/2017 16:15:21
@@ -211,6 +219,13 @@ Module: gfx_VertLine_NoClip.src (Library: graphx.lib) Version: 1:0 07/03/2017 16
     Segment: .graphx                           D:D1A8FD    D:D1A900        4h
 
 
+Module: icmpzero.src (Library: cshared.lib) Version: 1:0 07/03/2017 16:17:15
+
+    Name                                        Base        Top      Size
+    --------------------------------------- ----------- ----------- ---------
+    Segment: CODE                              D:D1E794    D:D1E798        5h
+
+
 Module: kb_Scan.src (Library: keypadc.lib) Version: 1:0 07/03/2017 16:16:05
 
     Name                                        Base        Top      Size
@@ -222,7 +237,15 @@ Module: memset.src (Library: cshared.lib) Version: 1:0 07/03/2017 16:17:27
 
     Name                                        Base        Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: CODE                              D:D1E456    D:D1E46C       17h
+    Segment: CODE                              D:D1E7E2    D:D1E7F8       17h
+
+
+Module: sbrk.src (Library: cshared.lib) Version: 1:0 07/03/2017 16:17:02
+
+    Name                                        Base        Top      Size
+    --------------------------------------- ----------- ----------- ---------
+    Segment: CODE                              D:D1E774    D:D1E793       20h
+    Segment: DATA                              D:D1E81E    D:D1E820        3h
 
 
 Module: Z:\home\waltz\CEdev\lib\asm\cstartup.asm (File: cstartup.obj) Version: 1:0 05/30/2017 19:13:17
@@ -238,9 +261,9 @@ EXTERNAL DEFINITIONS:
 Symbol                             Address   Module          Segment
 -------------------------------- ----------- --------------- --------------------------------
 __copy_code_to_ram                  00000000 (User Defined)
-__len_bss                           00000112 (User Defined)
+__len_bss                           00000118 (User Defined)
 __low_bss                           00D031F6 (User Defined)
-__heapbot                           00D03308 (User Defined)
+__heapbot                           00D0330E (User Defined)
 __heaptop                           00D13FD6 (User Defined)
 __stack                             00D1A87E (User Defined)
 _boot_GetBootMajorVer               D:000080 tice            CODE                            
@@ -386,6 +409,7 @@ _tokens                             D:D0323F MAIN            BSS
 _val                                D:D03242 MAIN            BSS                             
 _size                               D:D032A2 MAIN            BSS                             
 _OP                                 D:D032A5 MAIN            BSS                             
+__alloc_base                        D:D03308 MALLOC          BSS                             
 _init                               D:D1A882 cstartup        .header                         
 __program_description_end           D:D1A882 cstartup        .header                         
 _kb_Scan                            D:D1A8DC kb_Scan         .keypadc                        
@@ -407,33 +431,37 @@ _gfx_End                            D:D1A921 gfx_End         .graphx
 __exit                              D:D1A94E cstartup        .startup                        
 _exit                               D:D1A972 cstartup        .startup                        
 _main                               D:D1A976 MAIN            CODE                            
-_printText                          D:D1DA8B MAIN            CODE                            
-_fillScreen                         D:D1DAAD MAIN            CODE                            
-_x_x                                D:D1DACF MAIN            CODE                            
-_x_y                                D:D1DB80 MAIN            CODE                            
-_y_x                                D:D1DC31 MAIN            CODE                            
-_y_y                                D:D1DCEE MAIN            CODE                            
-_z_x                                D:D1DD9F MAIN            CODE                            
-_z_y                                D:D1DDF0 MAIN            CODE                            
-_function                           D:D1DE35 MAIN            CODE                            
-_mod                                D:D1DE51 MAIN            CODE                            
-_tokenize                           D:D1DE94 MAIN            CODE                            
-_floatToStr                         D:D1DEB3 MAIN            CODE                            
-_strToFloat                         D:D1DF01 MAIN            CODE                            
-_initRPN                            D:D1DF30 MAIN            CODE                            
-_pushRPN                            D:D1DF3A MAIN            CODE                            
-_popRPN                             D:D1DF65 MAIN            CODE                            
-_parseRPN                           D:D1DF85 MAIN            CODE                            
-_pushOP                             D:D1E3AD MAIN            CODE                            
-_popOP                              D:D1E3CE MAIN            CODE                            
-_shunt                              D:D1E3F3 MAIN            CODE                            
-__frameset0                         D:D1E3F4 frameset0       CODE                            
-__frameset                          D:D1E3FF frameset        CODE                            
-_delay                              D:D1E40D delay           CODE                            
-_memset                             D:D1E456 memset          CODE                            
-_w                                  D:D1E48F MAIN            DATA                            
+_printText                          D:D1DCE4 MAIN            CODE                            
+_fillScreen                         D:D1DD06 MAIN            CODE                            
+_x_x                                D:D1DD28 MAIN            CODE                            
+_x_y                                D:D1DDD9 MAIN            CODE                            
+_y_x                                D:D1DE8A MAIN            CODE                            
+_y_y                                D:D1DF47 MAIN            CODE                            
+_z_x                                D:D1DFF8 MAIN            CODE                            
+_z_y                                D:D1E049 MAIN            CODE                            
+_function                           D:D1E08E MAIN            CODE                            
+_mod                                D:D1E0AA MAIN            CODE                            
+_tokenize                           D:D1E0ED MAIN            CODE                            
+_floatToStr                         D:D1E10C MAIN            CODE                            
+_strToFloat                         D:D1E15A MAIN            CODE                            
+_initRPN                            D:D1E189 MAIN            CODE                            
+_pushRPN                            D:D1E193 MAIN            CODE                            
+_popRPN                             D:D1E1BE MAIN            CODE                            
+_parseRPN                           D:D1E1DE MAIN            CODE                            
+_pushOP                             D:D1E606 MAIN            CODE                            
+_popOP                              D:D1E627 MAIN            CODE                            
+_shunt                              D:D1E64C MAIN            CODE                            
+_backspace                          D:D1E64D MAIN            CODE                            
+__frameset0                         D:D1E682 frameset0       CODE                            
+__frameset                          D:D1E68D frameset        CODE                            
+_malloc                             D:D1E6CC MALLOC          CODE                            
+__s_sbrk                            D:D1E774 sbrk            CODE                            
+__icmpzero                          D:D1E794 icmpzero        CODE                            
+_delay                              D:D1E799 delay           CODE                            
+_memset                             D:D1E7E2 memset          CODE                            
+_w                                  D:D1E81B MAIN            DATA                            
 
-195 external symbol(s).
+200 external symbol(s).
 
 SYMBOL CROSS REFERENCE:
 =======================
@@ -444,6 +472,7 @@ __len_bss                         Defined     LINKER
 __low_bss                         Defined     LINKER
                                   Referenced  Z:\home\waltz\CEdev\lib\asm\cstartup.asm
 __heapbot                         Defined     LINKER
+                                  Referenced  sbrk.src
 __heaptop                         Defined     LINKER
 __stack                           Defined     LINKER
 _boot_GetBootMajorVer             Defined     tice.src
@@ -616,6 +645,7 @@ _tokens                           Defined     ..\SRC\MAIN.C
 _val                              Defined     ..\SRC\MAIN.C
 _size                             Defined     ..\SRC\MAIN.C
 _OP                               Defined     ..\SRC\MAIN.C
+__alloc_base                      Defined     .\MALLOC.C
 _init                             Defined     Z:\home\waltz\CEdev\lib\asm\cstartup.asm
 __program_description_end         Defined     Z:\home\waltz\CEdev\lib\asm\cstartup.asm
 _kb_Scan                          Defined     kb_Scan.src
@@ -674,10 +704,18 @@ _parseRPN                         Defined     ..\SRC\MAIN.C
 _pushOP                           Defined     ..\SRC\MAIN.C
 _popOP                            Defined     ..\SRC\MAIN.C
 _shunt                            Defined     ..\SRC\MAIN.C
+_backspace                        Defined     ..\SRC\MAIN.C
 __frameset0                       Defined     frameset0.src
                                   Referenced  ..\SRC\MAIN.C
 __frameset                        Defined     frameset.src
                                   Referenced  ..\SRC\MAIN.C
+                                  Referenced  .\MALLOC.C
+_malloc                           Defined     .\MALLOC.C
+                                  Referenced  ..\SRC\MAIN.C
+__s_sbrk                          Defined     sbrk.src
+                                  Referenced  .\MALLOC.C
+__icmpzero                        Defined     icmpzero.src
+                                  Referenced  .\MALLOC.C
 _delay                            Defined     delay.src
                                   Referenced  ..\SRC\MAIN.C
 _memset                           Defined     memset.src
@@ -686,7 +724,7 @@ _w                                Defined     ..\SRC\MAIN.C
 
 OUTPUT CHECKSUM
 ===============
-bin/DEMO.hex         215794
+bin/DEMO.hex         23E0D6
 
 
 

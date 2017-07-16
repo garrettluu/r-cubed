@@ -1,10 +1,9 @@
-/*	The AMAZING 3D grapher for the TI84+CE
+/*	The (not) AMAZING 3D grapher for the TI84+CE
  *by gluu
  *currently in a very early alpha stage
- *like, i don't even have user input
  *DONE! Mathematical expression parser
  *DONE! better way of handling perspective
- *TODO: fix bug regarding wrapping of screen when graphing
+ *DONE(sort of)! fix bug regarding wrapping of screen when graphing
  *TODO: shunting yard algorithm
  *TODO: possible cylindrical and spherical plots?
  *
@@ -37,8 +36,9 @@
 #include <fileioc.h>
 
 
+
 //C is a dumb language 
-//why do i have to define my functions up here and then actually write them all the way down there after i write main()
+//lol jk
 //still better than writing assembly code tho
 void printText(const char *text, uint8_t x, uint8_t y);
 
@@ -61,6 +61,8 @@ double function(double x, double y);
 double mod(double a, double b);
 
 char *tokenize(char *input);
+
+char* backspace(char* str);
 
 //global vars
 char text[15];
@@ -98,12 +100,12 @@ double parseRPN(char *s, double X, double Y);
 
 void shunt(void);
 
-void wait(double ms);
 
 //main function
 //this is what gets run when the program starts
 void main(void)
 {
+#define DELAY 250
     //initialize all the keymaps
     //I don't think all of them get used, but it's nice to have them anyways
     //feel free to delete the unused ones if you really want to save a few bytes
@@ -156,12 +158,19 @@ void main(void)
     double aaa;
 //    char equtest[40] = " x x * y y * - 4 /";
     char equ[40] = "x sin";
-    char *test = "shrek is love";
-    uint8_t xxNodes[256][3]; //create the node arrays
-    uint8_t xyNodes[256][3]; //why are they multidimensional? this is like 2am code so who knows
-    uint8_t yxNodes[256][3];
-    uint8_t yyNodes[256][3];
+//    int xxNodes[128]; //create the node arrays
+//    int xyNodes[128];
+//    int yxNodes[128];
+//    int yyNodes[128];
+    uint8_t *xxNodes; //create the node arrays
+    uint8_t *xyNodes;
+    uint8_t *yxNodes;
+    uint8_t *yyNodes;
 
+	xxNodes = (uint8_t*)malloc(sizeof(uint8_t)*128);
+	xyNodes = (uint8_t*)malloc(sizeof(uint8_t)*128);
+	yxNodes = (uint8_t*)malloc(sizeof(uint8_t)*128);
+	yyNodes = (uint8_t*)malloc(sizeof(uint8_t)*128);
 
     //------program actually starts here------\\
 
@@ -172,7 +181,6 @@ void main(void)
 
     gfx_SetTextFGColor(gfx_black);
 
-    floatToStr(5);
 
     //testing purposes
 //    for (t = 0; t < 1 && kb_Data[kb_group_1] != kb_2nd; t += .1)
@@ -201,17 +209,22 @@ void main(void)
 
     while (!os_GetCSC()); //wait for input
 
-    delay(150);
+    delay(DELAY);
     kb_Scan();
     sel = 0;
     MAIN:do
     {
-    		gfx_FillScreen(gfx_white);
-    		gfx_PrintStringXY(menuTitle, 160-gfx_GetStringWidth(menuTitle),12);
-    		gfx_PrintStringXY("1. Enter equation ", 12, 21);
-    		gfx_PrintStringXY("2. Graph", 12, 30);
-    		gfx_PrintStringXY("*",4,21+(sel*9));
-    		gfx_SwapDraw();
+		gfx_FillScreen(gfx_white);
+		gfx_PrintStringXY(menuTitle, 160-gfx_GetStringWidth(menuTitle),12);
+		gfx_PrintStringXY("1. Enter equation ", 12, 21);
+		gfx_PrintStringXY("2. Graph", 12, 30);
+		gfx_PrintStringXY("*",4,21+(sel*9));
+		gfx_SwapDraw();
+		if (keyRecentlyPressed == true)
+		{
+			delay(150); //delay of 150ms; this prevents keys from being stuck too long
+			keyRecentlyPressed = false;
+		}
     	kb_Scan();
     	key6 = kb_Data[kb_group_6];
     	key7 = kb_Data[kb_group_7]; //load the group 7 registers
@@ -223,6 +236,7 @@ void main(void)
     				--sel;
     			}
     			firstLoopIsComplete = false;
+    			keyRecentlyPressed = true;
     			break;
     		case kb_Down:
     			if (sel < 1)
@@ -230,6 +244,7 @@ void main(void)
         			++sel;
     			}
     			firstLoopIsComplete = false;
+    			keyRecentlyPressed = true;
 				break;
     		default:
     			break;
@@ -244,6 +259,7 @@ void main(void)
     		main = false;
     		if (sel == 0)
     		{
+    			delay(150);
     			mode = 1;
     		}
     		else if (sel == 1)
@@ -266,7 +282,7 @@ void main(void)
 			gfx_SwapDraw();
 			if (keyRecentlyPressed == true)
 			{
-				delay(150); //delay of 150ms; this prevents keys from being stuck too long
+				delay(DELAY); //delay of 150ms; this prevents keys from being stuck too long
 				keyRecentlyPressed = false;
 			}
 			kb_Scan();
@@ -279,6 +295,31 @@ void main(void)
 			key7 = kb_Data[kb_group_7];
 			//Welcome to Switch-Statement City! Population: 0, cuz no one wants to live in this atrocious town
 			//Hope you enjoy your stay!
+			switch(key1)
+			{
+				case kb_Graph:
+					keyRecentlyPressed = true;
+					break;
+				case kb_Trace:
+					keyRecentlyPressed = true;
+					break;
+				case kb_Zoom:
+					break;
+				case kb_Window:
+					break;
+				case kb_Yequ:
+					break;
+				case kb_2nd:
+					break;
+				case kb_Mode:
+					break;
+				case kb_Del:
+					backspace(equ);
+					keyRecentlyPressed = true;
+					break;
+				default:
+					break;
+			}
 			switch(key2)
 			{
 				case kb_Ln:
@@ -358,12 +399,14 @@ void main(void)
 					keyRecentlyPressed = true;
 					break;
 				case kb_Cos:
+					strcat(equ,"cos");
 					keyRecentlyPressed = true;
 					break;
 				case kb_Prgm:
 					keyRecentlyPressed = true;
 					break;
 				case kb_Stat:
+					strcat(equ,"y");
 					keyRecentlyPressed = true;
 					break;
 				default:
@@ -391,6 +434,7 @@ void main(void)
 					keyRecentlyPressed = true;
 					break;
 				case kb_Tan:
+					strcat(equ,"tan");
 					keyRecentlyPressed = true;
 					break;
 				case kb_Vars:
@@ -404,8 +448,10 @@ void main(void)
 				case kb_Enter:
 					main = true;
 					mode = 0;
-					goto MAIN;
+					delay(DELAY);
 					keyRecentlyPressed = true;
+					goto MAIN;
+
 					break;
 				case kb_Sub:
 					strcat(equ,"-");
@@ -557,15 +603,52 @@ void main(void)
 
 
 
-					xxNodes[i][0] = (uint8_t)(160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
+					xxNodes[i] = (160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
 														  (z_x(a, b, c) * parseRPN(equ,g, h) * .25)))); //fill out the arrays of nodes
-					xyNodes[i][0] = (uint8_t)(
+					xyNodes[i] = (
 							120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * parseRPN(equ,g, h)))));
-					yxNodes[i][0] = (uint8_t)(
+					yxNodes[i] = (
 							160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) * parseRPN(equ,h, g)))));
-					yyNodes[i][0] = (uint8_t)(
+					yyNodes[i] = (
 							120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * parseRPN(equ,h, g)))));
 
+					if (160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
+							  (z_x(a, b, c) * parseRPN(equ,g, h) * .25))) > 320)
+					{
+						xxNodes[i] = 320;
+					}
+					if (120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * parseRPN(equ,g, h)))) > 240)
+					{
+						xyNodes[i] = 239;
+					}
+					if (160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) * parseRPN(equ,h, g)))) > 320)
+					{
+						yxNodes[i] = 320;
+					}
+					if (120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * parseRPN(equ,h, g)))) > 240)
+					{
+						yyNodes[i] = 239;
+					}
+
+
+
+					if (160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
+							  (z_x(a, b, c) * parseRPN(equ,g, h) * .25))) < 0)
+					{
+						xxNodes[i] = 0;
+					}
+					if (120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * parseRPN(equ,g, h)))) < 0)
+					{
+						xyNodes[i] = 0;
+					}
+					if (160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) * parseRPN(equ,h, g)))) < 0)
+					{
+						yxNodes[i] = 0;
+					}
+					if (120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * parseRPN(equ,h, g)))) < 0)
+					{
+						yyNodes[i] = 0;
+					}
 
 
 					//testing purposes
@@ -583,13 +666,13 @@ void main(void)
 					{
 						if ((i - 1) % (int) (n) != 0) // we don't want to connect the nodes that are on opposite sides
 						{
-							gfx_Line(xxNodes[i - 1][0], xyNodes[i - 1][0], xxNodes[i][0],
-									 xyNodes[i][0]); //connect the nodes
+							gfx_Line(xxNodes[i - 1], xyNodes[i - 1], xxNodes[i],
+									 xyNodes[i]); //connect the nodes
 						}
 						gfx_SetColor(gfx_blue); //we want graph in blue
 						if ((i - 1) % (int) (n) != 0)
 						{ //do the same thing
-							gfx_Line(yxNodes[i - 1][0], yyNodes[i - 1][0], yxNodes[i][0], yyNodes[i][0]);
+							gfx_Line(yxNodes[i - 1], yyNodes[i - 1], yxNodes[i], yyNodes[i]);
 						}
 					}
 					i++; //increment i
@@ -792,4 +875,15 @@ double popOP(void)
 void shunt(void)
 {
 
+}
+char* backspace(char* str)
+{
+    int i = 0;
+    while(str[i] != '\0')
+    {
+        i++;
+
+    }
+    str[i-1] = '\0';
+    return str;
 }
