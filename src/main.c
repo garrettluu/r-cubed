@@ -1,4 +1,4 @@
-/*	The (not) AMAZING 3D grapher for the TI84+CE
+/*    The (not) AMAZING 3D grapher for the TI84+CE
  *by gluu
  *currently in a very early alpha stage
  *DONE! Mathematical expression parser
@@ -10,12 +10,11 @@
  *Based on the 3D parametric grapher on desmos
  *
  *Please bear with parts of code that are redundant or inefficient.
-	I don't care enough to fix them for now.
+    I don't care enough to fix them for now.
  *
  * I think I fixed all indentation and formatting
- *	
+ *
  */
-
 
 //headers
 #include <stdbool.h>
@@ -29,685 +28,441 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-/* CE Keypad C Library */
+//c libraries
 #include <keypadc.h>
 #include <graphx.h>
 #include <fileioc.h>
 
+#define DELAY 250
 
-
-//C is a dumb language 
-//lol jk
-//still better than writing assembly code tho
-void printText(const char *text, uint8_t x, uint8_t y);
-
-void fillScreen(uint8_t color);
+//initialize strings
+const char *graph = "Graphing...";
+const char *menuTitle = "Main Menu";
 
 double x_x(double a, double b, double c);
-
 double x_y(double a, double b, double c);
-
 double y_x(double a, double b, double c);
-
 double y_y(double a, double b, double c);
-
 double z_x(double a, double b, double c);
-
 double z_y(double a, double b, double c);
 
-double function(double x, double y);
-
 double mod(double a, double b);
-
 char *tokenize(char *input);
-
 char* backspace(char* str);
 
-//global vars
-char text[15];
-float r;
-float aa;
-float bb;
-char c[40];
-char *d;
-char *e, *w = " ";
-char *tokens;
-char *floatToStr(float arg);
-typedef struct node
-{
-	double val;
-	struct Node* next;
-} node;
-
-double val[24];
-int size;
-
-typedef struct opStack
-{
-    char op[96];
-    int size;
-} opStack;
-opStack OP;
-
-void initRPN(void);
-
 void pushRPN(double val);
-
 double popRPN(void);
-
 double parseRPN(char *s, double X, double Y);
 
 void shunt(void);
 
+static double yaw_orig; //dummy variables we'll use later
+static double roll_orig;
+static double pitch_orig;
+static void drawPerspectiveBox(void) {
+    int xx_25 = x_x(yaw_orig, roll_orig, pitch_orig) * 25;
+    int xy_25 = x_y(yaw_orig, roll_orig, pitch_orig) * 25;
+    int yx_25 = y_x(yaw_orig, roll_orig, pitch_orig) * 25;
+    int yy_25 = y_y(yaw_orig, roll_orig, pitch_orig) * 25;
+    int zx_25 = z_x(yaw_orig, roll_orig, pitch_orig) * 25;
+    int zy_25 = z_y(yaw_orig, roll_orig, pitch_orig) * 25;
+
+    //The perspective box
+    //This is my solution to controlling perspective, since we can't rotate in real time
+    //rotate the preview axes to desired position and press enter, and the function will redraw itself
+
+    gfx_SetColor(gfx_white);
+    gfx_FillRectangle(320 - 64, 0, 64, 64);
+
+    gfx_SetColor(gfx_black);
+    gfx_VertLine_NoClip(320 - 64, 0, 64); //borders for box
+    gfx_HorizLine_NoClip(320 - 64, 64, 64);
+
+    //x-axis
+    gfx_Line_NoClip(288 - xx_25, 32 + xy_25, 288 + xx_25, 32 - xy_25);
+    gfx_PrintStringXY("x", 288 + xx_25, 32 - xy_25);
+
+    //y-axis
+    gfx_Line_NoClip(288 - yx_25, 32 + yy_25, 288 + yx_25, 32 - yy_25);
+    gfx_PrintStringXY("y", 288 + yx_25, 32 - yy_25);
+
+    //z-axis
+    gfx_Line_NoClip(288 - zx_25, 32 + zy_25, 288 + zx_25, 32 - zy_25);
+    gfx_PrintStringXY("z", 288 + zx_25, 32 - zy_25);
+    gfx_BlitRectangle(gfx_buffer, 320 - 64, 0, 64, 65);
+}
+
+char equ[40] = "x sin";
+static void addToEqu(const char *str)
+{
+    strcat(equ, str);
+}
 
 //main function
 //this is what gets run when the program starts
 void main(void)
 {
-#define DELAY 250
-    //initialize all the keymaps
-    //I don't think all of them get used, but it's nice to have them anyways
-    //feel free to delete the unused ones if you really want to save a few bytes
-    kb_key_t key1;
-    kb_key_t key2;
-    kb_key_t key3;
-    kb_key_t key4;
-    kb_key_t key5;
-    kb_key_t key6;
-    kb_key_t key7;
-
-    //initialize strings
-    const char *graph = "Graphing...";
-    const char *menuTitle = "Main Menu";
+    sk_key_t key;
 
     //declare variables and some constants
     //uint8_t is the best thing ever
     //it's basically an unsigned 8bit integer that takes up less space than an int
     //but functions the same as an int for all intents and purposes (except negatives)
-    int8_t sel = -1; //used for menu selections
-    int8_t cursorPos = 0;
-    bool kill = false; //used to terminate program
-    bool firstLoopIsComplete = false; //used to initialize graphx
+    uint8_t sel; //used for menu selections
     bool graphingIsComplete = false; //used to plot points
-    bool lol3 = false; //used to draw the perspective changer
-    bool lol2 = false;
     bool main = true;
-    bool keyRecentlyPressed = false;
     uint8_t mode = 0; //used for menu selections
-    uint8_t i = 0;
-    double t; //parameter for plotting points
-    double a = -2.3; //yaw
-    double b = .6; //roll
-    double c = 0; //pitch; this never changes since i don't want people to mess with the rotation of the screen
-    double a1 = a; //dummy variables we'll use later
-    double b1 = b;
-    double c1 = c;
-    double g; //g and h are used for calculating the points to plot
-    double _g; //_g and _h are unused for now, keeping it as legacy in case i might need them someday
-    double h;
-    double _h;
+    double yaw = -2.3; //yaw
+    double roll = .6; //roll
+    double pitch = 0; //pitch; this never changes since i don't want people to mess with the rotation of the screen
     const double s = 15; //scale of the graph
     const double s2 = 3.75; //how much of the graph gets shown
     const double n = 10; //resolution of the grid of the graph is (higher = more detail)
-    double dx = 1 / (n * (1 +
-                          n)); //degree of precision when plotting; higher values mean less precise plotting. This value should be called dt to be mathematically correct, but I don't feel like changing it now
-    double d1;
-    double d2;
 
-    double aaa;
-//    char equtest[40] = " x x * y y * - 4 /";
-    char equ[40] = "x sin";
-//    int xxNodes[128]; //create the node arrays
-//    int xyNodes[128];
-//    int yxNodes[128];
-//    int yyNodes[128];
-    uint8_t *xxNodes; //create the node arrays
-    uint8_t *xyNodes;
-    uint8_t *yxNodes;
-    uint8_t *yyNodes;
+    uint8_t *xxNodes = malloc(128); //create the node arrays
+    uint8_t *xyNodes = malloc(128);
+    uint8_t *yxNodes = malloc(128);
+    uint8_t *yyNodes = malloc(128);
 
-	xxNodes = (uint8_t*)malloc(sizeof(uint8_t)*128);
-	xyNodes = (uint8_t*)malloc(sizeof(uint8_t)*128);
-	yxNodes = (uint8_t*)malloc(sizeof(uint8_t)*128);
-	yyNodes = (uint8_t*)malloc(sizeof(uint8_t)*128);
+    //dummy variables we'll use later
+    yaw_orig = yaw;
+    roll_orig = roll;
+    pitch_orig = pitch;
 
     //------program actually starts here------\\
 
     prgm_CleanUp(); //clear the screen
 
-    gfx_Begin(gfx_8bpp); //initialize advanced graphx
-    gfx_SetDraw(gfx_buffer);
-
-    gfx_SetTextFGColor(gfx_black);
-
-
-    //testing purposes
-//    for (t = 0; t < 1 && kb_Data[kb_group_1] != kb_2nd; t += .1)
-//    for(tokens = strtok(equtest, " "); tokens != NULL; tokens = strtok(NULL," "))
-//    {
-//    	g = 2*strtod(tokens,&e);
-//    	h = 8;
-//    	floatToStr(g);
-//    	if (e > tokens && *tokens != '+') gfx_PrintStringXY(text, 12, 21 + (9 * i));
-////    	floatToStr(parseRPN(equ,g,h));
-//    	gfx_PrintStringXY(tokens, 150, 21 + (9 * i));
-//    	i++;
-//    }
-
-
+    gfx_Begin(); //initialize advanced graphx
+    gfx_SetDrawBuffer();
 
     gfx_PrintStringXY("R3 - 3D grapher for the TI84PCE", 12, 12); //print title text
     gfx_PrintStringXY("f(x,y) = ", 12, 21);
-    gfx_PrintStringXY(equ,98,21);
-//    gfx_PrintStringXY(text, 12, 21);
-
-//    gfx_PrintStringXY(text, 12, 30);
-
-    gfx_SwapDraw(); //update the screen
-
+    gfx_PrintStringXY(equ, 98, 21);
+    gfx_SwapDraw();
 
     while (!os_GetCSC()); //wait for input
 
-    delay(DELAY);
-    kb_Scan();
     sel = 0;
-    MAIN:do
-    {
-		gfx_FillScreen(gfx_white);
-		gfx_PrintStringXY(menuTitle, 160-gfx_GetStringWidth(menuTitle),12);
-		gfx_PrintStringXY("1. Enter equation ", 12, 21);
-		gfx_PrintStringXY("2. Graph", 12, 30);
-		gfx_PrintStringXY("*",4,21+(sel*9));
-		gfx_SwapDraw();
-		if (keyRecentlyPressed == true)
-		{
-			delay(150); //delay of 150ms; this prevents keys from being stuck too long
-			keyRecentlyPressed = false;
-		}
-    	kb_Scan();
-    	key6 = kb_Data[kb_group_6];
-    	key7 = kb_Data[kb_group_7]; //load the group 7 registers
-    	switch(key7)
-    	{
-    		case kb_Up:
-    			if (sel > 0)
-    			{
-    				--sel;
-    			}
-    			firstLoopIsComplete = false;
-    			keyRecentlyPressed = true;
-    			break;
-    		case kb_Down:
-    			if (sel < 1)
-    			{
-        			++sel;
-    			}
-    			firstLoopIsComplete = false;
-    			keyRecentlyPressed = true;
-				break;
-    		default:
-    			break;
-    	}
-    	if (!lol2)
-    	{
-    		gfx_SwapDraw();
-    		lol2 = true;
-    	}
-    	if (key6 == kb_Enter && main)
-    	{
-    		main = false;
-    		if (sel == 0)
-    		{
-    			delay(150);
-    			mode = 1;
-    		}
-    		else if (sel == 1)
-    		{
-    			mode = 2;
-    		}
-    	}
+    key = 1;
 
+MAIN:
+
+    do
+    {
+        if (key) {
+            gfx_FillScreen(gfx_white);
+            gfx_PrintStringXY(menuTitle, 160-gfx_GetStringWidth(menuTitle),12);
+            gfx_PrintStringXY("Enter equation ", 12, 21);
+            gfx_PrintStringXY("Graph", 12, 30);
+            gfx_PrintStringXY("*",4,21+(sel*9));
+            gfx_SwapDraw();
+        }
+
+        key = os_GetCSC();
+
+        switch (key)
+        {
+            case sk_Up:
+                if (sel > 0)
+                {
+                    --sel;
+                }
+                break;
+            case sk_Down:
+                if (sel < 1)
+                {
+                    ++sel;
+                }
+                break;
+            case sk_Enter:
+                if (main)
+                {
+                    main = false;
+                    mode = sel + 1;
+                }
+            default:
+                break;
+        }
     }
-    while(main && kb_Data[kb_group_1] != kb_2nd);
+    
+    while(main && os_GetCSC() != sk_2nd);
+    
     if (mode == 1)
     {
-    	//quite possibly the most annoying thing to code
-    	do
-    	{
-			gfx_FillScreen(gfx_white);
-			gfx_PrintStringXY("f(x,y) = ", 12, 21);
-			gfx_PrintStringXY(equ,64,21);
-			gfx_PrintStringXY("|", 64+gfx_GetStringWidth(equ),21);
-			gfx_SwapDraw();
-			if (keyRecentlyPressed == true)
-			{
-				delay(DELAY); //delay of 150ms; this prevents keys from being stuck too long
-				keyRecentlyPressed = false;
-			}
-			kb_Scan();
-			key1 = kb_Data[kb_group_1];
-			key2 = kb_Data[kb_group_2];
-			key3 = kb_Data[kb_group_3];
-			key4 = kb_Data[kb_group_4];
-			key5 = kb_Data[kb_group_5];
-			key6 = kb_Data[kb_group_6];
-			key7 = kb_Data[kb_group_7];
-			//Welcome to Switch-Statement City! Population: 0, cuz no one wants to live in this atrocious town
-			//Hope you enjoy your stay!
-			switch(key1)
-			{
-				case kb_Graph:
-					keyRecentlyPressed = true;
-					break;
-				case kb_Trace:
-					keyRecentlyPressed = true;
-					break;
-				case kb_Zoom:
-					break;
-				case kb_Window:
-					break;
-				case kb_Yequ:
-					break;
-				case kb_2nd:
-					break;
-				case kb_Mode:
-					break;
-				case kb_Del:
-					backspace(equ);
-					keyRecentlyPressed = true;
-					break;
-				default:
-					break;
-			}
-			switch(key2)
-			{
-				case kb_Ln:
-					strcat(equ,"ln");
-					keyRecentlyPressed = true;
-					break;
-				case kb_Log:
-					strcat(equ,"log");
-					keyRecentlyPressed = true;
-					break;
-				case kb_Square:
-					break;
-				case kb_Recip:
-					break;
-				case kb_Math:
-					break;
-				case kb_Alpha:
-					break;
-				default:
-					break;
-			}
-			switch(key3)
-			{
-				case kb_0:
-					strcat(equ,"0");
-					keyRecentlyPressed = true;
-					break;
-				case kb_1:
-					strcat(equ,"1");
-					keyRecentlyPressed = true;
-					break;
-				case kb_4:
-					strcat(equ,"4");
-					keyRecentlyPressed = true;
-					break;
-				case kb_7:
-					strcat(equ,"7");
-					keyRecentlyPressed = true;
-					break;
-				case kb_Comma:
-					strcat(equ," ");
-					keyRecentlyPressed = true;
-					break;
-				case kb_Sin:
-					strcat(equ,"sin");
-					keyRecentlyPressed = true;
-					break;
-				case kb_Apps:
-					keyRecentlyPressed = true;
-					break;
-				case kb_GraphVar:
-					strcat(equ,"x");
-					keyRecentlyPressed = true;
-					break;
-				default:
-					break;
-			}
-			switch(key4)
-			{
-				case kb_DecPnt:
-					strcat(equ,".");
-					keyRecentlyPressed = true;
-					break;
-				case kb_2:
-					strcat(equ,"2");
-					keyRecentlyPressed = true;
-					break;
-				case kb_5:
-					strcat(equ,"5");
-					keyRecentlyPressed = true;
-					break;
-				case kb_8:
-					strcat(equ,"8");
-					keyRecentlyPressed = true;
-					break;
-				case kb_LParen:
-					keyRecentlyPressed = true;
-					break;
-				case kb_Cos:
-					strcat(equ,"cos");
-					keyRecentlyPressed = true;
-					break;
-				case kb_Prgm:
-					keyRecentlyPressed = true;
-					break;
-				case kb_Stat:
-					strcat(equ,"y");
-					keyRecentlyPressed = true;
-					break;
-				default:
-					break;
-			}
-			switch(key5)
-			{
-				case kb_Chs:
-					strcat(equ,"`");
-					keyRecentlyPressed = true;
-					break;
-				case kb_3:
-					strcat(equ,"3");
-					keyRecentlyPressed = true;
-					break;
-				case kb_6:
-					strcat(equ,"6");
-					keyRecentlyPressed = true;
-					break;
-				case kb_9:
-					strcat(equ,"9");
-					keyRecentlyPressed = true;
-					break;
-				case kb_RParen:
-					keyRecentlyPressed = true;
-					break;
-				case kb_Tan:
-					strcat(equ,"tan");
-					keyRecentlyPressed = true;
-					break;
-				case kb_Vars:
-					keyRecentlyPressed = true;
-					break;
-				default:
-					break;
-			}
-			switch(key6)
-			{
-				case kb_Enter:
-					main = true;
-					mode = 0;
-					delay(DELAY);
-					keyRecentlyPressed = true;
-					goto MAIN;
-
-					break;
-				case kb_Sub:
-					strcat(equ,"-");
-					keyRecentlyPressed = true;
-					break;
-				case kb_Add:
-					strcat(equ,"+");
-					keyRecentlyPressed = true;
-					break;
-				case kb_Mul:
-					strcat(equ,"*");
-					keyRecentlyPressed = true;
-					break;
-				case kb_Div:
-					strcat(equ,"/");
-					keyRecentlyPressed = true;
-					break;
-				case kb_Power:
-					strcat(equ,"^");
-					keyRecentlyPressed = true;
-					break;
-				case kb_Clear:
-					keyRecentlyPressed = true;
-					strcpy(equ,"");
-					break;
-				default:
-					break;
-			}
-    	} while(mode == 1 && kb_Data[kb_group_1] != kb_2nd);
+        sk_key_t key;
+        //quite possibly the most annoying thing to code
+        do
+        {
+            key = os_GetCSC();
+            
+            gfx_FillScreen(gfx_white);
+            gfx_PrintStringXY("f(x,y) = ", 12, 21);
+            gfx_PrintStringXY(equ, 64, 21);
+            gfx_PrintStringXY("|", 64+gfx_GetStringWidth(equ),21);
+            gfx_SwapDraw();
+            
+            //Welcome to Switch-Statement City! Population: 0, cuz no one wants to live in this atrocious town
+            //Hope you enjoy your stay!
+            switch(key)
+            {
+                case sk_Del:
+                    backspace(equ);
+                    break;
+                case sk_Ln:
+                    addToEqu("ln");
+                    break;
+                case sk_Log:
+                    addToEqu("log");
+                    break;
+                case sk_0:
+                    addToEqu("0");
+                    break;
+                case sk_1:
+                    addToEqu("1");
+                    break;
+                case sk_4:
+                    addToEqu("4");
+                    break;
+                case sk_7:
+                    addToEqu("7");
+                    break;
+                case sk_Comma:
+                    addToEqu(" ");
+                    break;
+                case sk_Sin:
+                    addToEqu("sin");
+                    break;
+                case sk_Apps:
+                    break;
+                case sk_GraphVar:
+                    addToEqu("x");
+                    break;
+                case sk_DecPnt:
+                    addToEqu(".");
+                    break;
+                case sk_2:
+                    addToEqu("2");
+                    break;
+                case sk_5:
+                    addToEqu("5");
+                    break;
+                case sk_8:
+                    addToEqu("8");
+                    break;
+                case sk_Cos:
+                    addToEqu("cos");
+                    break;
+                case sk_Stat:
+                    addToEqu("y");
+                    break;
+                case sk_Chs:
+                    addToEqu("`");
+                    break;
+                case sk_3:
+                    addToEqu("3");
+                    break;
+                case sk_6:
+                    addToEqu("6");
+                    break;
+                case sk_9:
+                    addToEqu("9");
+                    break;
+                case sk_Tan:
+                    addToEqu("tan");
+                    break;
+                case sk_Enter:
+                    main = true;
+                    mode = 0;
+                    goto MAIN;
+                case sk_Sub:
+                    addToEqu("-");
+                    break;
+                case sk_Add:
+                    addToEqu("+");
+                    break;
+                case sk_Mul:
+                    addToEqu("*");
+                    break;
+                case sk_Div:
+                    addToEqu("/");
+                    break;
+                case sk_Power:
+                    addToEqu("^");
+                    break;
+                case sk_Clear:
+                    addToEqu("");
+                    break;
+                default:
+                    break;
+            }
+        } while(mode == 1 && key != kb_2nd);
     }
+    
     if (mode == 2)
     {
-		do
-		{
-			//THIS IS WHERE THE FUN BEGINS
-			if (!firstLoopIsComplete)
-			{
-				i = 0;
-				//the stuff here will only happen the first time this loop is run
-				gfx_FillScreen(gfx_white); //fill the screen with white
-				gfx_PrintStringXY(graph, 320 - gfx_GetStringWidth(graph), 230);
-				gfx_BlitRectangle(gfx_buffer, 320 - gfx_GetStringWidth(graph), 230, gfx_GetStringWidth(graph), 10);
-				firstLoopIsComplete = true; //make sure these aren't run again
-			}
-			kb_Scan(); //scan the keyboard for inputs
-			key7 = kb_Data[kb_group_7]; //load the group 7 registers
-			gfx_SetColor(gfx_black);
-			switch (key7)
-			{
-				//this is for controlling perspective, but the ez80 is a crappy 48mHz cpu and can't do this in real time
-				//(well it can, but it has to redraw the function every freakin' time)
-				case kb_Up:
-					//	gfx_FillScreen( gfx_white); //every time this happens, we want to clear the screen before drawing stuff again
-					gfx_SetColor(gfx_white);
-					gfx_FillRectangle(320 - 64, 0, 64, 64);
-					b1 += .15;
-					lol3 = false; //this is so that it redraws the function
-					break;
-				case kb_Down:
-					gfx_SetColor(gfx_white);
-					gfx_FillRectangle(320 - 64, 0, 64, 64);
-					b1 -= .15;
-					lol3 = false; //i honestly should name my variables more intuitively so you can actually understand what they do
-					break;
-				case kb_Left:
-					gfx_SetColor(gfx_white);
-					gfx_FillRectangle(320 - 64, 0, 64, 64);
-					a1 += .15;
-					lol3 = false;
-					break;
-				case kb_Right:
-					gfx_SetColor(gfx_white);
-					gfx_FillRectangle(320 - 64, 0, 64, 64);
-					a1 -= .15;
-					lol3 = false;
-					break;
-				default:
-					break;
-			}
-			//The perspective box
-			//This is my solution to controlling perspective, since we can't rotate in real time
-			//rotate the preview axes to desired position and press enter, and the function will redraw itself
-			gfx_SetColor(gfx_black);
-			gfx_VertLine_NoClip(320 - 64, 0, 64); //borders for box
-			gfx_HorizLine_NoClip(320 - 64, 64, 64);
-			//x-axis
-			gfx_Line_NoClip(288 - (x_x(a1, b1, c1) * 24), 32 + (x_y(a1, b1, c1) * 24), (int) (288 + (x_x(a1, b1, c1) * 24)),
-							(int) (32 - (x_y(a1, b1, c1) * 24)));
-			gfx_PrintStringXY("x", (int) (288 + (x_x(a1, b1, c1) * 25)), (int) (32 - (x_y(a1, b1, c1) * 25))); //axis labels
-			//y-axis
-			gfx_Line_NoClip(288 - (y_x(a1, b1, c1) * 24), 32 + (y_y(a1, b1, c1) * 24), (int) (288 + (y_x(a1, b1, c1) * 24)),
-							(int) (32 - (y_y(a1, b1, c1) * 24)));
-			gfx_PrintStringXY("y", (int) (288 + (y_x(a1, b1, c1) * 25)), (int) (32 - (y_y(a1, b1, c1) * 25)));
-			//z-axis
-			gfx_Line_NoClip(288 - (z_x(a1, b1, c1) * 24), 32 + (z_y(a1, b1, c1) * 24), (int) (288 + (z_x(a1, b1, c1) * 24)),
-							(int) (32 - (z_y(a1, b1, c1) * 24)));
-			gfx_PrintStringXY("z", (int) (288 + (z_x(a1, b1, c1) * 25)), (int) (32 - (z_y(a1, b1, c1) * 25)));
-			if (!lol3)
-			{
-				gfx_BlitRectangle(gfx_buffer, 320 - 64, 0, 64,
-								  65); //blit the corner; take from the buffer and draw it on screen
-				lol3 = true; //we don't want this to keep running
-			}
-			if (kb_Data[kb_group_6] == kb_Enter)
-			{
-				gfx_PrintStringXY(graph, 320 - gfx_GetStringWidth(graph), 230);
-				gfx_BlitRectangle(gfx_buffer, 320 - gfx_GetStringWidth(graph), 230, gfx_GetStringWidth(graph), 10);
-				a = a1;
-				b = b1;
-				c = c1;
-				graphingIsComplete = false;
-			}
+        //the stuff here will only happen the first time this loop is run
+        gfx_FillScreen(gfx_white); //fill the screen with white
+        gfx_PrintStringXY(graph, 320 - gfx_GetStringWidth(graph), 230);
+        gfx_BlitRectangle(gfx_buffer, 320 - gfx_GetStringWidth(graph), 230, gfx_GetStringWidth(graph), 10);
 
+        do
+        {
+            key = os_GetCSC();
 
-			if (!graphingIsComplete)
-			{
-				//basically, this is the for-loop that controls graphing
-				//initial condition: t=0
-				//go until t is greater than one
-				//add dx to t each time
-				gfx_FillScreen(gfx_white);
-				gfx_SetColor(gfx_black); //we want to draw in black
-				//x-axis
-				//apparently the _NoClip functions are faster than their clipped counterparts
-				gfx_Line_NoClip(160 - (x_x(a, b, c) * 100), 120 + (x_y(a, b, c) * 100), (int) (160 + (x_x(a, b, c) * 100)),
-								(int) (120 - (x_y(a, b, c) *
-											  100))); //we're casting doubles to ints here, but i think that is redundant since gfx_Line converts doubles automatically
-				gfx_PrintStringXY("x", (int) (160 + (x_x(a, b, c) * 100)),
-								  (int) (120 - (x_y(a, b, c) * 100))); //axis labels, according to the right-hand rule
-				//y-axis
-				gfx_Line_NoClip(160 - (y_x(a, b, c) * 100), 120 + (y_y(a, b, c) * 100), (int) (160 + (y_x(a, b, c) * 100)),
-								(int) (120 - (y_y(a, b, c) *
-											  100))); //btw (160,120) is the center of the screen, counting from the top left corner as (0,0)
-				gfx_PrintStringXY("y", (int) (160 + (y_x(a, b, c) * 100)), (int) (120 - (y_y(a, b, c) * 100)));
-				//z-axis
-				gfx_Line_NoClip(160 - (z_x(a, b, c) * 100), 120 + (z_y(a, b, c) * 100), (int) (160 + (z_x(a, b, c) * 100)),
-								(int) (120 - (z_y(a, b, c) * 100))); //the resolution of the TI84+CE is 320*240
-				gfx_PrintStringXY("z", (int) (160 + (z_x(a, b, c) * 100)), (int) (120 - (z_y(a, b, c) * 100)));
-				i = 0;
-				for (t = 0; t < 1 && kb_Data[kb_group_1] != kb_2nd; t += .00909)
-				{
-					kb_Scan(); //keep scanning for key presses
-					gfx_SetColor(gfx_green); //we want to graph in green
-					//equations for the grid/graph
-					g = 2 * s2 * ((floor(t * (n + 1)) / n) - .5);
-					h = 2 * s2 * (mod(t * (n + 1), 1) - .5);
-					//	_g = 2*s2*((floor((t+dx)*(n+1))/n)-.5); //unused for now
-					//	_h = 2*s2*(mod((t+dx)*(n+1),1)-.5); //unused for now
+            switch (key)
+            {
+                //this is for controlling perspective, but the ez80 is a crappy 48mHz cpu and can't do this in real time
+                //(well it can, but it has to redraw the function every freakin' time)
+                case sk_Up:
+                    roll_orig += .15;
+                    drawPerspectiveBox();
+                    break;
+                case sk_Down:
+                    roll_orig -= .15;
+                    drawPerspectiveBox();
+                    break;
+                case sk_Left:
+                    yaw_orig += .15;
+                    drawPerspectiveBox();
+                    break;
+                case sk_Right:
+                    yaw_orig -= .15;
+                    drawPerspectiveBox();
+                    break;
+                default:
+                    break;
+            }
 
+            if (key == sk_Enter)
+            {
+                uint8_t strWidth = gfx_GetStringWidth(graph);
+                gfx_PrintStringXY(graph, 320 - strWidth, 230);
+                gfx_BlitRectangle(gfx_buffer, 320 - strWidth, 230, strWidth, 10);
+                yaw = yaw_orig;
+                roll = roll_orig;
+                pitch = pitch_orig;
+                graphingIsComplete = false;
+            }
 
+            if (!graphingIsComplete)
+            {
+                uint8_t i;
+                float t;
 
-					xxNodes[i] = (160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
-														  (z_x(a, b, c) * parseRPN(equ,g, h) * .25)))); //fill out the arrays of nodes
-					xyNodes[i] = (
-							120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * parseRPN(equ,g, h)))));
-					yxNodes[i] = (
-							160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) * parseRPN(equ,h, g)))));
-					yyNodes[i] = (
-							120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * parseRPN(equ,h, g)))));
+                float xx_a_b_c = x_x(yaw, roll, pitch);
+                float xy_a_b_c = x_y(yaw, roll, pitch);
+                float yx_a_b_c = y_x(yaw, roll, pitch);
+                float yy_a_b_c = y_y(yaw, roll, pitch);
+                float zx_a_b_c = z_x(yaw, roll, pitch);
+                float zy_a_b_c = z_y(yaw, roll, pitch);
 
-					if (160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
-							  (z_x(a, b, c) * parseRPN(equ,g, h) * .25))) > 320)
-					{
-						xxNodes[i] = 320;
-					}
-					if (120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * parseRPN(equ,g, h)))) > 240)
-					{
-						xyNodes[i] = 239;
-					}
-					if (160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) * parseRPN(equ,h, g)))) > 320)
-					{
-						yxNodes[i] = 320;
-					}
-					if (120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * parseRPN(equ,h, g)))) > 240)
-					{
-						yyNodes[i] = 239;
-					}
+                int xx_a_b_c_100 = xx_a_b_c * 100;
+                int xy_a_b_c_100 = xy_a_b_c * 100;
+                int yx_a_b_c_100 = yx_a_b_c * 100;
+                int yy_a_b_c_100 = yy_a_b_c * 100;
+                int zx_a_b_c_100 = zx_a_b_c * 100;
+                int zy_a_b_c_100 = zy_a_b_c * 100;
+                
+                //basically, this is the for-loop that controls graphing
+                //initial condition: t=0
+                //go until t is greater than one
+                //add dx to t each time
+                gfx_FillScreen(gfx_white);
+                gfx_SetColor(gfx_black);
+                
+                //x-axis
+                gfx_Line_NoClip(160 - xx_a_b_c_100, 120 + xy_a_b_c_100, 160 + xx_a_b_c_100, 120 - xy_a_b_c_100);
+                gfx_PrintStringXY("x", 160 + xx_a_b_c_100, 120 - xy_a_b_c_100);
+                
+                //y-axis
+                gfx_Line_NoClip(160 - yx_a_b_c_100, 120 + yy_a_b_c_100, 160 + yx_a_b_c_100, 120 - yy_a_b_c_100);
+                gfx_PrintStringXY("y", 160 + yx_a_b_c_100, 120 - yy_a_b_c_100);
+                
+                //z-axis
+                gfx_Line_NoClip(160 - zx_a_b_c_100, 120 + zy_a_b_c_100, 160 + zx_a_b_c_100, 120 - zy_a_b_c_100);
+                gfx_PrintStringXY("z", 160 + zx_a_b_c_100, 120 - zy_a_b_c_100);
+                
+                for (i = 0, t = 0; t < 1 && os_GetCSC() != sk_2nd; t += .00909, i++)
+                {
+                    uint8_t xxNode, xyNode, yxNode, yyNode;
+                    uint8_t xxNode_p, xyNode_p, yxNode_p, yyNode_p;
 
+                    //equations for the grid/graph
+                    double g = 2 * s2 * ((floor(t * (n + 1)) / n) - .5);
+                    double h = 2 * s2 * (mod(t * (n + 1), 1) - .5);
+                    double pRPN_h_g = parseRPN(equ, h, g);
+                    double pRPN_g_h = parseRPN(equ, g, h);
+                    
+                    xxNode = (160 + (s * ((xx_a_b_c * g) + (yx_a_b_c * h) + (zx_a_b_c * pRPN_g_h * .25)))); //fill out the arrays of nodes
+                    xyNode = (120 - (s * ((xy_a_b_c * g) + (yy_a_b_c * h) + (zy_a_b_c * pRPN_g_h))));
+                    yxNode = (160 + (s * ((xx_a_b_c * h) + (yx_a_b_c * g) + (zx_a_b_c * pRPN_h_g))));
+                    yyNode = (120 - (s * ((xy_a_b_c * h) + (yy_a_b_c * g) + (zy_a_b_c * pRPN_h_g))));
 
+                    if (xxNode > 320)
+                    {
+                        xxNode = 320;
+                    }
+                    else if (xxNode < 0)
+                    {
+                        xxNode = 0;
+                    }
+                    
+                    if (xyNode > 240)
+                    {
+                        xyNode = 239;
+                    }
+                    else if (xyNode < 0)
+                    {
+                        xyNode = 0;
+                    }
+                    
+                    if (yxNode > 320)
+                    {
+                        yxNode = 320;
+                    }
+                    else if (yxNode < 0)
+                    {
+                        yxNode = 0;
+                    }
+                    
+                    if (yyNode > 240)
+                    {
+                        yyNode = 239;
+                    }
+                    else if (yyNode < 0)
+                    {
+                        yyNode = 0;
+                    }
 
-					if (160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
-							  (z_x(a, b, c) * parseRPN(equ,g, h) * .25))) < 0)
-					{
-						xxNodes[i] = 0;
-					}
-					if (120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * parseRPN(equ,g, h)))) < 0)
-					{
-						xyNodes[i] = 0;
-					}
-					if (160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) * parseRPN(equ,h, g)))) < 0)
-					{
-						yxNodes[i] = 0;
-					}
-					if (120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * parseRPN(equ,h, g)))) < 0)
-					{
-						yyNodes[i] = 0;
-					}
+                    xxNodes[i] = xxNode;
+                    xyNodes[i] = xyNode;
+                    yxNodes[i] = yxNode;
+                    yyNodes[i] = yyNode;
+                    
+                    if (i >= 12) //for some reason the first 12 nodes don't connect to the rest, so we omit them
+                    {
+                        if ((i - 1) % (int)(n)) // we don't want to connect the nodes that are on opposite sides
+                        {
+                            gfx_SetColor(gfx_green);
+                            gfx_Line(xxNodes[i - 1], xyNodes[i - 1], xxNode, xyNode);
+                            
+                            gfx_SetColor(gfx_blue);
+                            gfx_Line(yxNodes[i - 1], yyNodes[i - 1], yxNode, yyNode);
+                        }
+                    }
+                }
+                drawPerspectiveBox();
+                gfx_SwapDraw();
+                graphingIsComplete = true; // this is so that it only plots the function once
+            }
 
-
-					//testing purposes
-	//                xxNodes[i][0] = (uint8_t)(160 + (s * ((x_x(a, b, c) * g) + (y_x(a, b, c) * h) +
-	//                                                      (z_x(a, b, c) * function(g, h))))); //fill out the arrays of nodes
-	//                xyNodes[i][0] = (uint8_t)(
-	//                        120 - (s * ((x_y(a, b, c) * g) + (y_y(a, b, c) * h) + (z_y(a, b, c) * function( g, h)))));
-	//                yxNodes[i][0] = (uint8_t)(
-	//                        160 + (s * ((x_x(a, b, c) * h) + (y_x(a, b, c) * g) + (z_x(a, b, c) *function( h, g)))));
-	//                yyNodes[i][0] = (uint8_t)(
-	//                        120 - (s * ((x_y(a, b, c) * h) + (y_y(a, b, c) * g) + (z_y(a, b, c) * function( h, g)))));
-
-
-					if (i >= 12) //for some reason the first 12 nodes don't connect to the rest, so we omit them
-					{
-						if ((i - 1) % (int) (n) != 0) // we don't want to connect the nodes that are on opposite sides
-						{
-							gfx_Line(xxNodes[i - 1], xyNodes[i - 1], xxNodes[i],
-									 xyNodes[i]); //connect the nodes
-						}
-						gfx_SetColor(gfx_blue); //we want graph in blue
-						if ((i - 1) % (int) (n) != 0)
-						{ //do the same thing
-							gfx_Line(yxNodes[i - 1], yyNodes[i - 1], yxNodes[i], yyNodes[i]);
-						}
-					}
-					i++; //increment i
-					//really inefficient pixel plotter. slow af
-					//use this at your own risk
-					//	gfx_SetPixel( 160 + (s*((x_x(a,b,c)*g)+(y_x(a,b,c)*h)+(z_x(a,b,c)*function(g,h)))) ,   120-(s*((x_y(a,b,c)*g) + (y_y(a,b,c)*h) + (z_y(a,b,c)*function(g,h)))));
-					//	gfx_SetColor(gfx_blue);
-					//	gfx_SetPixel(160+(s*((x_x(a,b,c)*h)+(y_x(a,b,c)*g)+(z_x(a,b,c)*function(h,g)))),120-(s*((x_y(a,b,c)*h) + (y_y(a,b,c)*g) + (z_y(a,b,c)*function(h,g)))));
-
-				}
-				gfx_SwapDraw();
-				graphingIsComplete = true; // this is so that it only plots the function once
-				lol3 = false;
-			}
-
-		} while (!kill && kb_Data[kb_group_1] != kb_2nd);
+        } while (key != sk_2nd);
     }
 
     gfx_End(); //stop the gfx
     prgm_CleanUp(); //clear the screen
     //end of program
-}
-
-//function that prints simple text on screen
-//similar to the Output() function of TI-BASIC
-void printText(const char *text, uint8_t xpos, uint8_t ypos)
-{
-    os_SetCursorPos(ypos, xpos); //set the place to start putting text
-    os_PutStrFull(text); //output the string
-}
-
-/* Simple way to fill the screen with a given color */
-void fillScreen(uint8_t color)
-{
-    memset_fast(lcd_Ram, color, LCD_SIZE);
 }
 
 //used to calculate the position of points in the 3d world and translate them into 2d coordinates to draw onto the screen
@@ -742,16 +497,6 @@ double z_y(double a, double b, double c)
     return cos(c) * cos(b);
 }
 
-//the 3d function you want to graph
-//note that this is in the format f(x,y)=
-//for example: for f(x,y)=cos(xy)-y^2, type in
-//	return cos(x*y)-(pow(y,2));
-//soon i should have user input
-double function(double x, double y)
-{
-    return x-y;
-}
-
 //proper modulus function
 //the % operator only works with integers
 //and the fmod() function can't handle negative numbers properly
@@ -759,6 +504,26 @@ double mod(double a, double N)
 {
     return a - N * floor(a / N);
 }
+
+//global vars
+char text[15];
+float r;
+float aa;
+float bb;
+char c[40];
+char *d;
+char *e, *w = " ";
+char *tokens;
+
+double val[24];
+int size;
+
+typedef struct opStack
+{
+    char op[96];
+    int size;
+} opStack;
+opStack OP;
 
 char *tokenize(char *input)
 {
@@ -768,22 +533,6 @@ char *tokenize(char *input)
     return output;
 }
 
-char *floatToStr(float arg)
-{
-    const real_t arg2 = os_FloatToReal(arg);
-    os_RealToStr(text, &arg2, -1, 1, -1);
-    return text;
-}
-float strToFloat(char *arg, char *end)
-{
-	const real_t arg2 = os_StrToReal(arg,&end);
-	return os_RealToFloat(&arg2);
-}
-//sets the size of the stack to 0
-void initRPN()
-{
-    size = 0;
-}
 //pushes the argument to the stack
 void pushRPN(double v)
 {
@@ -797,68 +546,71 @@ double popRPN(void)
 //THIS FINALLY WORKS AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 double parseRPN(char *s, double X, double Y) //THE REVERSE POLISH NOTATION PARSER IS HERE
 {
+    char tok;
     double a, b; //declare my vars
-    initRPN(); //set stack size to 0;
-    strcpy(c,s); //copy the string s to c, so we can mess with c all we want without damaging s
-    for(tokens = strtok(c,w); tokens != NULL; tokens = strtok(NULL,w)) //chop c into tokens, separated by spaces as delims
+    size = 0; //set stack size to 0;
+    strcpy(c, s); //copy the string s to c, so we can mess with c all we want without damaging s
+    for(tokens = strtok(c, w); tokens; tokens = strtok(NULL, w)) //chop c into tokens, separated by spaces as delims
     {
-    	//for each token we will:
-    	a = strtod(tokens,&e); //convert it to a number and store it in a
-        if (e > tokens && *tokens != '+' && *tokens != '-' && *tokens != '/' && *tokens != '*' && *tokens != '^' && *tokens != 'x' && *tokens != 'y' ) //stupid
+        //for each token we will:
+        a = strtod(tokens,&e); //convert it to a number and store it in a
+        tok = *tokens;
+        
+        if (e > tokens && tok != '+' && tok != '-' && tok != '/' && tok != '*' && tok != '^' && tok != 'x' && tok != 'y' ) //stupid
         {
-        	pushRPN(a); //push a to the stack if the token was an actual number
+            pushRPN(a); //push a to the stack if the token was an actual number
         }
-        else if (*tokens == 'x')
+        else if (tok == 'x')
         {
-        	pushRPN(X); //push the value of argument X to stack
+            pushRPN(X); //push the value of argument X to stack
         }
-        else if (*tokens == 'y')
+        else if (tok == 'y')
         {
-        	pushRPN(Y); //push argument Y to stack
+            pushRPN(Y); //push argument Y to stack
         }
 #define binop(x)  b = popRPN(), a = popRPN(), pushRPN(x) //the binary operators: takes top 2 numbers on stack, evaluates them, then pushes the result back to stack
-        else if (*tokens == '+')
+        else if (tok == '+')
         {
-        	binop(a + b);
+            binop(a + b);
         }
-        else if (*tokens == '-')
+        else if (tok == '-')
         {
-        	binop(a - b);
+            binop(a - b);
         }
-        else if (*tokens == '*')
+        else if (tok == '*')
         {
-        	binop(a * b);
+            binop(a * b);
         }
-        else if (*tokens == '/')
+        else if (tok == '/')
         {
-        	binop(a / b);
+            binop(a / b);
         }
-        else if (*tokens == '^')
+        else if (tok == '^')
         {
-        	binop(pow(a, b));
+            binop(pow(a, b));
         }
 #undef binop
 #define monop(x) b = popRPN(), pushRPN(x); //mono operators: takes top number on stack, evaluates it, then pushes the result back to the stack
         else if (strcmp(tokens,"sin") == 0)
         {
-        	monop(sin(b));
+            monop(sin(b));
         }
         else if (strcmp(tokens,"cos") == 0)
         {
-        	monop(cos(b));
+            monop(cos(b));
         }
         else if (strcmp(tokens,"tan") == 0)
         {
-        	monop(tan(b));
+            monop(tan(b));
         }
         else if (strcmp(tokens,"ln") == 0)
-		{
-			monop(tan(b));
-		}
+        {
+            monop(tan(b));
+        }
         else if (strcmp(tokens,"log") == 0)
-		{
-			monop(tan(b));
-		}
+        {
+            monop(tan(b));
+        }
 #undef monop
     }
     return popRPN();
