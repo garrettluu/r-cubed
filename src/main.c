@@ -184,13 +184,10 @@ MAIN:
             default:
                 break;
         }
-    }
-    
-    while(main && os_GetCSC() != sk_2nd);
+    } while(main && key != sk_2nd);
     
     if (mode == 1)
     {
-        sk_key_t key;
         //quite possibly the most annoying thing to code
         do
         {
