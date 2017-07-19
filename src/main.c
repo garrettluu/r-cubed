@@ -43,12 +43,11 @@ double x_x(double a, double b, double c);
 double x_y(double a, double b, double c);
 double y_x(double a, double b, double c);
 double y_y(double a, double b, double c);
-double z_x(double a, double b, double c);
-double z_y(double a, double b, double c);
+double z_x(double b, double c);
+double z_y(double b, double c);
 
 double mod(double a, double b);
 char *tokenize(char *input);
-char* backspace(char* str);
 
 void pushRPN(double val);
 double popRPN(void);
@@ -64,8 +63,8 @@ static void drawPerspectiveBox(void) {
     int xy_25 = x_y(yaw_orig, roll_orig, pitch_orig) * 25;
     int yx_25 = y_x(yaw_orig, roll_orig, pitch_orig) * 25;
     int yy_25 = y_y(yaw_orig, roll_orig, pitch_orig) * 25;
-    int zx_25 = z_x(yaw_orig, roll_orig, pitch_orig) * 25;
-    int zy_25 = z_y(yaw_orig, roll_orig, pitch_orig) * 25;
+    int zx_25 = z_x(roll_orig, pitch_orig) * 25;
+    int zy_25 = z_y(roll_orig, pitch_orig) * 25;
 
     //The perspective box
     //This is my solution to controlling perspective, since we can't rotate in real time
@@ -119,21 +118,19 @@ void main(void)
     const double s2 = 3.75; //how much of the graph gets shown
     const double n = 10; //resolution of the grid of the graph is (higher = more detail)
 
-    uint8_t *xxNodes = malloc(128); //create the node arrays
-    uint8_t *xyNodes = malloc(128);
-    uint8_t *yxNodes = malloc(128);
-    uint8_t *yyNodes = malloc(128);
-
+    int p_xxNode = 0;
+    int p_xyNode = 0;
+    int p_yxNode = 0;
+    int p_yyNode = 0;
+    
+    uint8_t strGraphWidth = gfx_GetStringWidth(graph);
+    
     //dummy variables we'll use later
     yaw_orig = yaw;
     roll_orig = roll;
     pitch_orig = pitch;
-
-    //------program actually starts here------\\
-
-    prgm_CleanUp(); //clear the screen
-
-    gfx_Begin(); //initialize advanced graphx
+    
+    gfx_Begin();
     gfx_SetDrawBuffer();
 
     gfx_PrintStringXY("R3 - 3D grapher for the TI84PCE", 12, 12); //print title text
@@ -196,7 +193,7 @@ MAIN:
             gfx_FillScreen(gfx_white);
             gfx_PrintStringXY("f(x,y) = ", 12, 21);
             gfx_PrintStringXY(equ, 64, 21);
-            gfx_PrintStringXY("|", 64+gfx_GetStringWidth(equ),21);
+            gfx_PrintStringXY("|", 64 + gfx_GetStringWidth(equ), 21);
             gfx_SwapDraw();
             
             //Welcome to Switch-Statement City! Population: 0, cuz no one wants to live in this atrocious town
@@ -204,7 +201,7 @@ MAIN:
             switch(key)
             {
                 case sk_Del:
-                    backspace(equ);
+                    equ[strlen(equ)-1] = '\0';
                     break;
                 case sk_Ln:
                     addToEqu("ln");
@@ -300,8 +297,8 @@ MAIN:
     {
         //the stuff here will only happen the first time this loop is run
         gfx_FillScreen(gfx_white); //fill the screen with white
-        gfx_PrintStringXY(graph, 320 - gfx_GetStringWidth(graph), 230);
-        gfx_BlitRectangle(gfx_buffer, 320 - gfx_GetStringWidth(graph), 230, gfx_GetStringWidth(graph), 10);
+        gfx_PrintStringXY(graph, 320 - strGraphWidth, 230);
+        gfx_BlitRectangle(gfx_buffer, 320 -strGraphWidth, 230, strGraphWidth, 10);
 
         do
         {
@@ -333,9 +330,8 @@ MAIN:
 
             if (key == sk_Enter)
             {
-                uint8_t strWidth = gfx_GetStringWidth(graph);
-                gfx_PrintStringXY(graph, 320 - strWidth, 230);
-                gfx_BlitRectangle(gfx_buffer, 320 - strWidth, 230, strWidth, 10);
+                gfx_PrintStringXY(graph, 320 - strGraphWidth, 230);
+                gfx_BlitRectangle(gfx_buffer, 320 - strGraphWidth, 230, strGraphWidth, 10);
                 yaw = yaw_orig;
                 roll = roll_orig;
                 pitch = pitch_orig;
@@ -344,15 +340,15 @@ MAIN:
 
             if (!graphingIsComplete)
             {
-                uint8_t i;
+                unsigned int i;
                 float t;
 
                 float xx_a_b_c = x_x(yaw, roll, pitch);
                 float xy_a_b_c = x_y(yaw, roll, pitch);
                 float yx_a_b_c = y_x(yaw, roll, pitch);
                 float yy_a_b_c = y_y(yaw, roll, pitch);
-                float zx_a_b_c = z_x(yaw, roll, pitch);
-                float zy_a_b_c = z_y(yaw, roll, pitch);
+                float zx_a_b_c = z_x(roll, pitch);
+                float zy_a_b_c = z_y(roll, pitch);
 
                 int xx_a_b_c_100 = xx_a_b_c * 100;
                 int xy_a_b_c_100 = xy_a_b_c * 100;
@@ -380,16 +376,19 @@ MAIN:
                 gfx_Line_NoClip(160 - zx_a_b_c_100, 120 + zy_a_b_c_100, 160 + zx_a_b_c_100, 120 - zy_a_b_c_100);
                 gfx_PrintStringXY("z", 160 + zx_a_b_c_100, 120 - zy_a_b_c_100);
                 
-                for (i = 0, t = 0; t < 1 && os_GetCSC() != sk_2nd; t += .00909, i++)
+                for (i = 0, t = 0; t < 1; t += .00909, i++)
                 {
-                    uint8_t xxNode, xyNode, yxNode, yyNode;
-                    uint8_t xxNode_p, xyNode_p, yxNode_p, yyNode_p;
-
+                    int xxNode, xyNode, yxNode, yyNode;
+                    double g, h, pRPN_h_g, pRPN_g_h;
+                    
+                    if (i < 11) //for some reason the first 12 nodes don't connect to the rest, so we omit them
+                        continue;
+                    
                     //equations for the grid/graph
-                    double g = 2 * s2 * ((floor(t * (n + 1)) / n) - .5);
-                    double h = 2 * s2 * (mod(t * (n + 1), 1) - .5);
-                    double pRPN_h_g = parseRPN(equ, h, g);
-                    double pRPN_g_h = parseRPN(equ, g, h);
+                    g = 2 * s2 * ((floor(t * (n + 1)) / n) - .5);
+                    h = 2 * s2 * (mod(t * (n + 1), 1) - .5);
+                    pRPN_h_g = parseRPN(equ, h, g);
+                    pRPN_g_h = parseRPN(equ, g, h);
                     
                     xxNode = (160 + (s * ((xx_a_b_c * g) + (yx_a_b_c * h) + (zx_a_b_c * pRPN_g_h * .25)))); //fill out the arrays of nodes
                     xyNode = (120 - (s * ((xy_a_b_c * g) + (yy_a_b_c * h) + (zy_a_b_c * pRPN_g_h))));
@@ -432,22 +431,19 @@ MAIN:
                         yyNode = 0;
                     }
 
-                    xxNodes[i] = xxNode;
-                    xyNodes[i] = xyNode;
-                    yxNodes[i] = yxNode;
-                    yyNodes[i] = yyNode;
-                    
-                    if (i >= 12) //for some reason the first 12 nodes don't connect to the rest, so we omit them
+                    if ((i - 1) % (int)(n)) // we don't want to connect the nodes that are on opposite sides
                     {
-                        if ((i - 1) % (int)(n)) // we don't want to connect the nodes that are on opposite sides
-                        {
-                            gfx_SetColor(gfx_green);
-                            gfx_Line(xxNodes[i - 1], xyNodes[i - 1], xxNode, xyNode);
-                            
-                            gfx_SetColor(gfx_blue);
-                            gfx_Line(yxNodes[i - 1], yyNodes[i - 1], yxNode, yyNode);
-                        }
+                        gfx_SetColor(gfx_green);
+                        gfx_Line_NoClip(p_xxNode, p_xyNode, xxNode, xyNode);
+
+                        gfx_SetColor(gfx_blue);
+                        gfx_Line_NoClip(p_yxNode, p_yyNode, yxNode, yyNode);
                     }
+                    
+                    p_xxNode = xxNode;
+                    p_xyNode = xyNode;
+                    p_yxNode = yxNode;
+                    p_yyNode = yyNode;
                 }
                 drawPerspectiveBox();
                 gfx_SwapDraw();
@@ -458,7 +454,6 @@ MAIN:
     }
 
     gfx_End(); //stop the gfx
-    prgm_CleanUp(); //clear the screen
     //end of program
 }
 
@@ -484,12 +479,12 @@ double y_y(double a, double b, double c)
     return (cos(c) * cos(a) * sin(b)) - (sin(c) * sin(a));
 }
 
-double z_x(double a, double b, double c)
+double z_x(double b, double c)
 {
     return -1 * sin(c) * cos(b);
 }
 
-double z_y(double a, double b, double c)
+double z_y(double b, double c)
 {
     return cos(c) * cos(b);
 }
@@ -624,15 +619,4 @@ double popOP(void)
 void shunt(void)
 {
 
-}
-char* backspace(char* str)
-{
-    int i = 0;
-    while(str[i] != '\0')
-    {
-        i++;
-
-    }
-    str[i-1] = '\0';
-    return str;
 }
