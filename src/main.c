@@ -34,19 +34,28 @@
 #include <fileioc.h>
 
 #define STEP .15
+
 #define PERSPECTIVE_BOX_SCALE 25
 #define PERSPECTIVE_BOX_WIDTH 64
 #define PERSPECTIVE_BOX_HEIGHT 64
 #define HALF_PERSPECTIVE_BOX_HEIGHT_WIDTH 32
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 180
-#define TEXT_START_X 12;
-#define TEXT_START_Y 12;
-#define TEXT_HEIGHT 9;
-#define TEXT_SPACING 10;
 
-#define MODE_INPUT = 1;
-#define MODE_GRAPH = 2;
+#define SCREEN_WIDTH 320
+#define SCREEN_HEIGHT 240
+#define HALF_SCREEN_WIDTH 160
+#define HALF_SCREEN_HEIGHT 120
+
+#define TEXT_START_X 12
+#define TEXT_START_Y 12
+#define TEXT_HEIGHT 9
+#define TEXT_SPACING 10
+
+#define CURSOR_START_X 4
+
+#define GRAPH_SCALE 100
+
+#define MODE_INPUT = 1
+#define MODE_GRAPH = 2
 
 //initialize strings
 const char *graph = "Graphing...";
@@ -193,10 +202,10 @@ MAIN:
     {
         if (key) {
             gfx_FillScreen(gfx_white);
-            gfx_PrintStringXY(menuTitle, 160-gfx_GetStringWidth(menuTitle),12);
-            gfx_PrintStringXY("Enter equation ", 12, 21);
-            gfx_PrintStringXY("Graph", 12, 30);
-            gfx_PrintStringXY("*",4,21+(sel*9));
+            gfx_PrintStringXY(menuTitle, HALF_SCREEN_WIDTH - gfx_GetStringWidth(menuTitle), TEXT_START_Y);
+            gfx_PrintStringXY("Enter equation ", TEXT_START_X, TEXT_START_Y + TEXT_HEIGHT);
+            gfx_PrintStringXY("Graph", TEXT_START_X, TEXT_START_Y + TEXT_HEIGHT + TEXT_HEIGHT);
+            gfx_PrintStringXY("*", CURSOR_START_X, TEXT_START_X + TEXT_HEIGHT + (sel * TEXT_HEIGHT));
             gfx_SwapDraw();
         }
 
@@ -406,12 +415,12 @@ MAIN:
                 float zx_a_b_c = z_x(yaw, roll, pitch);
                 float zy_a_b_c = z_y(yaw, roll, pitch);
 
-                int xx_a_b_c_100 = xx_a_b_c * 100;
-                int xy_a_b_c_100 = xy_a_b_c * 100;
-                int yx_a_b_c_100 = yx_a_b_c * 100;
-                int yy_a_b_c_100 = yy_a_b_c * 100;
-                int zx_a_b_c_100 = zx_a_b_c * 100;
-                int zy_a_b_c_100 = zy_a_b_c * 100;
+                int xx_a_b_c_100 = xx_a_b_c * GRAPH_SCALE;
+                int xy_a_b_c_100 = xy_a_b_c * GRAPH_SCALE;
+                int yx_a_b_c_100 = yx_a_b_c * GRAPH_SCALE;
+                int yy_a_b_c_100 = yy_a_b_c * GRAPH_SCALE;
+                int zx_a_b_c_100 = zx_a_b_c * GRAPH_SCALE;
+                int zy_a_b_c_100 = zy_a_b_c * GRAPH_SCALE;
                 
                 //basically, this is the for-loop that controls graphing
                 //initial condition: t=0
@@ -421,16 +430,19 @@ MAIN:
                 gfx_SetColor(gfx_black);
                 
                 //x-axis
-                gfx_Line_NoClip(160 - xx_a_b_c_100, 120 + xy_a_b_c_100, 160 + xx_a_b_c_100, 120 - xy_a_b_c_100);
-                gfx_PrintStringXY("x", 160 + xx_a_b_c_100, 120 - xy_a_b_c_100);
+                gfx_Line_NoClip(HALF_SCREEN_WIDTH - xx_a_b_c_100, HALF_SCREEN_HEIGHT + xy_a_b_c_100,
+                        HALF_SCREEN_WIDTH + xx_a_b_c_100, HALF_SCREEN_HEIGHT - xy_a_b_c_100);
+                gfx_PrintStringXY("x", HALF_SCREEN_WIDTH + xx_a_b_c_100, HALF_SCREEN_HEIGHT - xy_a_b_c_100);
                 
                 //y-axis
-                gfx_Line_NoClip(160 - yx_a_b_c_100, 120 + yy_a_b_c_100, 160 + yx_a_b_c_100, 120 - yy_a_b_c_100);
-                gfx_PrintStringXY("y", 160 + yx_a_b_c_100, 120 - yy_a_b_c_100);
+                gfx_Line_NoClip(HALF_SCREEN_WIDTH - yx_a_b_c_100, HALF_SCREEN_HEIGHT + yy_a_b_c_100,
+                        HALF_SCREEN_WIDTH + yx_a_b_c_100, HALF_SCREEN_HEIGHT - yy_a_b_c_100);
+                gfx_PrintStringXY("y", HALF_SCREEN_WIDTH + yx_a_b_c_100, HALF_SCREEN_HEIGHT - yy_a_b_c_100);
                 
                 //z-axis
-                gfx_Line_NoClip(160 - zx_a_b_c_100, 120 + zy_a_b_c_100, 160 + zx_a_b_c_100, 120 - zy_a_b_c_100);
-                gfx_PrintStringXY("z", 160 + zx_a_b_c_100, 120 - zy_a_b_c_100);
+                gfx_Line_NoClip(HALF_SCREEN_WIDTH - zx_a_b_c_100, HALF_SCREEN_HEIGHT + zy_a_b_c_100,
+                        HALF_SCREEN_WIDTH + zx_a_b_c_100, HALF_SCREEN_HEIGHT - zy_a_b_c_100);
+                gfx_PrintStringXY("z", HALF_SCREEN_WIDTH + zx_a_b_c_100, HALF_SCREEN_HEIGHT - zy_a_b_c_100);
                 
                 for (i = 0, t = 0; t < 1 && os_GetCSC() != sk_2nd; t += .00909, i++)
                 {
@@ -442,42 +454,43 @@ MAIN:
                     double h = 2 * s2 * (mod(t * (n + 1), 1) - .5);
                     double pRPN_h_g = parseRPN(equ, h, g);
                     double pRPN_g_h = parseRPN(equ, g, h);
-                    
-                    xxNode = (160 + (s * ((xx_a_b_c * g) + (yx_a_b_c * h) + (zx_a_b_c * pRPN_g_h)))); //fill out the arrays of nodes
-                    xyNode = (120 - (s * ((xy_a_b_c * g) + (yy_a_b_c * h) + (zy_a_b_c * pRPN_g_h))));
-                    yxNode = (160 + (s * ((xx_a_b_c * h) + (yx_a_b_c * g) + (zx_a_b_c * pRPN_h_g))));
-                    yyNode = (120 - (s * ((xy_a_b_c * h) + (yy_a_b_c * g) + (zy_a_b_c * pRPN_h_g))));
 
-                    if (xxNode > 320)
+                    //fill out the arrays of nodes
+                    xxNode = (HALF_SCREEN_WIDTH + (s * ((xx_a_b_c * g) + (yx_a_b_c * h) + (zx_a_b_c * pRPN_g_h))));
+                    xyNode = (HALF_SCREEN_HEIGHT - (s * ((xy_a_b_c * g) + (yy_a_b_c * h) + (zy_a_b_c * pRPN_g_h))));
+                    yxNode = (HALF_SCREEN_WIDTH + (s * ((xx_a_b_c * h) + (yx_a_b_c * g) + (zx_a_b_c * pRPN_h_g))));
+                    yyNode = (HALF_SCREEN_HEIGHT - (s * ((xy_a_b_c * h) + (yy_a_b_c * g) + (zy_a_b_c * pRPN_h_g))));
+
+                    if (xxNode > SCREEN_WIDTH)
                     {
-                        xxNode = 320;
+                        xxNode = SCREEN_WIDTH;
                     }
                     else if (xxNode < 0)
                     {
                         xxNode = 0;
                     }
                     
-                    if (xyNode > 240)
+                    if (xyNode > SCREEN_HEIGHT)
                     {
-                        xyNode = 239;
+                        xyNode = SCREEN_HEIGHT - 1;
                     }
                     else if (xyNode < 0)
                     {
                         xyNode = 0;
                     }
                     
-                    if (yxNode > 320)
+                    if (yxNode > SCREEN_WIDTH)
                     {
-                        yxNode = 320;
+                        yxNode = SCREEN_WIDTH;
                     }
                     else if (yxNode < 0)
                     {
                         yxNode = 0;
                     }
                     
-                    if (yyNode > 240)
+                    if (yyNode > SCREEN_HEIGHT)
                     {
-                        yyNode = 239;
+                        yyNode = SCREEN_HEIGHT - 1;
                     }
                     else if (yyNode < 0)
                     {
